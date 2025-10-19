@@ -222,19 +222,147 @@
 
 
 
+// import React from 'react';
+// import { Link, useLocation, useNavigate } from 'react-router-dom';
+// import { useAuth } from '../../hooks/useAuth';
+// import { useCart } from '../../hooks/useCart';
+// import { useState, useEffect } from 'react';
+// import { Home, Grid, ShoppingCart, User } from 'lucide-react';
+
+// const Footer: React.FC = () => {
+//   const location = useLocation();
+//   const navigate = useNavigate();
+//   const { isAuthenticated } = useAuth();
+//   const { getTotalItems } = useCart();
+//   const [cartItemCount, setCartItemCount] = useState(0);
+
+//   const isActive = (path: string) => {
+//     return location.pathname === path;
+//   };
+
+//   const handleCartClick = () => {
+//     navigate('/cart');
+//   };
+
+//   const handleAccountClick = () => {
+//     if (isAuthenticated) {
+//       navigate('/account');
+//     } else {
+//       navigate('/login');
+//     }
+//   };
+
+//   // تحديث عداد السلة عند تغيير عدد العناصر
+//   useEffect(() => {
+//     setCartItemCount(getTotalItems());
+//   }, [getTotalItems]);
+
+//   return (
+//     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 safe-area-bottom shadow-lg z-50">
+//       <div className="flex justify-between items-center max-w-md mx-auto">
+//         {/* زر الرئيسية */}
+//         <Link 
+//           to="/home" 
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
+//             isActive('/home') 
+//               ? 'text-blue-600 bg-blue-50' 
+//               : 'text-gray-600 hover:text-blue-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/home') ? 'bg-blue-100' : 'group-hover:bg-blue-50'
+//           }`}>
+//             <Home className="w-5 h-5" />
+//           </div>
+//           <span className="text-xs mt-1 font-medium">الرئيسية</span>
+//         </Link>
+
+//         {/* زر التصنيفات */}
+//         <Link 
+//           to="/categories" 
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
+//             isActive('/categories') 
+//               ? 'text-green-600 bg-green-50' 
+//               : 'text-gray-600 hover:text-green-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/categories') ? 'bg-green-100' : 'group-hover:bg-green-50'
+//           }`}>
+//             <Grid className="w-5 h-5" />
+//           </div>
+//           <span className="text-xs mt-1 font-medium">التصنيفات</span>
+//         </Link>
+
+//         {/* زر السلة */}
+//         <button
+//           onClick={handleCartClick}
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
+//             isActive('/cart') 
+//               ? 'text-orange-600 bg-orange-50' 
+//               : 'text-gray-600 hover:text-orange-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/cart') ? 'bg-orange-100' : 'group-hover:bg-orange-50'
+//           }`}>
+//             <ShoppingCart className="w-5 h-5" />
+//             {cartItemCount > 0 && (
+//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
+//                 {cartItemCount > 99 ? '99+' : cartItemCount}
+//               </span>
+//             )}
+//           </div>
+//           <span className="text-xs mt-1 font-medium">السلة</span>
+//         </button>
+
+//         {/* زر الحساب */}
+//         <button
+//           onClick={handleAccountClick}
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
+//             (isActive('/account') || isActive('/login')) 
+//               ? 'text-purple-600 bg-purple-50' 
+//               : 'text-gray-600 hover:text-purple-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             (isActive('/account') || isActive('/login')) ? 'bg-purple-100' : 'group-hover:bg-purple-50'
+//           }`}>
+//             <User className="w-5 h-5" />
+//           </div>
+//           <span className="text-xs mt-1 font-medium">
+//             {isAuthenticated ? 'حسابي' : 'تسجيل'}
+//           </span>
+//         </button>
+//       </div>
+//     </footer>
+//   );
+// };
+
+// export default Footer;
+
+
+
+
+
+// components/layout/Footer.tsx
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
+import { useFavorites } from '../../hooks/useFavorites';
 import { useState, useEffect } from 'react';
-import { Home, Grid, ShoppingCart, User } from 'lucide-react';
+import { Home, Search, ShoppingCart, User, Heart } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { getTotalItems } = useCart();
+  const { favorites } = useFavorites();
   const [cartItemCount, setCartItemCount] = useState(0);
+  // const [favoritesCount, setFavoritesCount] = useState(0);
+    const { favoritesCount, isFavorite } = useFavorites(); // استخدام favoritesCount مباشرة
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -252,7 +380,11 @@ const Footer: React.FC = () => {
     }
   };
 
-  // تحديث عداد السلة عند تغيير عدد العناصر
+  const handleFavoritesClick = () => {
+    navigate('/favorites');
+  };
+
+  // تحديث العدادين عند تغيير عدد العناصر
   useEffect(() => {
     setCartItemCount(getTotalItems());
   }, [getTotalItems]);
@@ -277,23 +409,44 @@ const Footer: React.FC = () => {
           <span className="text-xs mt-1 font-medium">الرئيسية</span>
         </Link>
 
-        {/* زر التصنيفات */}
+        {/* زر البحث */}
         <Link 
-          to="/categories" 
+          to="/search" 
           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-            isActive('/categories') 
+            isActive('/search') 
               ? 'text-green-600 bg-green-50' 
               : 'text-gray-600 hover:text-green-500 hover:bg-gray-50'
           }`}
         >
           <div className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive('/categories') ? 'bg-green-100' : 'group-hover:bg-green-50'
+            isActive('/search') ? 'bg-green-100' : 'group-hover:bg-green-50'
           }`}>
-            <Grid className="w-5 h-5" />
+            <Search className="w-5 h-5" />
           </div>
-          <span className="text-xs mt-1 font-medium">التصنيفات</span>
+          <span className="text-xs mt-1 font-medium">البحث</span>
         </Link>
 
+        {/* زر المفضلة */}
+     <button
+          onClick={handleFavoritesClick}
+          className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
+            isActive('/favorites') 
+              ? 'text-pink-600 bg-pink-50' 
+              : 'text-gray-600 hover:text-pink-500 hover:bg-gray-50'
+          }`}
+        >
+          <div className={`p-2 rounded-lg transition-all duration-300 ${
+            isActive('/favorites') ? 'bg-pink-100' : 'group-hover:bg-pink-50'
+          }`}>
+            <Heart className="w-5 h-5" />
+            {favoritesCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
+                {favoritesCount > 99 ? '99+' : favoritesCount}
+              </span>
+            )}
+          </div>
+          <span className="text-xs mt-1 font-medium">المفضلة</span>
+        </button>
         {/* زر السلة */}
         <button
           onClick={handleCartClick}
@@ -340,3 +493,5 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
+

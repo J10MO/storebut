@@ -27,7 +27,7 @@
 // };
 
 
-
+// /categories/index.ts
 import { apiClient } from '../client';
 import { 
   Category, 

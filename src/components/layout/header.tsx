@@ -485,27 +485,272 @@
 
 
 
+// // components/layout/Navbar.tsx
+// import React, { useState } from 'react';
+// import { Button } from '../ui/button';
+// import { Badge } from '../ui/badge';
+// import { 
+//   Menu, 
+//   User, 
+//   Heart,
+//   ChevronDown,
+//   Sparkles,
+//   X,
+//   ShoppingBag,
+//   Phone,
+//   LogOut
+// } from 'lucide-react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import { useFavorites } from '../../hooks/useFavorites';
+// import { useAuth } from '../../hooks/useAuth';
+
+// const Navbar: React.FC = () => {
+//   const { favorites } = useFavorites();
+//   const { isAuthenticated, logout } = useAuth();
+//   const navigate = useNavigate();
+//   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate('/');
+//     setIsMobileMenuOpen(false);
+//   };
+
+//   const closeMobileMenu = () => {
+//     setIsMobileMenuOpen(false);
+//   };
+
+//   return (
+//     <nav className="bg-white shadow-md sticky top-0 z-50 border-b border-pink-100">
+//       {/* Main Navbar */}
+//       <div className="container mx-auto px-4">
+//         <div className="flex items-center justify-between h-16">
+//           {/* Logo */}
+//           <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+//             <div className="w-11 h-11 bg-gradient-to-br from-pink-500 via-pink-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+//               <span className="text-white font-bold text-xl">✨</span>
+//             </div>
+//             <div className="flex flex-col">
+//               <span className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent leading-5">
+//                 جمالك
+//               </span>
+//               <span className="text-xs text-gray-500 font-medium">Beauty & Care</span>
+//             </div>
+//           </Link>
+
+//           {/* Spacer */}
+//           <div className="flex-1"></div>
+
+//           {/* Navigation Items */}
+//           <div className="flex items-center gap-2">
+//             {/* Favorites/Wishlist */}
+//             <Link to="/FavoritesPage">
+//               <Button 
+//                 variant="ghost" 
+//                 size="icon" 
+//                 className="relative hover:bg-pink-50 transition-colors group"
+//               >
+//                 <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors group-hover:fill-pink-100" />
+//                 {favorites.length > 0 && (
+//                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-[10px] font-semibold border-2 border-white">
+//                     {favorites.length > 9 ? '9+' : favorites.length}
+//                   </Badge>
+//                 )}
+//               </Button>
+//             </Link>
+
+//             {/* User Account Dropdown */}
+//             {isAuthenticated ? (
+//               <div className="relative group hidden sm:block">
+//                 <Button 
+//                   variant="ghost" 
+//                   className="flex items-center gap-2 h-10 px-3 hover:bg-pink-50 transition-colors rounded-full"
+//                 >
+//                   <User className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors" />
+//                   <span className="text-sm font-medium text-gray-700 group-hover:text-pink-600 transition-colors">حسابي</span>
+//                   <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-pink-600 group-hover:rotate-180 transition-all duration-200" />
+//                 </Button>
+                
+//                 {/* Dropdown Menu */}
+//                 <div className="absolute left-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-pink-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
+//                   <div className="py-2">
+//                     <Link 
+//                       to="/account" 
+//                       className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors rounded-lg mx-2 font-medium"
+//                     >
+//                       <div className="flex items-center gap-2">
+//                         <User className="w-4 h-4" />
+//                         <span>الملف الشخصي</span>
+//                       </div>
+//                     </Link>
+//                     <Link 
+//                       to="/orders" 
+//                       className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors rounded-lg mx-2 font-medium"
+//                     >
+//                       <div className="flex items-center gap-2">
+//                         <ShoppingBag className="w-4 h-4" />
+//                         <span>طلباتي</span>
+//                       </div>
+//                     </Link>
+//                     <Link 
+//                       to="/favorites" 
+//                       className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors rounded-lg mx-2 font-medium"
+//                     >
+//                       <div className="flex items-center gap-2">
+//                         <Heart className="w-4 h-4" />
+//                         <span>المفضلة ({favorites.length})</span>
+//                       </div>
+//                     </Link>
+//                     <div className="border-t border-pink-100 mt-2 pt-2">
+//                       <button 
+//                         onClick={handleLogout}
+//                         className="block w-full text-right px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium rounded-lg mx-2"
+//                       >
+//                         <div className="flex items-center gap-2">
+//                           <LogOut className="w-4 h-4" />
+//                           <span>تسجيل الخروج</span>
+//                         </div>
+//                       </button>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             ) : (
+//               <Link to="/login" className="hidden sm:block">
+//                 <Button 
+//                   variant="ghost" 
+//                   className="flex items-center gap-2 h-10 px-4 hover:bg-pink-50 transition-colors rounded-full"
+//                 >
+//                   <User className="w-5 h-5 text-gray-700" />
+//                   <span className="text-sm font-medium text-gray-700">تسجيل الدخول</span>
+//                 </Button>
+//               </Link>
+//             )}
+
+//             {/* Contact Us - Always Visible */}
+//             <Link to="/contact" className="hidden sm:block">
+//               <Button 
+//                 variant="ghost" 
+//                 className="flex items-center gap-2 h-10 px-4 hover:bg-blue-50 transition-colors rounded-full"
+//               >
+//                 <Phone className="w-4 h-4 text-gray-700" />
+//                 <span className="text-sm font-medium text-gray-700">اتصل بنا</span>
+//               </Button>
+//             </Link>
+
+//             {/* Mobile Menu Button */}
+//             <Button 
+//               variant="ghost" 
+//               size="icon" 
+//               className="lg:hidden hover:bg-pink-50 transition-colors"
+//               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+//             >
+//               {isMobileMenuOpen ? (
+//                 <X className="w-6 h-6 text-gray-700" />
+//               ) : (
+//                 <Menu className="w-6 h-6 text-gray-700" />
+//               )}
+//             </Button>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Mobile Menu */}
+//       {isMobileMenuOpen && (
+//         <div className="lg:hidden bg-white border-t border-pink-100 shadow-lg">
+//           <div className="container mx-auto px-4 py-4">
+//             <div className="space-y-2">
+//               {/* User Section */}
+//               {isAuthenticated ? (
+//                 <>
+//                   <Link 
+//                     to="/account" 
+//                     className="flex items-center gap-3 p-3 text-gray-700 hover:bg-pink-50 rounded-xl transition-colors"
+//                     onClick={closeMobileMenu}
+//                   >
+//                     <User className="w-5 h-5" />
+//                     <span className="font-medium">الملف الشخصي</span>
+//                   </Link>
+//                   <Link 
+//                     to="/orders" 
+//                     className="flex items-center gap-3 p-3 text-gray-700 hover:bg-pink-50 rounded-xl transition-colors"
+//                     onClick={closeMobileMenu}
+//                   >
+//                     <ShoppingBag className="w-5 h-5" />
+//                     <span className="font-medium">طلباتي</span>
+//                   </Link>
+//                   <Link 
+//                     to="/favorites" 
+//                     className="flex items-center gap-3 p-3 text-gray-700 hover:bg-pink-50 rounded-xl transition-colors"
+//                     onClick={closeMobileMenu}
+//                   >
+//                     <Heart className="w-5 h-5" />
+//                     <span className="font-medium">المفضلة ({favorites.length})</span>
+//                   </Link>
+//                 </>
+//               ) : (
+//                 <Link 
+//                   to="/login" 
+//                   className="flex items-center gap-3 p-3 text-gray-700 hover:bg-pink-50 rounded-xl transition-colors"
+//                   onClick={closeMobileMenu}
+//                 >
+//                   <User className="w-5 h-5" />
+//                   <span className="font-medium">تسجيل الدخول</span>
+//                 </Link>
+//               )}
+
+//               {/* Contact Us */}
+//               <Link 
+//                 to="/contact" 
+//                 className="flex items-center gap-3 p-3 text-gray-700 hover:bg-blue-50 rounded-xl transition-colors"
+//                 onClick={closeMobileMenu}
+//               >
+//                 <Phone className="w-5 h-5" />
+//                 <span className="font-medium">اتصل بنا</span>
+//               </Link>
+
+//               {/* Logout for authenticated users */}
+//               {isAuthenticated && (
+//                 <button 
+//                   onClick={handleLogout}
+//                   className="flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors w-full text-right"
+//                 >
+//                   <LogOut className="w-5 h-5" />
+//                   <span className="font-medium">تسجيل الخروج</span>
+//                 </button>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </nav>
+//   );
+// };
+
+// export default Navbar;
+
+
+
+
+
+
 // components/layout/Navbar.tsx
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { 
   Menu, 
   User, 
-  Heart,
   ChevronDown,
-  Sparkles,
   X,
   ShoppingBag,
   Phone,
-  LogOut
+  LogOut,
+  Search
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 
 const Navbar: React.FC = () => {
-  const { favorites } = useFavorites();
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -543,19 +788,14 @@ const Navbar: React.FC = () => {
 
           {/* Navigation Items */}
           <div className="flex items-center gap-2">
-            {/* Favorites/Wishlist */}
-            <Link to="/FavoritesPage">
+            {/* Search Button */}
+            <Link to="/search">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative hover:bg-pink-50 transition-colors group"
+                className="hover:bg-blue-50 transition-colors group"
               >
-                <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors group-hover:fill-pink-100" />
-                {favorites.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-[10px] font-semibold border-2 border-white">
-                    {favorites.length > 9 ? '9+' : favorites.length}
-                  </Badge>
-                )}
+                <Search className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" />
               </Button>
             </Link>
 
@@ -590,15 +830,6 @@ const Navbar: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <ShoppingBag className="w-4 h-4" />
                         <span>طلباتي</span>
-                      </div>
-                    </Link>
-                    <Link 
-                      to="/favorites" 
-                      className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors rounded-lg mx-2 font-medium"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Heart className="w-4 h-4" />
-                        <span>المفضلة ({favorites.length})</span>
                       </div>
                     </Link>
                     <div className="border-t border-pink-100 mt-2 pt-2">
@@ -660,6 +891,16 @@ const Navbar: React.FC = () => {
         <div className="lg:hidden bg-white border-t border-pink-100 shadow-lg">
           <div className="container mx-auto px-4 py-4">
             <div className="space-y-2">
+              {/* Search */}
+              <Link 
+                to="/search" 
+                className="flex items-center gap-3 p-3 text-gray-700 hover:bg-blue-50 rounded-xl transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <Search className="w-5 h-5" />
+                <span className="font-medium">البحث</span>
+              </Link>
+
               {/* User Section */}
               {isAuthenticated ? (
                 <>
@@ -678,14 +919,6 @@ const Navbar: React.FC = () => {
                   >
                     <ShoppingBag className="w-5 h-5" />
                     <span className="font-medium">طلباتي</span>
-                  </Link>
-                  <Link 
-                    to="/favorites" 
-                    className="flex items-center gap-3 p-3 text-gray-700 hover:bg-pink-50 rounded-xl transition-colors"
-                    onClick={closeMobileMenu}
-                  >
-                    <Heart className="w-5 h-5" />
-                    <span className="font-medium">المفضلة ({favorites.length})</span>
                   </Link>
                 </>
               ) : (

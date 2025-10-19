@@ -1519,6 +1519,311 @@
 
 
 
+
+
+
+// import React, { useCallback, useEffect, useRef, useState } from 'react';
+// import { Card } from '../../ui/card';
+// import { useHomepageAds } from '../../../hooks/useAd';
+// import { Ad } from '../../../api/types/ads.types';
+// import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// interface AdsCarouselProps {
+//   className?: string;
+// }
+
+// export const AdsCarousel: React.FC<AdsCarouselProps> = ({
+//   className = '',
+// }) => {
+//   const { homepageAds, loading, error, trackClick, trackView } = useHomepageAds();
+//   const viewedAdsRef = useRef<Set<string>>(new Set());
+//   const [currentIndex, setCurrentIndex] = useState(0);
+//   const [isDragging, setIsDragging] = useState(false);
+//   const [startX, setStartX] = useState(0);
+//   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+//   // Handle ad click with tracking
+//   const handleAdClick = useCallback(async (ad: Ad, e: React.MouseEvent) => {
+//     e.preventDefault();
+    
+//     try {
+//       await trackClick(ad.id);
+//     } catch (error) {
+//       console.error('Failed to track ad click:', error);
+//     }
+    
+//     window.open(`/products/${ad.product_id}`, '_blank', 'noopener,noreferrer');
+//   }, [trackClick]);
+
+//   // Track ad view when visible
+//   const handleAdView = useCallback(async (ad: Ad) => {
+//     if (viewedAdsRef.current.has(ad.id)) return;
+    
+//     viewedAdsRef.current.add(ad.id);
+//     try {
+//       await trackView(ad.id);
+//     } catch (error) {
+//       console.error('Failed to track ad view:', error);
+//     }
+//   }, [trackView]);
+
+//   // Track initial ad views
+//   useEffect(() => {
+//     homepageAds.forEach(ad => {
+//       handleAdView(ad);
+//     });
+//   }, [homepageAds, handleAdView]);
+
+//   // Touch and drag handlers for mobile slider
+//   const handleTouchStart = (e: React.TouchEvent) => {
+//     setIsDragging(true);
+//     setStartX(e.touches[0].clientX);
+//   };
+
+//   const handleTouchMove = (e: React.TouchEvent) => {
+//     if (!isDragging) return;
+//     const currentX = e.touches[0].clientX;
+//     const diff = startX - currentX;
+
+//     if (Math.abs(diff) > 50) { // Minimum drag distance
+//       if (diff > 0 && currentIndex < homepageAds.length - 1) {
+//         // Swipe left - next
+//         setCurrentIndex(prev => prev + 1);
+//       } else if (diff < 0 && currentIndex > 0) {
+//         // Swipe right - previous
+//         setCurrentIndex(prev => prev - 1);
+//       }
+//       setIsDragging(false);
+//     }
+//   };
+
+//   const handleTouchEnd = () => {
+//     setIsDragging(false);
+//   };
+
+//   // Auto-play for mobile
+//   useEffect(() => {
+//     if (homepageAds.length <= 1) return;
+
+//     const interval = setInterval(() => {
+//       setCurrentIndex(prev => 
+//         prev === homepageAds.length - 1 ? 0 : prev + 1
+//       );
+//     }, 5000);
+
+//     return () => clearInterval(interval);
+//   }, [homepageAds.length]);
+
+//   // Scroll to current index
+//   useEffect(() => {
+//     if (scrollContainerRef.current) {
+//       const container = scrollContainerRef.current;
+//       const card = container.children[currentIndex] as HTMLElement;
+//       if (card) {
+//         container.scrollTo({
+//           left: card.offsetLeft - container.offsetLeft,
+//           behavior: 'smooth'
+//         });
+//       }
+//     }
+//   }, [currentIndex]);
+
+//   // Loading state
+//   if (loading) {
+//     return (
+//       <div className={`w-full ${className}`}>
+//         <div className="relative w-full h-[280px] bg-gradient-to-br from-muted/50 to-muted rounded-2xl overflow-hidden">
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center space-y-4">
+//               <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
+//               <p className="text-muted-foreground font-medium">جاري تحميل الإعلانات...</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // Error state
+//   if (error) {
+//     return (
+//       <div className={`w-full ${className}`}>
+//         <div className="relative w-full h-[280px] bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-2xl overflow-hidden border border-destructive/20">
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center space-y-3 px-6">
+//               <div className="w-14 h-14 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
+//                 <span className="text-2xl">⚠️</span>
+//               </div>
+//               <p className="text-destructive font-semibold text-lg">خطأ في تحميل الإعلانات</p>
+//               <p className="text-destructive/70 text-sm">{error}</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // Empty state
+//   if (!homepageAds || homepageAds.length === 0) {
+//     return (
+//       <div className={`w-full ${className}`}>
+//         <div className="relative w-full h-[280px] bg-gradient-to-br from-muted/30 to-muted/10 rounded-2xl overflow-hidden border border-dashed border-muted-foreground/20">
+//           <div className="absolute inset-0 flex items-center justify-center">
+//             <div className="text-center space-y-3">
+//               <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto">
+//                 <span className="text-2xl">📢</span>
+//               </div>
+//               <p className="text-muted-foreground font-medium">لا توجد إعلانات حالياً</p>
+//               <p className="text-muted-foreground/60 text-sm">سيتم عرض الإعلانات قريباً</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className={`w-full ${className}`}>
+//       {/* Mobile Slider Container */}
+//       <div className="relative">
+//         {/* Scroll Container for Mobile */}
+//         <div
+//           ref={scrollContainerRef}
+//           className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:overflow-visible"
+//           onTouchStart={handleTouchStart}
+//           onTouchMove={handleTouchMove}
+//           onTouchEnd={handleTouchEnd}
+//           style={{
+//             scrollbarWidth: 'none',
+//             msOverflowStyle: 'none'
+//           }}
+//         >
+//           {homepageAds.map((ad, index) => (
+//             <div
+//               key={ad.id}
+//               className="flex-shrink-0 w-[85vw] max-w-sm snap-center md:w-auto md:flex-shrink"
+//             >
+//               <Card
+//                 className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer border border-muted/30 bg-background md:rounded-xl"
+//                 onClick={(e) => handleAdClick(ad, e)}
+//               >
+//                 {/* Image Container */}
+//                 <div className="relative w-full h-[220px] md:h-[180px] lg:h-[200px] overflow-hidden bg-gradient-to-br from-muted to-muted/50">
+//                   <img
+//                     src={ad.image_url || '/placeholder-ad.jpg'}
+//                     alt={ad.title}
+//                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+//                     loading={index < 3 ? "eager" : "lazy"}
+//                     onError={(e) => {
+//                       const target = e.target as HTMLImageElement;
+//                       target.src = '/placeholder-ad.jpg';
+//                     }}
+//                   />
+                  
+//                   {/* Gradient Overlay */}
+//                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  
+//                   {/* Ad Badge */}
+//                   {/* <div className="absolute top-4 right-4 bg-primary/95 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-xs font-bold shadow-2xl">
+//                     إعلان
+//                   </div> */}
+                  
+//                   {/* Hover Content - Desktop only */}
+//                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden md:flex items-center justify-center p-6">
+//                     <div className="text-center text-white">
+//                       <h3 className="font-bold text-lg mb-2 line-clamp-2">
+//                         {ad.title}
+//                       </h3>
+//                       {ad.description && (
+//                         <p className="text-white/90 text-sm line-clamp-3 mb-4">
+//                           {ad.description}
+//                         </p>
+//                       )}
+//                       <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-semibold text-sm">
+//                         اضغط للمزيد
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* Mobile Info Overlay */}
+//                   <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent md:hidden">
+//                     <h3 className="text-white font-bold text-base mb-1 line-clamp-1">
+//                       {ad.title}
+//                     </h3>
+//                     {ad.description && (
+//                       <p className="text-white/80 text-sm line-clamp-2">
+//                         {ad.description}
+//                       </p>
+//                     )}
+//                   </div>
+//                 </div>
+
+//                 {/* Bottom Info Bar - Desktop only */}
+//                 <div className="hidden md:block p-4 bg-gradient-to-r from-background to-muted/20 border-t border-muted/30">
+//                   <h4 className="font-semibold text-foreground line-clamp-1 text-sm">
+//                     {ad.title}
+//                   </h4>
+//                   {ad.description && (
+//                     <p className="text-muted-foreground text-xs line-clamp-1 mt-1">
+//                       {ad.description}
+//                     </p>
+//                   )}
+//                 </div>
+//               </Card>
+//             </div>
+//           ))}
+//         </div>
+
+//         {/* Mobile Navigation Arrows */}
+//         {/* {homepageAds.length > 1 && (
+//           <>
+//             <button
+//               onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
+//               className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-2xl md:hidden z-10"
+//               disabled={currentIndex === 0}
+//             >
+//               <ChevronRight className="w-5 h-5" />
+//             </button>
+//             <button
+//               onClick={() => setCurrentIndex(prev => Math.min(homepageAds.length - 1, prev + 1))}
+//               className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-2xl md:hidden z-10"
+//               disabled={currentIndex === homepageAds.length - 1}
+//             >
+//               <ChevronLeft className="w-5 h-5" />
+//             </button>
+//           </>
+//         )} */}
+
+//         {/* Mobile Pagination Dots */}
+//         {homepageAds.length > 1 && (
+//           <div className="flex justify-center gap-2 mt-4 md:hidden">
+//             {homepageAds.map((_, index) => (
+//               <button
+//                 key={index}
+//                 onClick={() => setCurrentIndex(index)}
+//                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
+//                   currentIndex === index 
+//                     ? 'bg-primary w-6' 
+//                     : 'bg-muted-foreground/30'
+//                 }`}
+//               />
+//             ))}
+//           </div>
+//         )}
+//       </div>
+
+//       {/* Ads Counter */}
+//       <div className="text-center mt-6 md:mt-8">
+//         <p className="text-sm text-muted-foreground font-medium">
+//           عرض {homepageAds.length} إعلان
+//         </p>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card } from '../../ui/card';
 import { useHomepageAds } from '../../../hooks/useAd';
@@ -1629,11 +1934,11 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
   if (loading) {
     return (
       <div className={`w-full ${className}`}>
-        <div className="relative w-full h-[280px] bg-gradient-to-br from-muted/50 to-muted rounded-2xl overflow-hidden">
+        <div className="relative w-full h-[200px] sm:h-[250px] md:h-[300px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
-              <p className="text-muted-foreground font-medium">جاري تحميل الإعلانات...</p>
+            <div className="text-center space-y-3">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto" />
+              <p className="text-gray-600 font-medium text-sm">جاري تحميل الإعلانات...</p>
             </div>
           </div>
         </div>
@@ -1645,14 +1950,13 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
   if (error) {
     return (
       <div className={`w-full ${className}`}>
-        <div className="relative w-full h-[280px] bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-2xl overflow-hidden border border-destructive/20">
+        <div className="relative w-full h-[200px] sm:h-[250px] md:h-[300px] bg-gradient-to-br from-red-50 to-red-100 rounded-xl overflow-hidden border border-red-200">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center space-y-3 px-6">
-              <div className="w-14 h-14 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-2xl">⚠️</span>
+            <div className="text-center space-y-2 px-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-xl">⚠️</span>
               </div>
-              <p className="text-destructive font-semibold text-lg">خطأ في تحميل الإعلانات</p>
-              <p className="text-destructive/70 text-sm">{error}</p>
+              <p className="text-red-600 font-semibold text-sm">خطأ في تحميل الإعلانات</p>
             </div>
           </div>
         </div>
@@ -1664,14 +1968,13 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
   if (!homepageAds || homepageAds.length === 0) {
     return (
       <div className={`w-full ${className}`}>
-        <div className="relative w-full h-[280px] bg-gradient-to-br from-muted/30 to-muted/10 rounded-2xl overflow-hidden border border-dashed border-muted-foreground/20">
+        <div className="relative w-full h-[200px] sm:h-[250px] md:h-[300px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden border border-dashed border-gray-300">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center space-y-3">
-              <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto">
-                <span className="text-2xl">📢</span>
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-xl">📢</span>
               </div>
-              <p className="text-muted-foreground font-medium">لا توجد إعلانات حالياً</p>
-              <p className="text-muted-foreground/60 text-sm">سيتم عرض الإعلانات قريباً</p>
+              <p className="text-gray-600 font-medium text-sm">لا توجد إعلانات حالياً</p>
             </div>
           </div>
         </div>
@@ -1686,7 +1989,7 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
         {/* Scroll Container for Mobile */}
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:overflow-visible"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-3 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 lg:gap-6 md:overflow-visible"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -1698,18 +2001,18 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
           {homepageAds.map((ad, index) => (
             <div
               key={ad.id}
-              className="flex-shrink-0 w-[85vw] max-w-sm snap-center md:w-auto md:flex-shrink"
+              className="flex-shrink-0 w-[90vw] max-w-md snap-center md:w-auto md:flex-shrink"
             >
               <Card
-                className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer border border-muted/30 bg-background md:rounded-xl"
-                onClick={(e) => handleAdClick(ad, e)}
+                className="group relative overflow-hidden rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white"
+                // onClick={(e) => handleAdClick(ad, e)}
               >
-                {/* Image Container */}
-                <div className="relative w-full h-[220px] md:h-[180px] lg:h-[200px] overflow-hidden bg-gradient-to-br from-muted to-muted/50">
+                {/* Image Container - Clean design without text */}
+                <div className="relative w-full h-[160px] sm:h-[200px] md:h-[180px] lg:h-[220px] xl:h-[250px] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                   <img
                     src={ad.image_url || '/placeholder-ad.jpg'}
                     alt={ad.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading={index < 3 ? "eager" : "lazy"}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -1717,91 +2020,59 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
                     }}
                   />
                   
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  {/* Hover Overlay Effect */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
                   
-                  {/* Ad Badge */}
-                  {/* <div className="absolute top-4 right-4 bg-primary/95 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-xs font-bold shadow-2xl">
+                  {/* Ad Badge - Minimal design */}
+                  {/* <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-medium">
                     إعلان
                   </div> */}
-                  
-                  {/* Hover Content - Desktop only */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden md:flex items-center justify-center p-6">
-                    <div className="text-center text-white">
-                      <h3 className="font-bold text-lg mb-2 line-clamp-2">
-                        {ad.title}
-                      </h3>
-                      {ad.description && (
-                        <p className="text-white/90 text-sm line-clamp-3 mb-4">
-                          {ad.description}
-                        </p>
-                      )}
-                      <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-semibold text-sm">
-                        اضغط للمزيد
+
+                  {/* Click Indicator - Only on hover */}
+                  {/* <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
+                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <ChevronLeft className="w-4 h-4 text-white transform rotate-180" />
                       </div>
                     </div>
-                  </div>
-
-                  {/* Mobile Info Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent md:hidden">
-                    <h3 className="text-white font-bold text-base mb-1 line-clamp-1">
-                      {ad.title}
-                    </h3>
-                    {ad.description && (
-                      <p className="text-white/80 text-sm line-clamp-2">
-                        {ad.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Bottom Info Bar - Desktop only */}
-                <div className="hidden md:block p-4 bg-gradient-to-r from-background to-muted/20 border-t border-muted/30">
-                  <h4 className="font-semibold text-foreground line-clamp-1 text-sm">
-                    {ad.title}
-                  </h4>
-                  {ad.description && (
-                    <p className="text-muted-foreground text-xs line-clamp-1 mt-1">
-                      {ad.description}
-                    </p>
-                  )}
+                  </div> */}
                 </div>
               </Card>
             </div>
           ))}
         </div>
 
-        {/* Mobile Navigation Arrows */}
+        {/* Mobile Navigation Arrows - Minimal design */}
         {/* {homepageAds.length > 1 && (
           <>
             <button
               onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-2xl md:hidden z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-lg md:hidden z-10 transition-opacity duration-200 hover:bg-black/80"
               disabled={currentIndex === 0}
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentIndex(prev => Math.min(homepageAds.length - 1, prev + 1))}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-2xl md:hidden z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-lg md:hidden z-10 transition-opacity duration-200 hover:bg-black/80"
               disabled={currentIndex === homepageAds.length - 1}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
           </>
         )} */}
 
-        {/* Mobile Pagination Dots */}
+        {/* Mobile Pagination Dots - Clean design */}
         {homepageAds.length > 1 && (
-          <div className="flex justify-center gap-2 mt-4 md:hidden">
+          <div className="flex justify-center gap-1.5 mt-4 md:hidden">
             {homepageAds.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                   currentIndex === index 
-                    ? 'bg-primary w-6' 
-                    : 'bg-muted-foreground/30'
+                    ? 'bg-blue-600 w-6' 
+                    : 'bg-gray-300'
                 }`}
               />
             ))}
@@ -1809,12 +2080,23 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({
         )}
       </div>
 
-      {/* Ads Counter */}
-      <div className="text-center mt-6 md:mt-8">
-        <p className="text-sm text-muted-foreground font-medium">
-          عرض {homepageAds.length} إعلان
+      {/* Ads Counter - Minimal */}
+      {/* <div className="text-center mt-4 md:mt-6">
+        <p className="text-xs text-gray-500">
+          {homepageAds.length} إعلان
         </p>
-      </div>
+      </div> */}
+
+      {/* CSS for scrollbar hide */}
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

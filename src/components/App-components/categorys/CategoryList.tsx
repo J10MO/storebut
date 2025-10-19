@@ -775,6 +775,239 @@
 
 
 
+// import React from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { Category } from '../../../api/types/category.types';
+// import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+// const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+// interface CategoryCircleListProps {
+//   categories: Category[];
+//   size?: number;
+//   spacing?: number;
+//   showNameAr?: boolean;
+// }
+
+// const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
+//   categories,
+//   size = 100,
+//   spacing = 20,
+//   showNameAr = true,
+// }) => {
+//   const navigate = useNavigate();
+//   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+
+//   const handleClick = (id: number) => {
+//     const categoryId = Number(id);
+//     if (!isNaN(categoryId)) {
+//       navigate(`/categories/${categoryId}/products`);
+//     }
+//   };
+
+//   // دالة محسنة لبناء رابط الصورة الكامل
+//   const getFullImageUrl = (imageUrl: string | null) => {
+//     if (!imageUrl) return null;
+    
+//     // إذا كان الرابط كاملاً بالفعل (يحتوي على http أو https)
+//     if (imageUrl.startsWith('http')) {
+//       return imageUrl;
+//     }
+    
+//     // تنظيف الـ base URL - إزالة أي / في النهاية
+//     const baseUrl = API_BASE_URL?.replace(/\/$/, '');
+    
+//     // إذا كان imageUrl يبدأ بـ /uploads/ فهذا يعني أنه مسار كامل من الجذر
+//     if (imageUrl.startsWith('/uploads/')) {
+//       return `${baseUrl}${imageUrl}`;
+//     }
+    
+//     // إذا كان imageUrl يبدأ بـ / فقط
+//     if (imageUrl.startsWith('/')) {
+//       return `${baseUrl}${imageUrl}`;
+//     }
+    
+//     // إذا كان اسم ملف فقط (بدون /)
+//     return `${baseUrl}/uploads/categories/${imageUrl}`;
+//   };
+
+//   // دوال التمرير للسلايدر
+//   const scrollLeft = () => {
+//     if (scrollContainerRef.current) {
+//       scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+//     }
+//   };
+
+//   const scrollRight = () => {
+//     if (scrollContainerRef.current) {
+//       scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+//     }
+//   };
+
+//   // دالة محسنة لمعالجة أخطاء تحميل الصور
+//   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, categoryName: string) => {
+//     const target = e.target as HTMLImageElement;
+//     console.warn(`فشل تحميل الصورة للتصنيف "${categoryName}":`, target.src);
+    
+//     // إخفاء الصورة المعطلة وإظهار الأيقونة البديلة
+//     const parent = target.parentElement;
+//     if (parent) {
+//       target.style.display = 'none';
+//       // إنشاء عنصر الأيقونة البديلة
+//       const fallback = document.createElement('div');
+//       fallback.className = 'w-full h-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center';
+//       fallback.innerHTML = '<span class="text-2xl text-gray-500">📦</span>';
+//       parent.appendChild(fallback);
+//     }
+//   };
+
+//   // دالة لمعالجة تحميل الصور بنجاح
+//   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+//     const target = e.target as HTMLImageElement;
+//     target.style.opacity = '1';
+//   };
+
+//   // تصفية التصنيفات لتفادي التكرار
+//   const uniqueCategories = categories.filter((cat, index, self) => 
+//     index === self.findIndex(c => c.id === cat.id)
+//   );
+
+//   return (
+//     <div className="w-full relative px-1">
+//       {/* السلايدر */}
+//       <div className="relative">
+//         {/* الزر الأيسر */}
+//         <button
+//           onClick={scrollLeft}
+//           className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg hover:bg-white transition-all hidden md:block"
+//           aria-label="السابق"
+//         >
+//           <ChevronRight className="w-4 h-4 text-gray-700" />
+//         </button>
+
+//         {/* الزر الأيمن */}
+//         <button
+//           onClick={scrollRight}
+//           className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg hover:bg-white transition-all hidden md:block"
+//           aria-label="التالي"
+//         >
+//           <ChevronLeft className="w-4 h-4 text-gray-700" />
+//         </button>
+
+//         {/* حاوية السلايدر */}
+//         <div
+//           ref={scrollContainerRef}
+//           className="flex overflow-x-auto scrollbar-hide gap-6 pb-4 p-2 px-2"
+//           style={{ 
+//             scrollbarWidth: 'none',
+//             msOverflowStyle: 'none'
+//           }}
+//         >
+//           {uniqueCategories.map((cat) => {
+//             const label = showNameAr && cat.name_ar ? cat.name_ar : cat.name;
+//             const fullImageUrl = getFullImageUrl(cat.image_url);
+//             const productCount = parseInt(cat.product_count || '0');
+
+//             // سجل تصحيح للأغراض التنموية
+//             if (cat.image_url) {
+//               console.log('Category Image Debug:', {
+//                 category: label,
+//                 originalImage: cat.image_url,
+//                 fullImageUrl: fullImageUrl,
+//                 apiBaseUrl: API_BASE_URL,
+//                 isExternal: cat.image_url.startsWith('http')
+//               });
+//             }
+
+//             return (
+//               <div
+//                 key={cat.id}
+//                 className="flex flex-col items-center flex-shrink-0 cursor-pointer group"
+//                 style={{ width: size }}
+//                 onClick={() => handleClick(cat.id)}
+//               >
+//                 {/* الدائرة - الكارت */}
+//                 <div className="relative">
+//                   {/* الخلفية الدائرية */}
+//                   <div
+//                     className="rounded-full border-4 border-white shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-110"
+//                     style={{
+//                       width: size,
+//                       height: size,
+//                       background: cat.color 
+//                         ? `linear-gradient(135deg, ${cat.color}30, ${cat.color}60)`
+//                         : 'linear-gradient(135deg, #f3f4f6, #e5e7eb)',
+//                     }}
+//                   >
+//                     {/* الصورة */}
+//                     <div className="w-full h-full rounded-full overflow-hidden p-1.5">
+//                       {fullImageUrl ? (
+//                         <img
+//                           src={fullImageUrl}
+//                           alt={label}
+//                           className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+//                           style={{ opacity: 0, transition: 'opacity 0.3s' }}
+//                           loading="lazy"
+//                           onLoad={handleImageLoad}
+//                           onError={(e) => handleImageError(e, label)}
+//                         />
+//                       ) : (
+//                         <div className="w-full h-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+//                           <span className="text-2xl text-gray-500">
+//                             {cat.icon || '📦'}
+//                           </span>
+//                         </div>
+//                       )}
+//                     </div>
+
+//                     {/* عدد المنتجات */}
+//                     {productCount > 0 && (
+//                       <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
+//                         {productCount > 99 ? '99+' : productCount}
+//                       </div>
+//                     )}
+
+//                     {/* تأثير hover */}
+//                     <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
+//                   </div>
+
+//                   {/* مؤشر النشاط */}
+//                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full border-2 border-white shadow-sm" />
+//                 </div>
+
+//                 {/* اسم التصنيف */}
+//                 <div className="mt-3 text-center">
+//                   <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+//                     {label}
+//                   </h3>
+//                 </div>
+//               </div>
+//             );
+//           })}
+//         </div>
+//       </div>
+
+//       {/* مؤشر التمرير */}
+//       <div className="flex justify-center mt-4 gap-1">
+//         {uniqueCategories.slice(0, Math.min(6, uniqueCategories.length)).map((_, index) => (
+//           <div
+//             key={index}
+//             className="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CategoryCircleList;
+
+
+
+
+
+
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Category } from '../../../api/types/category.types';
@@ -791,8 +1024,8 @@ interface CategoryCircleListProps {
 
 const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
   categories,
-  size = 100,
-  spacing = 20,
+  size = 80, // حجم أصغر للهواتف
+  spacing = 16,
   showNameAr = true,
 }) => {
   const navigate = useNavigate();
@@ -809,56 +1042,40 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
   const getFullImageUrl = (imageUrl: string | null) => {
     if (!imageUrl) return null;
     
-    // إذا كان الرابط كاملاً بالفعل (يحتوي على http أو https)
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
     
-    // تنظيف الـ base URL - إزالة أي / في النهاية
     const baseUrl = API_BASE_URL?.replace(/\/$/, '');
     
-    // إذا كان imageUrl يبدأ بـ /uploads/ فهذا يعني أنه مسار كامل من الجذر
     if (imageUrl.startsWith('/uploads/')) {
       return `${baseUrl}${imageUrl}`;
     }
     
-    // إذا كان imageUrl يبدأ بـ / فقط
     if (imageUrl.startsWith('/')) {
       return `${baseUrl}${imageUrl}`;
     }
     
-    // إذا كان اسم ملف فقط (بدون /)
     return `${baseUrl}/uploads/categories/${imageUrl}`;
   };
 
   // دوال التمرير للسلايدر
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
     }
   };
 
   // دالة محسنة لمعالجة أخطاء تحميل الصور
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, categoryName: string) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
-    console.warn(`فشل تحميل الصورة للتصنيف "${categoryName}":`, target.src);
-    
-    // إخفاء الصورة المعطلة وإظهار الأيقونة البديلة
-    const parent = target.parentElement;
-    if (parent) {
-      target.style.display = 'none';
-      // إنشاء عنصر الأيقونة البديلة
-      const fallback = document.createElement('div');
-      fallback.className = 'w-full h-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center';
-      fallback.innerHTML = '<span class="text-2xl text-gray-500">📦</span>';
-      parent.appendChild(fallback);
-    }
+    target.style.display = 'none';
   };
 
   // دالة لمعالجة تحميل الصور بنجاح
@@ -873,31 +1090,34 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
   );
 
   return (
-    <div className="w-full relative px-1">
+    <div className="w-full relative">
       {/* السلايدر */}
       <div className="relative">
-        {/* الزر الأيسر */}
-        <button
-          onClick={scrollLeft}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg hover:bg-white transition-all hidden md:block"
-          aria-label="السابق"
-        >
-          <ChevronRight className="w-4 h-4 text-gray-700" />
-        </button>
+        {/* أزرار التنقل - تظهر فقط عند الحاجة */}
+        {uniqueCategories.length > 4 && (
+          <>
+            <button
+              onClick={scrollLeft}
+              className="absolute -left-2 md:-left-4 top-1/2 transform -translate-y-1/2 z-10 p-1.5 md:p-2 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg hover:bg-white transition-all duration-200 hover:shadow-xl"
+              aria-label="السابق"
+            >
+              <ChevronRight className="w-3 h-3 md:w-4 md:h-4 text-gray-700" />
+            </button>
 
-        {/* الزر الأيمن */}
-        <button
-          onClick={scrollRight}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg hover:bg-white transition-all hidden md:block"
-          aria-label="التالي"
-        >
-          <ChevronLeft className="w-4 h-4 text-gray-700" />
-        </button>
+            <button
+              onClick={scrollRight}
+              className="absolute -right-2 md:-right-4 top-1/2 transform -translate-y-1/2 z-10 p-1.5 md:p-2 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg hover:bg-white transition-all duration-200 hover:shadow-xl"
+              aria-label="التالي"
+            >
+              <ChevronLeft className="w-3 h-3 md:w-4 md:h-4 text-gray-700" />
+            </button>
+          </>
+        )}
 
         {/* حاوية السلايدر */}
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto scrollbar-hide gap-6 pb-4 p-2 px-2"
+          className="flex overflow-x-auto scrollbar-hide gap-4 md:gap-6 pb-2 px-1"
           style={{ 
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
@@ -907,17 +1127,6 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
             const label = showNameAr && cat.name_ar ? cat.name_ar : cat.name;
             const fullImageUrl = getFullImageUrl(cat.image_url);
             const productCount = parseInt(cat.product_count || '0');
-
-            // سجل تصحيح للأغراض التنموية
-            if (cat.image_url) {
-              console.log('Category Image Debug:', {
-                category: label,
-                originalImage: cat.image_url,
-                fullImageUrl: fullImageUrl,
-                apiBaseUrl: API_BASE_URL,
-                isExternal: cat.image_url.startsWith('http')
-              });
-            }
 
             return (
               <div
@@ -930,30 +1139,30 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
                 <div className="relative">
                   {/* الخلفية الدائرية */}
                   <div
-                    className="rounded-full border-4 border-white shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-110"
+                    className="rounded-full border-2 md:border-3 border-white shadow-md transition-all duration-300 group-hover:shadow-lg group-hover:scale-105"
                     style={{
                       width: size,
                       height: size,
                       background: cat.color 
-                        ? `linear-gradient(135deg, ${cat.color}30, ${cat.color}60)`
-                        : 'linear-gradient(135deg, #f3f4f6, #e5e7eb)',
+                        ? `linear-gradient(135deg, ${cat.color}20, ${cat.color}40)`
+                        : 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
                     }}
                   >
                     {/* الصورة */}
-                    <div className="w-full h-full rounded-full overflow-hidden p-1.5">
+                    <div className="w-full h-full rounded-full overflow-hidden p-1">
                       {fullImageUrl ? (
                         <img
                           src={fullImageUrl}
                           alt={label}
-                          className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
                           style={{ opacity: 0, transition: 'opacity 0.3s' }}
                           loading="lazy"
                           onLoad={handleImageLoad}
-                          onError={(e) => handleImageError(e, label)}
+                          onError={handleImageError}
                         />
                       ) : (
                         <div className="w-full h-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                          <span className="text-2xl text-gray-500">
+                          <span className="text-lg md:text-xl text-gray-500">
                             {cat.icon || '📦'}
                           </span>
                         </div>
@@ -962,22 +1171,22 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
 
                     {/* عدد المنتجات */}
                     {productCount > 0 && (
-                      <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
+                      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center shadow-md border border-white">
                         {productCount > 99 ? '99+' : productCount}
                       </div>
                     )}
 
                     {/* تأثير hover */}
-                    <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
+                    <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/5 transition-all duration-300" />
                   </div>
 
                   {/* مؤشر النشاط */}
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full border-2 border-white shadow-sm" />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-green-500 rounded-full border border-white shadow-sm" />
                 </div>
 
                 {/* اسم التصنيف */}
-                <div className="mt-3 text-center">
-                  <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                <div className="mt-2 text-center w-full">
+                  <h3 className="font-medium text-gray-900 text-xs md:text-sm line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors duration-200 px-1">
                     {label}
                   </h3>
                 </div>
@@ -987,15 +1196,16 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
         </div>
       </div>
 
-      {/* مؤشر التمرير */}
-      <div className="flex justify-center mt-4 gap-1">
-        {uniqueCategories.slice(0, Math.min(6, uniqueCategories.length)).map((_, index) => (
-          <div
-            key={index}
-            className="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"
-          />
-        ))}
-      </div>
+      {/* CSS للاخفاء التمرير */}
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

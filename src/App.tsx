@@ -199,6 +199,7 @@ import CategoryProducts from './components/App-components/categorys/CategoryPrud
 import CategoryCards from './pages/imtest';
 import FavoritesPage from './pages/fevPage';
 import ProductById from './pages/productById';
+import SearchPage from './pages/search';
 // import CategoryProducts from './components/App-components/categorys/CategoryPrudect';
 function App() {
   return (
@@ -208,12 +209,13 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/home" element={<Home />} />
             <Route path="/products" element={<Products />} />
  <Route path="/categories" element={<CategoriesOverview />} />
   <Route path="/categories/:categoryId/products" element={<CategoryProducts />}/>
             <Route path="/cart" element={<Cart />} />
-            <Route path="/FavoritesPage" element={<FavoritesPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/products/:id" element={<ProductById />} />
             <Route path="/login" element={<Login />} />
