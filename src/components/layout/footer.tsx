@@ -345,13 +345,165 @@
 
 
 
+// // components/layout/Footer.tsx
+// import React from 'react';
+// import { Link, useLocation, useNavigate } from 'react-router-dom';
+// import { useAuth } from '../../hooks/useAuth';
+// import { useCart } from '../../hooks/useCart';
+// import { useFavorites } from '../../hooks/useFavorites';
+// import { useState, useEffect } from 'react';
+// import { Home, Search, ShoppingCart, User, Heart } from 'lucide-react';
+
+// const Footer: React.FC = () => {
+//   const location = useLocation();
+//   const navigate = useNavigate();
+//   const { isAuthenticated } = useAuth();
+//   const { getTotalItems } = useCart();
+//   const { favorites } = useFavorites();
+//   const [cartItemCount, setCartItemCount] = useState(0);
+//   // const [favoritesCount, setFavoritesCount] = useState(0);
+//     const { favoritesCount, isFavorite } = useFavorites(); // استخدام favoritesCount مباشرة
+
+//   const isActive = (path: string) => {
+//     return location.pathname === path;
+//   };
+
+//   const handleCartClick = () => {
+//     navigate('/cart');
+//   };
+
+//   const handleAccountClick = () => {
+//     if (isAuthenticated) {
+//       navigate('/account');
+//     } else {
+//       navigate('/login');
+//     }
+//   };
+
+//   const handleFavoritesClick = () => {
+//     navigate('/favorites');
+//   };
+
+//   // تحديث العدادين عند تغيير عدد العناصر
+//   useEffect(() => {
+//     setCartItemCount(getTotalItems());
+//   }, [getTotalItems]);
+
+//   return (
+//     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 safe-area-bottom shadow-lg z-50">
+//       <div className="flex justify-between items-center max-w-md mx-auto">
+//         {/* زر الرئيسية */}
+//         <Link 
+//           to="/home" 
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
+//             isActive('/home') 
+//               ? 'text-blue-600 bg-blue-50' 
+//               : 'text-gray-600 hover:text-blue-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/home') ? 'bg-blue-100' : 'group-hover:bg-blue-50'
+//           }`}>
+//             <Home className="w-5 h-5" />
+//           </div>
+//           <span className="text-xs mt-1 font-medium">الرئيسية</span>
+//         </Link>
+
+//         {/* زر البحث */}
+//         <Link 
+//           to="/search" 
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
+//             isActive('/search') 
+//               ? 'text-green-600 bg-green-50' 
+//               : 'text-gray-600 hover:text-green-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/search') ? 'bg-green-100' : 'group-hover:bg-green-50'
+//           }`}>
+//             <Search className="w-5 h-5" />
+//           </div>
+//           <span className="text-xs mt-1 font-medium">البحث</span>
+//         </Link>
+
+//         {/* زر المفضلة */}
+//      <button
+//           onClick={handleFavoritesClick}
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
+//             isActive('/favorites') 
+//               ? 'text-pink-600 bg-pink-50' 
+//               : 'text-gray-600 hover:text-pink-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/favorites') ? 'bg-pink-100' : 'group-hover:bg-pink-50'
+//           }`}>
+//             <Heart className="w-5 h-5" />
+//             {favoritesCount > 0 && (
+//               <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
+//                 {favoritesCount > 99 ? '99+' : favoritesCount}
+//               </span>
+//             )}
+//           </div>
+//           <span className="text-xs mt-1 font-medium">المفضلة</span>
+//         </button>
+//         {/* زر السلة */}
+//         <button
+//           onClick={handleCartClick}
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
+//             isActive('/cart') 
+//               ? 'text-orange-600 bg-orange-50' 
+//               : 'text-gray-600 hover:text-orange-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             isActive('/cart') ? 'bg-orange-100' : 'group-hover:bg-orange-50'
+//           }`}>
+//             <ShoppingCart className="w-5 h-5" />
+//             {cartItemCount > 0 && (
+//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
+//                 {cartItemCount > 99 ? '99+' : cartItemCount}
+//               </span>
+//             )}
+//           </div>
+//           <span className="text-xs mt-1 font-medium">السلة</span>
+//         </button>
+
+//         {/* زر الحساب */}
+//         <button
+//           onClick={handleAccountClick}
+//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
+//             (isActive('/account') || isActive('/login')) 
+//               ? 'text-purple-600 bg-purple-50' 
+//               : 'text-gray-600 hover:text-purple-500 hover:bg-gray-50'
+//           }`}
+//         >
+//           <div className={`p-2 rounded-lg transition-all duration-300 ${
+//             (isActive('/account') || isActive('/login')) ? 'bg-purple-100' : 'group-hover:bg-purple-50'
+//           }`}>
+//             <User className="w-5 h-5" />
+//           </div>
+//           <span className="text-xs mt-1 font-medium">
+//             {isAuthenticated ? 'حسابي' : 'تسجيل'}
+//           </span>
+//         </button>
+//       </div>
+//     </footer>
+//   );
+// };
+
+// export default Footer;
+
+
+
+
+
 // components/layout/Footer.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
 import { useFavorites } from '../../hooks/useFavorites';
-import { useState, useEffect } from 'react';
 import { Home, Search, ShoppingCart, User, Heart } from 'lucide-react';
 
 const Footer: React.FC = () => {
@@ -359,10 +511,9 @@ const Footer: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { getTotalItems } = useCart();
-  const { favorites } = useFavorites();
+  const { favoritesCount } = useFavorites();
+  
   const [cartItemCount, setCartItemCount] = useState(0);
-  // const [favoritesCount, setFavoritesCount] = useState(0);
-    const { favoritesCount, isFavorite } = useFavorites(); // استخدام favoritesCount مباشرة
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -384,114 +535,158 @@ const Footer: React.FC = () => {
     navigate('/favorites');
   };
 
-  // تحديث العدادين عند تغيير عدد العناصر
+  const handleSearchClick = () => {
+    navigate('/search');
+  };
+
+  const handleHomeClick = () => {
+    navigate('/home');
+  };
+
+  // Update cart count when items change
   useEffect(() => {
     setCartItemCount(getTotalItems());
   }, [getTotalItems]);
 
+  const navItems = [
+    {
+      id: 'home',
+      label: 'الرئيسية',
+      icon: Home,
+      path: '/home',
+      color: 'blue',
+      onClick: handleHomeClick,
+    },
+    {
+      id: 'search',
+      label: 'البحث',
+      icon: Search,
+      path: '/search',
+      color: 'green',
+      onClick: handleSearchClick,
+    },
+    {
+      id: 'favorites',
+      label: 'المفضلة',
+      icon: Heart,
+      path: '/favorites',
+      color: 'pink',
+      onClick: handleFavoritesClick,
+      badge: favoritesCount > 0 ? favoritesCount : null,
+    },
+    {
+      id: 'cart',
+      label: 'السلة',
+      icon: ShoppingCart,
+      path: '/cart',
+      color: 'orange',
+      onClick: handleCartClick,
+      badge: cartItemCount > 0 ? cartItemCount : null,
+    },
+    {
+      id: 'account',
+      label: isAuthenticated ? 'حسابي' : 'تسجيل',
+      icon: User,
+      path: isAuthenticated ? '/account' : '/login',
+      color: 'purple',
+      onClick: handleAccountClick,
+    },
+  ];
+
+  const getColorClasses = (color: string, isActive: boolean) => {
+    const colors: { [key: string]: { active: string; inactive: string; bg: string } } = {
+      blue: {
+        active: 'text-blue-600 bg-blue-50',
+        inactive: 'text-gray-600 hover:text-blue-500 hover:bg-blue-50',
+        bg: 'bg-blue-100',
+      },
+      green: {
+        active: 'text-green-600 bg-green-50',
+        inactive: 'text-gray-600 hover:text-green-500 hover:bg-green-50',
+        bg: 'bg-green-100',
+      },
+      pink: {
+        active: 'text-pink-600 bg-pink-50',
+        inactive: 'text-gray-600 hover:text-pink-500 hover:bg-pink-50',
+        bg: 'bg-pink-100',
+      },
+      orange: {
+        active: 'text-orange-600 bg-orange-50',
+        inactive: 'text-gray-600 hover:text-orange-500 hover:bg-orange-50',
+        bg: 'bg-orange-100',
+      },
+      purple: {
+        active: 'text-purple-600 bg-purple-50',
+        inactive: 'text-gray-600 hover:text-purple-500 hover:bg-purple-50',
+        bg: 'bg-purple-100',
+      },
+    };
+
+    const colorSet = colors[color] || colors.blue;
+    return isActive ? colorSet.active : colorSet.inactive;
+  };
+
+  const getBgColorClass = (color: string, isActive: boolean) => {
+    const colors: { [key: string]: { active: string; hover: string } } = {
+      blue: { active: 'bg-blue-100', hover: 'group-hover:bg-blue-50' },
+      green: { active: 'bg-green-100', hover: 'group-hover:bg-green-50' },
+      pink: { active: 'bg-pink-100', hover: 'group-hover:bg-pink-50' },
+      orange: { active: 'bg-orange-100', hover: 'group-hover:bg-orange-50' },
+      purple: { active: 'bg-purple-100', hover: 'group-hover:bg-purple-50' },
+    };
+
+    const colorSet = colors[color] || colors.blue;
+    return isActive ? colorSet.active : colorSet.hover;
+  };
+
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 safe-area-bottom shadow-lg z-50">
-      <div className="flex justify-between items-center max-w-md mx-auto">
-        {/* زر الرئيسية */}
-        <Link 
-          to="/home" 
-          className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-            isActive('/home') 
-              ? 'text-blue-600 bg-blue-50' 
-              : 'text-gray-600 hover:text-blue-500 hover:bg-gray-50'
-          }`}
-        >
-          <div className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive('/home') ? 'bg-blue-100' : 'group-hover:bg-blue-50'
-          }`}>
-            <Home className="w-5 h-5" />
-          </div>
-          <span className="text-xs mt-1 font-medium">الرئيسية</span>
-        </Link>
+    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50 safe-area-bottom">
+      <div className="max-w-lg mx-auto px-2 py-2">
+        <div className="flex justify-between items-center gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            
+            return (
+              <button
+                key={item.id}
+                onClick={item.onClick}
+                className={`flex flex-col items-center flex-1 rounded-2xl transition-all duration-300 group relative py-2 ${getColorClasses(
+                  item.color,
+                  active
+                )}`}
+                title={item.label}
+              >
+                <div
+                  className={`p-2.5 rounded-xl transition-all duration-300 ${getBgColorClass(
+                    item.color,
+                    active
+                  )}`}
+                >
+                  <Icon className="w-5 h-5" strokeWidth={2} />
+                </div>
 
-        {/* زر البحث */}
-        <Link 
-          to="/search" 
-          className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-            isActive('/search') 
-              ? 'text-green-600 bg-green-50' 
-              : 'text-gray-600 hover:text-green-500 hover:bg-gray-50'
-          }`}
-        >
-          <div className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive('/search') ? 'bg-green-100' : 'group-hover:bg-green-50'
-          }`}>
-            <Search className="w-5 h-5" />
-          </div>
-          <span className="text-xs mt-1 font-medium">البحث</span>
-        </Link>
+                {/* Badge for notifications */}
+                {item.badge && (
+                  <span
+                    className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-md ${
+                      active ? 'animate-pulse' : ''
+                    }`}
+                  >
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
+                )}
 
-        {/* زر المفضلة */}
-     <button
-          onClick={handleFavoritesClick}
-          className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
-            isActive('/favorites') 
-              ? 'text-pink-600 bg-pink-50' 
-              : 'text-gray-600 hover:text-pink-500 hover:bg-gray-50'
-          }`}
-        >
-          <div className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive('/favorites') ? 'bg-pink-100' : 'group-hover:bg-pink-50'
-          }`}>
-            <Heart className="w-5 h-5" />
-            {favoritesCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
-                {favoritesCount > 99 ? '99+' : favoritesCount}
-              </span>
-            )}
-          </div>
-          <span className="text-xs mt-1 font-medium">المفضلة</span>
-        </button>
-        {/* زر السلة */}
-        <button
-          onClick={handleCartClick}
-          className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
-            isActive('/cart') 
-              ? 'text-orange-600 bg-orange-50' 
-              : 'text-gray-600 hover:text-orange-500 hover:bg-gray-50'
-          }`}
-        >
-          <div className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive('/cart') ? 'bg-orange-100' : 'group-hover:bg-orange-50'
-          }`}>
-            <ShoppingCart className="w-5 h-5" />
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
-                {cartItemCount > 99 ? '99+' : cartItemCount}
-              </span>
-            )}
-          </div>
-          <span className="text-xs mt-1 font-medium">السلة</span>
-        </button>
-
-        {/* زر الحساب */}
-        <button
-          onClick={handleAccountClick}
-          className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-            (isActive('/account') || isActive('/login')) 
-              ? 'text-purple-600 bg-purple-50' 
-              : 'text-gray-600 hover:text-purple-500 hover:bg-gray-50'
-          }`}
-        >
-          <div className={`p-2 rounded-lg transition-all duration-300 ${
-            (isActive('/account') || isActive('/login')) ? 'bg-purple-100' : 'group-hover:bg-purple-50'
-          }`}>
-            <User className="w-5 h-5" />
-          </div>
-          <span className="text-xs mt-1 font-medium">
-            {isAuthenticated ? 'حسابي' : 'تسجيل'}
-          </span>
-        </button>
+                <span className="text-xs mt-1.5 font-semibold leading-none whitespace-nowrap">
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </footer>
   );
 };
 
 export default Footer;
-
-

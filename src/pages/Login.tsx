@@ -1849,6 +1849,580 @@
 
 
 
+// import React, { useState, useEffect } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import { useAuth } from '../hooks/useAuth';
+// import { useCart } from '../hooks/useCart';
+// import { Button } from '../components/ui/button';
+// import { Input } from '../components/ui/input';
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+// import { Loader2, Phone, Lock, ArrowRight, Home, User, MapPin, Navigation, CheckCircle } from 'lucide-react';
+
+// interface LoginProps {
+//   showCloseButton?: boolean;
+//   onClose?: () => void;
+// }
+
+// interface AddressForm {
+//   governorate: string;
+//   district: string;
+//   area: string;
+//   street: string;
+//   landmark: string;
+//   postalCode: string;
+// }
+
+// interface SendOTPResponse {
+//   success: boolean;
+//   exists?: boolean;
+//   message?: string;
+//   debugOtp?: string;
+// }
+
+// const Login: React.FC<LoginProps> = ({ showCloseButton = true, onClose }) => {
+//   const { login, sendOTP } = useAuth();
+//   const { transferGuestCartToUser } = useCart();
+//   const navigate = useNavigate();
+//   const location = useLocation();
+  
+//   const [phone, setPhone] = useState('');
+//   const [code, setCode] = useState('');
+//   const [name, setName] = useState('');
+//   const [email, setEmail] = useState('');
+//   const [step, setStep] = useState<'phone' | 'verify'>('phone');
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [userExists, setUserExists] = useState<boolean>(false);
+
+//   // Address form for new users
+//   const [address, setAddress] = useState<AddressForm>({
+//     governorate: '',
+//     district: '',
+//     area: '',
+//     street: '',
+//     landmark: '',
+//     postalCode: ''
+//   });
+
+//   const governorates = [
+//     'بغداد', 'البصرة', 'نينوى', 'أربيل', 'الأنبار', 'كربلاء', 
+//     'بابل', 'صلاح الدين', 'ذي قار', 'واسط', 'ميسان', 'القادسية',
+//     'المثنى', 'دهوك', 'السليمانية'
+//   ];
+
+//   const handleAddressChange = (field: keyof AddressForm, value: string) => {
+//     setAddress(prev => ({
+//       ...prev,
+//       [field]: value
+//     }));
+//   };
+
+// const handleSendOTP = async () => {
+//   if (!phone.trim()) {
+//     setError('الرجاء إدخال رقم الهاتف');
+//     return;
+//   }
+
+//   const phoneRegex = /^07[0-9]{9}$/;
+//   const cleanPhone = phone.replace(/\s/g, '');
+  
+//   if (!phoneRegex.test(cleanPhone)) {
+//     setError('رقم الهاتف يجب أن يبدأ بـ 07 ويحتوي على 11 رقماً');
+//     return;
+//   }
+
+//   setLoading(true);
+//   setError(null);
+  
+//   try {
+//     console.log('إرسال رمز التحقق إلى:', cleanPhone);
+//     const result = await sendOTP(cleanPhone) as SendOTPResponse;
+//     console.log('نتيجة إرسال الرمز:', result);
+    
+//     if (result.success) {
+//       // الـ exists موجود داخل result.data وليس result مباشرة
+//       const exists = result.data?.exists ?? false;
+      
+//       setStep('verify');
+//       setUserExists(exists);
+      
+//       console.log('userExists:', exists);
+//       console.log('result.data.exists:', result.data?.exists);
+      
+//       // عرض رمز التحقق للاختبار
+//       if (result.data?.debugOtp) {
+//         console.log(`رمز التحقق للاختبار: ${result.data.debugOtp}`);
+//         alert(`رمز التحقق للاختبار: ${result.data.debugOtp}`);
+//       }
+//     } else {
+//       setError(result.message || 'فشل في إرسال رمز التحقق');
+//     }
+//   } catch (err: any) {
+//     console.error('خطأ في إرسال الرمز:', err);
+//     setError('حدث خطأ أثناء إرسال رمز التحقق');
+//   } finally {
+//     setLoading(false);
+//   }
+// }
+
+//   const handleVerify = async () => {
+//     if (!code.trim()) {
+//       setError('الرجاء إدخال رمز التحقق');
+//       return;
+//     }
+
+//     // إذا كان المستخدم جديداً، نتحقق من البيانات الإضافية
+//     if (!userExists) {
+//       if (!name.trim()) {
+//         setError('الرجاء إدخال اسمك');
+//         return;
+//       }
+
+//       if (!address.governorate || !address.district || !address.area || !address.street) {
+//         setError('الرجاء إدخال العنوان الكامل (المحافظة، المنطقة، الحي، والشارع)');
+//         return;
+//       }
+//     }
+
+//     setLoading(true);
+//     setError(null);
+    
+//     try {
+//       const cleanPhone = phone.replace(/\s/g, '');
+//       console.log('التحقق من الرمز:', { 
+//         phone: cleanPhone, 
+//         code, 
+//         userExists,
+//         hasName: !!name.trim(),
+//         hasAddress: !!address.street
+//       });
+      
+//       // إعداد بيانات المستخدم - فقط إذا كان مستخدم جديد
+//       const userData = userExists
+//         ? undefined
+//         : {
+//             name: name.trim(),
+//             email: email.trim() || `${cleanPhone}@example.com`,
+//             address: {
+//               street: address.street,
+//               city: address.governorate,
+//               district: address.district,
+//               area: address.area,
+//               landmark: address.landmark,
+//               postalCode: address.postalCode || "00000"
+//             }
+//           };
+
+//       const result = await login(cleanPhone, code, userData);
+//       console.log('نتيجة تسجيل الدخول:', result);
+      
+//       if (result.success) {
+//         // نقل سلة الضيف إلى حساب المستخدم
+//         await transferGuestCartToUser();
+        
+//         // إعادة التوجيه إلى الصفحة السابقة أو الصفحة الرئيسية
+//         const from = (location.state as any)?.from?.pathname || '/';
+        
+//         if (onClose) {
+//           onClose();
+//         } else {
+//           navigate(from, { replace: true });
+//         }
+//       } else {
+//         setError(result.error || 'فشل التحقق من الرمز. تأكد من صحة الرمز المدخل');
+//       }
+//     } catch (err: any) {
+//       console.error('خطأ في التحقق:', err);
+//       setError('حدث خطأ أثناء التحقق من الرمز');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleBackToHome = () => {
+//     navigate('/');
+//   };
+
+//   const handleBack = () => {
+//     setStep('phone');
+//     setCode('');
+//     setName('');
+//     setEmail('');
+//     setAddress({
+//       governorate: '',
+//       district: '',
+//       area: '',
+//       street: '',
+//       landmark: '',
+//       postalCode: ''
+//     });
+//     setUserExists(false);
+//     setError(null);
+//   };
+
+//   const formatPhoneNumber = (value: string) => {
+//     const numbers = value.replace(/\D/g, '');
+//     let formatted = numbers;
+//     if (numbers.startsWith('07') && numbers.length > 2) {
+//       formatted = `07${numbers.slice(2, 11)}`; // 10 أرقام
+//     }
+    
+//     // تنسيق: 07X XXX XXXX
+//     if (formatted.length > 2) {
+//       formatted = formatted.replace(/(\d{2})(\d{3})(\d{4})/, '$1 $2 $3');
+//     } else if (formatted.length > 5) {
+//       formatted = formatted.replace(/(\d{2})(\d{3})(\d{0,4})/, '$1 $2 $3');
+//     } else if (formatted.length > 2) {
+//       formatted = formatted.replace(/(\d{2})(\d{0,3})/, '$1 $2');
+//     }
+    
+//     return formatted;
+//   };
+
+//   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const formatted = formatPhoneNumber(e.target.value);
+//     setPhone(formatted);
+//   };
+
+//   const isPhoneValid = phone.replace(/\s/g, '').length === 11;
+
+//   useEffect(() => {
+//     if (step === 'phone') {
+//       setUserExists(false);
+//     }
+//   }, [step]);
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4" dir="rtl">
+//       <Card className="max-w-md w-full max-h-[90vh] overflow-y-auto">
+//         <CardHeader className="space-y-1 relative sticky top-0 bg-white z-10">
+//           {showCloseButton && (
+//             <Button 
+//               variant="ghost"
+//               size="icon"
+//               onClick={handleBackToHome}
+//               className="absolute left-4 top-4"
+//             >
+//               <Home className="w-5 h-5" />
+//             </Button>
+//           )}
+          
+//           <CardTitle className="text-2xl font-bold text-center">
+//             {step === 'phone' ? 'تسجيل الدخول / إنشاء حساب' : 'التحقق من الرمز'}
+//           </CardTitle>
+//           <CardDescription className="text-center">
+//             {step === 'phone' 
+//               ? 'أدخل رقم هاتفك للمتابعة' 
+//               : userExists 
+//                 ? 'أدخل رمز التحقق لتسجيل الدخول' 
+//                 : 'أدخل رمز التحقق ومعلوماتك الشخصية'}
+//           </CardDescription>
+//         </CardHeader>
+
+//         <CardContent className="space-y-4">
+//           {error && (
+//             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-right text-sm">
+//               {error}
+//             </div>
+//           )}
+
+//           {step === 'phone' ? (
+//             <div className="space-y-4">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                   رقم الهاتف
+//                 </label>
+//                 <div className="relative">
+//                   <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+//                   <Input
+//                     type="tel"
+//                     value={phone}
+//                     onChange={handlePhoneChange}
+//                     placeholder="07X XXX XXXX"
+//                     className="pr-10 text-right text-lg"
+//                     disabled={loading}
+//                     dir="ltr"
+//                     maxLength={14}
+//                   />
+//                 </div>
+//                 <p className="text-xs text-gray-500 mt-2 text-right">
+//                   {phone ? `${11 - phone.replace(/\s/g, '').length} أرقام متبقية` : 'أدخل 10 أرقام يبدأ بـ 07'}
+//                 </p>
+//                 <p className="text-xs text-gray-500 mt-1 text-right">
+//                   مثال: 0799 999 9999
+//                 </p>
+//               </div>
+
+//               <Button
+//                 onClick={handleSendOTP}
+//                 disabled={loading || !isPhoneValid}
+//                 className="w-full"
+//                 size="lg"
+//               >
+//                 {loading ? (
+//                   <>
+//                     <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+//                     جاري الإرسال...
+//                   </>
+//                 ) : (
+//                   <>
+//                     متابعة
+//                     <ArrowRight className="ml-2 h-5 w-5" />
+//                   </>
+//                 )}
+//               </Button>
+
+//               {userExists && (
+//                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-2">
+//                   <div className="flex items-center gap-3">
+//                     <CheckCircle className="w-5 h-5 text-green-600" />
+//                     <div>
+//                       <h4 className="font-medium text-green-800 text-sm">
+//                         مرحباً بعودتك!
+//                       </h4>
+//                       <p className="text-green-700 text-xs mt-1">
+//                         تم التعرف على رقم هاتفك. أدخل رمز التحقق لتسجيل الدخول.
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           ) : (
+//             <div className="space-y-4">
+//               {/* رمز التحقق */}
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                   رمز التحقق *
+//                 </label>
+//                 <div className="relative">
+//                   <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+//                   <Input
+//                     type="text"
+//                     value={code}
+//                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+//                     placeholder="أدخل رمز التحقق المكون من 4 أرقام"
+//                     className="pr-10 text-center tracking-widest text-lg font-mono"
+//                     disabled={loading}
+//                     maxLength={4}
+//                     dir="ltr"
+//                   />
+//                 </div>
+//               </div>
+
+//               {/* المعلومات الشخصية والعنوان - للمستخدمين الجدد فقط */}
+//               {!userExists && (
+//                 <>
+//                   <div className="space-y-3">
+//                     <h3 className="text-lg font-semibold text-right border-b pb-2">
+//                       المعلومات الشخصية
+//                     </h3>
+                    
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                         الاسم الكامل *
+//                       </label>
+//                       <div className="relative">
+//                         <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+//                         <Input
+//                           type="text"
+//                           value={name}
+//                           onChange={(e) => setName(e.target.value)}
+//                           placeholder="أدخل اسمك الكامل"
+//                           className="pr-10 text-right"
+//                           disabled={loading}
+//                         />
+//                       </div>
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                         البريد الإلكتروني (اختياري)
+//                       </label>
+//                       <Input
+//                         type="email"
+//                         value={email}
+//                         onChange={(e) => setEmail(e.target.value)}
+//                         placeholder="example@email.com"
+//                         className="text-right"
+//                         disabled={loading}
+//                         dir="ltr"
+//                       />
+//                     </div>
+//                   </div>
+
+//                   {/* العنوان */}
+//                   <div className="space-y-3">
+//                     <h3 className="text-lg font-semibold text-right border-b pb-2 flex items-center gap-2">
+//                       <MapPin className="w-5 h-5" />
+//                       العنوان
+//                     </h3>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                         المحافظة *
+//                       </label>
+//                       <select
+//                         value={address.governorate}
+//                         onChange={(e) => handleAddressChange('governorate', e.target.value)}
+//                         className="w-full p-2 border border-gray-300 rounded-lg text-right bg-white"
+//                         disabled={loading}
+//                       >
+//                         <option value="">اختر المحافظة</option>
+//                         {governorates.map(gov => (
+//                           <option key={gov} value={gov}>{gov}</option>
+//                         ))}
+//                       </select>
+//                     </div>
+
+//                     <div className="grid grid-cols-2 gap-3">
+//                       <div>
+//                         <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                           المنطقة / القضاء *
+//                         </label>
+//                         <Input
+//                           type="text"
+//                           value={address.district}
+//                           onChange={(e) => handleAddressChange('district', e.target.value)}
+//                           placeholder="المنطقة"
+//                           className="text-right"
+//                           disabled={loading}
+//                         />
+//                       </div>
+
+//                       <div>
+//                         <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                           الحي / المنطقة *
+//                         </label>
+//                         <Input
+//                           type="text"
+//                           value={address.area}
+//                           onChange={(e) => handleAddressChange('area', e.target.value)}
+//                           placeholder="الحي"
+//                           className="text-right"
+//                           disabled={loading}
+//                         />
+//                       </div>
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                         الشارع والتفاصيل *
+//                       </label>
+//                       <div className="relative">
+//                         <Navigation className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
+//                         <textarea
+//                           value={address.street}
+//                           onChange={(e) => handleAddressChange('street', e.target.value)}
+//                           placeholder="اسم الشارع، رقم المنزل، التفاصيل..."
+//                           className="w-full p-2 border border-gray-300 rounded-lg text-right pr-10 min-h-[80px] resize-none"
+//                           disabled={loading}
+//                         />
+//                       </div>
+//                     </div>
+
+//                     <div className="grid grid-cols-2 gap-3">
+//                       <div>
+//                         <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                           أقرب نقطة دالة
+//                         </label>
+//                         <Input
+//                           type="text"
+//                           value={address.landmark}
+//                           onChange={(e) => handleAddressChange('landmark', e.target.value)}
+//                           placeholder="مقابل، بجانب..."
+//                           className="text-right"
+//                           disabled={loading}
+//                         />
+//                       </div>
+
+//                       <div>
+//                         <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+//                           الرمز البريدي
+//                         </label>
+//                         <Input
+//                           type="text"
+//                           value={address.postalCode}
+//                           onChange={(e) => handleAddressChange('postalCode', e.target.value.replace(/\D/g, ''))}
+//                           placeholder="الرمز البريدي"
+//                           className="text-right"
+//                           disabled={loading}
+//                           dir="ltr"
+//                           maxLength={5}
+//                         />
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </>
+//               )}
+
+//               <div className="flex gap-2 pt-4">
+//                 <Button
+//                   variant="outline"
+//                   onClick={handleBack}
+//                   disabled={loading}
+//                   className="flex-1"
+//                 >
+//                   رجوع
+//                 </Button>
+//                 <Button
+//                   onClick={handleVerify}
+//                   disabled={
+//                     loading || 
+//                     !code.trim() || 
+//                     code.length !== 4 || 
+//                     (!userExists && (!name.trim() || !address.governorate || !address.district || !address.area || !address.street))
+//                   }
+//                   className="flex-1"
+//                   size="lg"
+//                 >
+//                   {loading ? (
+//                     <>
+//                       <Loader2 className="ml-2 h-5 w-5 animate-spin" />
+//                       {userExists ? 'جاري تسجيل الدخول...' : 'جاري إنشاء الحساب...'}
+//                     </>
+//                   ) : (
+//                     userExists ? 'تسجيل الدخول' : 'إنشاء الحساب'
+//                   )}
+//                 </Button>
+//               </div>
+
+//               <div className="text-center">
+//                 <button
+//                   onClick={handleSendOTP}
+//                   disabled={loading}
+//                   className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400"
+//                 >
+//                   لم يصلك الرمز؟ إعادة إرسال
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+
+//           <div className="pt-4 border-t">
+//             <p className="text-xs text-gray-500 text-center">
+//               بالمتابعة، أنت توافق على{' '}
+//               <a href="/terms" className="text-blue-600 hover:underline">
+//                 الشروط والأحكام
+//               </a>
+//               {' '}و{' '}
+//               <a href="/privacy" className="text-blue-600 hover:underline">
+//                 سياسة الخصوصية
+//               </a>
+//             </p>
+//           </div>
+//         </CardContent>
+//       </Card>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -1856,7 +2430,7 @@ import { useCart } from '../hooks/useCart';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Loader2, Phone, Lock, ArrowRight, Home, User, MapPin, Navigation, CheckCircle } from 'lucide-react';
+import { Loader2, Phone, Lock, ArrowRight, Home, User, MapPin, Navigation, CheckCircle, Shield, Smartphone } from 'lucide-react';
 
 interface LoginProps {
   showCloseButton?: boolean;
@@ -1893,6 +2467,7 @@ const Login: React.FC<LoginProps> = ({ showCloseButton = true, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userExists, setUserExists] = useState<boolean>(false);
+  const [debugOtp, setDebugOtp] = useState<string>('');
 
   // Address form for new users
   const [address, setAddress] = useState<AddressForm>({
@@ -1917,53 +2492,53 @@ const Login: React.FC<LoginProps> = ({ showCloseButton = true, onClose }) => {
     }));
   };
 
-const handleSendOTP = async () => {
-  if (!phone.trim()) {
-    setError('الرجاء إدخال رقم الهاتف');
-    return;
-  }
-
-  const phoneRegex = /^07[0-9]{9}$/;
-  const cleanPhone = phone.replace(/\s/g, '');
-  
-  if (!phoneRegex.test(cleanPhone)) {
-    setError('رقم الهاتف يجب أن يبدأ بـ 07 ويحتوي على 11 رقماً');
-    return;
-  }
-
-  setLoading(true);
-  setError(null);
-  
-  try {
-    console.log('إرسال رمز التحقق إلى:', cleanPhone);
-    const result = await sendOTP(cleanPhone) as SendOTPResponse;
-    console.log('نتيجة إرسال الرمز:', result);
-    
-    if (result.success) {
-      // الـ exists موجود داخل result.data وليس result مباشرة
-      const exists = result.data?.exists ?? false;
-      
-      setStep('verify');
-      setUserExists(exists);
-      
-      console.log('userExists:', exists);
-      console.log('result.data.exists:', result.data?.exists);
-      
-      // عرض رمز التحقق للاختبار
-      if (result.data?.debugOtp) {
-        console.log(`رمز التحقق للاختبار: ${result.data.debugOtp}`);
-        alert(`رمز التحقق للاختبار: ${result.data.debugOtp}`);
-      }
-    } else {
-      setError(result.message || 'فشل في إرسال رمز التحقق');
+  const handleSendOTP = async () => {
+    if (!phone.trim()) {
+      setError('الرجاء إدخال رقم الهاتف');
+      return;
     }
-  } catch (err: any) {
-    console.error('خطأ في إرسال الرمز:', err);
-    setError('حدث خطأ أثناء إرسال رمز التحقق');
-  } finally {
-    setLoading(false);
+
+    const phoneRegex = /^07[0-9]{9}$/;
+    const cleanPhone = phone.replace(/\s/g, '');
+    
+    if (!phoneRegex.test(cleanPhone)) {
+      setError('رقم الهاتف يجب أن يبدأ بـ 07 ويحتوي على 11 رقماً');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setDebugOtp('');
+    
+    try {
+      console.log('إرسال رمز التحقق إلى:', cleanPhone);
+      const result = await sendOTP(cleanPhone) as SendOTPResponse;
+      console.log('نتيجة إرسال الرمز:', result);
+      
+      if (result.success) {
+        const exists = result.data?.exists ?? false;
+        
+        setStep('verify');
+        setUserExists(exists);
+        
+        // حفظ رمز التحقق لعرضه على الشاشة
+        if (result.data?.debugOtp) {
+          setDebugOtp(result.data.debugOtp);
+          console.log(`رمز التحقق للاختبار: ${result.data.debugOtp}`);
+        }
+        
+        console.log('userExists:', exists);
+        console.log('result.data.exists:', result.data?.exists);
+      } else {
+        setError(result.message || 'فشل في إرسال رمز التحقق');
+      }
+    } catch (err: any) {
+      console.error('خطأ في إرسال الرمز:', err);
+      setError('حدث خطأ أثناء إرسال رمز التحقق');
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   const handleVerify = async () => {
     if (!code.trim()) {
@@ -1971,7 +2546,6 @@ const handleSendOTP = async () => {
       return;
     }
 
-    // إذا كان المستخدم جديداً، نتحقق من البيانات الإضافية
     if (!userExists) {
       if (!name.trim()) {
         setError('الرجاء إدخال اسمك');
@@ -1997,7 +2571,6 @@ const handleSendOTP = async () => {
         hasAddress: !!address.street
       });
       
-      // إعداد بيانات المستخدم - فقط إذا كان مستخدم جديد
       const userData = userExists
         ? undefined
         : {
@@ -2017,10 +2590,8 @@ const handleSendOTP = async () => {
       console.log('نتيجة تسجيل الدخول:', result);
       
       if (result.success) {
-        // نقل سلة الضيف إلى حساب المستخدم
         await transferGuestCartToUser();
         
-        // إعادة التوجيه إلى الصفحة السابقة أو الصفحة الرئيسية
         const from = (location.state as any)?.from?.pathname || '/';
         
         if (onClose) {
@@ -2058,16 +2629,16 @@ const handleSendOTP = async () => {
     });
     setUserExists(false);
     setError(null);
+    setDebugOtp('');
   };
 
   const formatPhoneNumber = (value: string) => {
     const numbers = value.replace(/\D/g, '');
     let formatted = numbers;
     if (numbers.startsWith('07') && numbers.length > 2) {
-      formatted = `07${numbers.slice(2, 11)}`; // 10 أرقام
+      formatted = `07${numbers.slice(2, 11)}`;
     }
     
-    // تنسيق: 07X XXX XXXX
     if (formatted.length > 2) {
       formatted = formatted.replace(/(\d{2})(\d{3})(\d{4})/, '$1 $2 $3');
     } else if (formatted.length > 5) {
@@ -2089,74 +2660,87 @@ const handleSendOTP = async () => {
   useEffect(() => {
     if (step === 'phone') {
       setUserExists(false);
+      setDebugOtp('');
     }
   }, [step]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4" dir="rtl">
-      <Card className="max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <CardHeader className="space-y-1 relative sticky top-0 bg-white z-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 flex items-center justify-center p-4" dir="rtl">
+      <Card className="w-full max-w-lg shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+        <CardHeader className="space-y-3 text-center pb-6">
           {showCloseButton && (
             <Button 
               variant="ghost"
               size="icon"
               onClick={handleBackToHome}
-              className="absolute left-4 top-4"
+              className="absolute left-6 top-6 hover:bg-gray-100 rounded-full"
             >
               <Home className="w-5 h-5" />
             </Button>
           )}
           
-          <CardTitle className="text-2xl font-bold text-center">
-            {step === 'phone' ? 'تسجيل الدخول / إنشاء حساب' : 'التحقق من الرمز'}
+          <div className="flex justify-center mb-2">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          
+          <CardTitle className="text-2xl font-bold bg-gradient-to-l from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+            {step === 'phone' ? 'مرحباً بك' : 'التحقق من الهوية'}
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-gray-600 text-base">
             {step === 'phone' 
               ? 'أدخل رقم هاتفك للمتابعة' 
               : userExists 
-                ? 'أدخل رمز التحقق لتسجيل الدخول' 
-                : 'أدخل رمز التحقق ومعلوماتك الشخصية'}
+                ? 'أدخل رمز التحقق المرسل إلى هاتفك' 
+                : 'أكمل معلوماتك الشخصية'}
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-right text-sm">
-              {error}
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-right text-sm flex items-start gap-2">
+              <div className="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-red-600 text-xs">!</span>
+              </div>
+              <span>{error}</span>
             </div>
           )}
 
           {step === 'phone' ? (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+            <div className="space-y-6">
+              <div className="bg-blue-50/50 border border-blue-200 rounded-2xl p-5">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 text-right flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-blue-600" />
                   رقم الهاتف
                 </label>
                 <div className="relative">
-                  <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Phone className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     type="tel"
                     value={phone}
                     onChange={handlePhoneChange}
                     placeholder="07X XXX XXXX"
-                    className="pr-10 text-right text-lg"
+                    className="pr-12 text-right text-lg h-14 border-2 border-gray-200 focus:border-blue-500 bg-white rounded-xl"
                     disabled={loading}
                     dir="ltr"
                     maxLength={14}
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-2 text-right">
-                  {phone ? `${11 - phone.replace(/\s/g, '').length} أرقام متبقية` : 'أدخل 10 أرقام يبدأ بـ 07'}
-                </p>
-                <p className="text-xs text-gray-500 mt-1 text-right">
-                  مثال: 0799 999 9999
-                </p>
+                <div className="flex justify-between items-center mt-3">
+                  <p className="text-xs text-gray-500">
+                    {phone ? `${11 - phone.replace(/\s/g, '').length} أرقام متبقية` : 'أدخل 11 رقماً'}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    مثال: 0799 999 9999
+                  </p>
+                </div>
               </div>
 
               <Button
                 onClick={handleSendOTP}
                 disabled={loading || !isPhoneValid}
-                className="w-full"
+                className="w-full h-14 text-base font-semibold rounded-xl bg-gradient-to-l from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-lg shadow-blue-500/25 transition-all duration-200"
                 size="lg"
               >
                 {loading ? (
@@ -2172,196 +2756,214 @@ const handleSendOTP = async () => {
                 )}
               </Button>
 
-              {userExists && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-2">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <div>
-                      <h4 className="font-medium text-green-800 text-sm">
-                        مرحباً بعودتك!
-                      </h4>
-                      <p className="text-green-700 text-xs mt-1">
-                        تم التعرف على رقم هاتفك. أدخل رمز التحقق لتسجيل الدخول.
-                      </p>
+              <div className="text-center">
+                <p className="text-sm text-gray-500">
+                  سنرسل رمز تحقق إلى هاتفك
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* رمز التحقق مع عرض للاختبار */}
+              {debugOtp && (
+                <div className="bg-gradient-to-l from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Smartphone className="w-5 h-5 text-green-600" />
+                    <h4 className="font-semibold text-green-800 text-sm">
+                      رمز التحقق للاختبار
+                    </h4>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-700 font-mono tracking-widest bg-green-100 py-3 rounded-lg">
+                      {debugOtp}
                     </div>
+                    <p className="text-xs text-green-600 mt-2">
+                      هذا الرمز معروض للاختبار فقط
+                    </p>
                   </div>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* رمز التحقق */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+
+              <div className="bg-blue-50/50 border border-blue-200 rounded-2xl p-5">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 text-right flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-blue-600" />
                   رمز التحقق *
                 </label>
                 <div className="relative">
-                  <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                     placeholder="أدخل رمز التحقق المكون من 4 أرقام"
-                    className="pr-10 text-center tracking-widest text-lg font-mono"
+                    className="pr-12 text-center tracking-widest text-xl font-mono h-14 border-2 border-gray-200 focus:border-blue-500 bg-white rounded-xl"
                     disabled={loading}
                     maxLength={4}
                     dir="ltr"
                   />
                 </div>
+                <p className="text-xs text-gray-500 mt-2 text-right">
+                  أدخل الرمز المكون من 4 أرقام المرسل إلى {phone}
+                </p>
               </div>
 
               {/* المعلومات الشخصية والعنوان - للمستخدمين الجدد فقط */}
               {!userExists && (
                 <>
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-right border-b pb-2">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 text-right border-b pb-3 flex items-center gap-2">
+                      <User className="w-5 h-5 text-blue-600" />
                       المعلومات الشخصية
                     </h3>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                        الاسم الكامل *
-                      </label>
-                      <div className="relative">
-                        <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <div className="grid gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                          الاسم الكامل *
+                        </label>
+                        <div className="relative">
+                          <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <Input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="أدخل اسمك الكامل"
+                            className="pr-10 text-right h-12 border-2 border-gray-200 focus:border-blue-500 rounded-xl"
+                            disabled={loading}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                          البريد الإلكتروني (اختياري)
+                        </label>
                         <Input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="أدخل اسمك الكامل"
-                          className="pr-10 text-right"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="example@email.com"
+                          className="text-right h-12 border-2 border-gray-200 focus:border-blue-500 rounded-xl"
                           disabled={loading}
+                          dir="ltr"
                         />
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                        البريد الإلكتروني (اختياري)
-                      </label>
-                      <Input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="example@email.com"
-                        className="text-right"
-                        disabled={loading}
-                        dir="ltr"
-                      />
                     </div>
                   </div>
 
                   {/* العنوان */}
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-right border-b pb-2 flex items-center gap-2">
-                      <MapPin className="w-5 h-5" />
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 text-right border-b pb-3 flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-blue-600" />
                       العنوان
                     </h3>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                        المحافظة *
-                      </label>
-                      <select
-                        value={address.governorate}
-                        onChange={(e) => handleAddressChange('governorate', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-right bg-white"
-                        disabled={loading}
-                      >
-                        <option value="">اختر المحافظة</option>
-                        {governorates.map(gov => (
-                          <option key={gov} value={gov}>{gov}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                          المنطقة / القضاء *
+                          المحافظة *
                         </label>
-                        <Input
-                          type="text"
-                          value={address.district}
-                          onChange={(e) => handleAddressChange('district', e.target.value)}
-                          placeholder="المنطقة"
-                          className="text-right"
+                        <select
+                          value={address.governorate}
+                          onChange={(e) => handleAddressChange('governorate', e.target.value)}
+                          className="w-full p-3 border-2 border-gray-200 rounded-xl text-right bg-white focus:border-blue-500 focus:ring-0 h-12"
                           disabled={loading}
-                        />
+                        >
+                          <option value="">اختر المحافظة</option>
+                          {governorates.map(gov => (
+                            <option key={gov} value={gov}>{gov}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                            المنطقة / القضاء *
+                          </label>
+                          <Input
+                            type="text"
+                            value={address.district}
+                            onChange={(e) => handleAddressChange('district', e.target.value)}
+                            placeholder="المنطقة"
+                            className="text-right h-12 border-2 border-gray-200 focus:border-blue-500 rounded-xl"
+                            disabled={loading}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                            الحي / المنطقة *
+                          </label>
+                          <Input
+                            type="text"
+                            value={address.area}
+                            onChange={(e) => handleAddressChange('area', e.target.value)}
+                            placeholder="الحي"
+                            className="text-right h-12 border-2 border-gray-200 focus:border-blue-500 rounded-xl"
+                            disabled={loading}
+                          />
+                        </div>
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                          الحي / المنطقة *
+                          الشارع والتفاصيل *
                         </label>
-                        <Input
-                          type="text"
-                          value={address.area}
-                          onChange={(e) => handleAddressChange('area', e.target.value)}
-                          placeholder="الحي"
-                          className="text-right"
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                        الشارع والتفاصيل *
-                      </label>
-                      <div className="relative">
-                        <Navigation className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
-                        <textarea
-                          value={address.street}
-                          onChange={(e) => handleAddressChange('street', e.target.value)}
-                          placeholder="اسم الشارع، رقم المنزل، التفاصيل..."
-                          className="w-full p-2 border border-gray-300 rounded-lg text-right pr-10 min-h-[80px] resize-none"
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                          أقرب نقطة دالة
-                        </label>
-                        <Input
-                          type="text"
-                          value={address.landmark}
-                          onChange={(e) => handleAddressChange('landmark', e.target.value)}
-                          placeholder="مقابل، بجانب..."
-                          className="text-right"
-                          disabled={loading}
-                        />
+                        <div className="relative">
+                          <Navigation className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
+                          <textarea
+                            value={address.street}
+                            onChange={(e) => handleAddressChange('street', e.target.value)}
+                            placeholder="اسم الشارع، رقم المنزل، التفاصيل..."
+                            className="w-full p-3 border-2 border-gray-200 rounded-xl text-right pr-10 min-h-[80px] resize-none focus:border-blue-500 focus:ring-0"
+                            disabled={loading}
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                          الرمز البريدي
-                        </label>
-                        <Input
-                          type="text"
-                          value={address.postalCode}
-                          onChange={(e) => handleAddressChange('postalCode', e.target.value.replace(/\D/g, ''))}
-                          placeholder="الرمز البريدي"
-                          className="text-right"
-                          disabled={loading}
-                          dir="ltr"
-                          maxLength={5}
-                        />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                            أقرب نقطة دالة
+                          </label>
+                          <Input
+                            type="text"
+                            value={address.landmark}
+                            onChange={(e) => handleAddressChange('landmark', e.target.value)}
+                            placeholder="مقابل، بجانب..."
+                            className="text-right h-12 border-2 border-gray-200 focus:border-blue-500 rounded-xl"
+                            disabled={loading}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                            الرمز البريدي
+                          </label>
+                          <Input
+                            type="text"
+                            value={address.postalCode}
+                            onChange={(e) => handleAddressChange('postalCode', e.target.value.replace(/\D/g, ''))}
+                            placeholder="الرمز البريدي"
+                            className="text-right h-12 border-2 border-gray-200 focus:border-blue-500 rounded-xl"
+                            disabled={loading}
+                            dir="ltr"
+                            maxLength={5}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </>
               )}
 
-              <div className="flex gap-2 pt-4">
+              <div className="flex gap-3 pt-2">
                 <Button
                   variant="outline"
                   onClick={handleBack}
                   disabled={loading}
-                  className="flex-1"
+                  className="flex-1 h-12 rounded-xl border-2 border-gray-300 hover:border-gray-400"
                 >
                   رجوع
                 </Button>
@@ -2373,7 +2975,7 @@ const handleSendOTP = async () => {
                     code.length !== 4 || 
                     (!userExists && (!name.trim() || !address.governorate || !address.district || !address.area || !address.street))
                   }
-                  className="flex-1"
+                  className="flex-1 h-12 text-base font-semibold rounded-xl bg-gradient-to-l from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-lg shadow-blue-500/25"
                   size="lg"
                 >
                   {loading ? (
@@ -2391,7 +2993,7 @@ const handleSendOTP = async () => {
                 <button
                   onClick={handleSendOTP}
                   disabled={loading}
-                  className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400"
+                  className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 font-medium"
                 >
                   لم يصلك الرمز؟ إعادة إرسال
                 </button>
@@ -2399,14 +3001,14 @@ const handleSendOTP = async () => {
             </div>
           )}
 
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t border-gray-200">
             <p className="text-xs text-gray-500 text-center">
               بالمتابعة، أنت توافق على{' '}
-              <a href="/terms" className="text-blue-600 hover:underline">
+              <a href="/terms" className="text-blue-600 hover:underline font-medium">
                 الشروط والأحكام
               </a>
               {' '}و{' '}
-              <a href="/privacy" className="text-blue-600 hover:underline">
+              <a href="/privacy" className="text-blue-600 hover:underline font-medium">
                 سياسة الخصوصية
               </a>
             </p>

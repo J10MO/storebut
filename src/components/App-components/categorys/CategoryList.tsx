@@ -1171,7 +1171,7 @@ const CategoryCircleList: React.FC<CategoryCircleListProps> = ({
 
                     {/* عدد المنتجات */}
                     {productCount > 0 && (
-                      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center shadow-md border border-white">
+                      <div className="absolute top-1 right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center shadow-md border border-white">
                         {productCount > 99 ? '99+' : productCount}
                       </div>
                     )}

@@ -781,10 +781,10 @@ const CartPage: React.FC = () => {
     }
     
     if (imageUrl.startsWith('/')) {
-      return `http://localhost:5000${imageUrl}`;
+      return `https://markt-x51r.onrender.com/api${imageUrl}`;
     }
     
-    return `http://localhost:5000/uploads/products/${imageUrl}`;
+    return `https://markt-x51r.onrender.com/api/uploads/products/${imageUrl}`;
   };
 
   const shippingCost = getTotalPrice() >= 50000 ? 0 : 5000;
@@ -792,7 +792,7 @@ const CartPage: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 " dir="rtl" >
         <div className="max-w-md w-full text-center">
           <div className="w-32 h-32 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
             <ShoppingBag className="w-16 h-16 text-blue-400" />
@@ -822,7 +822,7 @@ const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8 mb-15" dir="rtl">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

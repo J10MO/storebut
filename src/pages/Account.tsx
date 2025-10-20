@@ -766,6 +766,1151 @@
 
 
 
+// import React, { useState } from 'react';
+// import { useAuth } from '../hooks/useAuth';
+// import { useOrders } from '../hooks/useOrders';
+// import { useNavigate } from 'react-router-dom';
+// import { 
+//   User, 
+//   Package, 
+//   Settings, 
+//   LogOut, 
+//   Star, 
+//   MapPin,
+//   Calendar,
+//   CreditCard,
+//   Truck,
+//   CheckCircle,
+//   XCircle,
+//   Clock,
+//   Edit,
+//   Shield,
+//   Bell,
+//   Trash2,
+//   Award,
+//   TrendingUp,
+//   Crown
+// } from 'lucide-react';
+
+// const Account: React.FC = () => {
+//   const { user, logout } = useAuth();
+//   const { orders, loading: ordersLoading } = useOrders();
+//   const navigate = useNavigate();
+//   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings'>('profile');
+//   const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate('/');
+//   };
+
+//   const calculateNextLevelProgress = () => {
+//     const levels = {
+//       bronze: { min: 0, next: 'silver', color: 'from-amber-600 to-amber-700' },
+//       silver: { min: 10, next: 'gold', color: 'from-gray-400 to-gray-500' },
+//       gold: { min: 20, next: 'platinum', color: 'from-yellow-500 to-yellow-600' },
+//       platinum: { min: 50, next: null, color: 'from-blue-400 to-blue-600' }
+//     };
+
+//     const currentLevel = user?.membershipLevel || 'bronze';
+//     const currentOrders = user?.totalOrders || 0;
+//     const levelInfo = levels[currentLevel as keyof typeof levels];
+    
+//     if (!levelInfo.next) return { progress: 100, nextLevel: null, needed: 0, color: levelInfo.color };
+
+//     const nextLevelMin = levels[levelInfo.next as keyof typeof levels].min;
+//     const progress = ((currentOrders - levelInfo.min) / (nextLevelMin - levelInfo.min)) * 100;
+    
+//     return {
+//       progress: Math.min(Math.max(progress, 0), 100),
+//       nextLevel: levelInfo.next,
+//       needed: nextLevelMin - currentOrders,
+//       color: levelInfo.color
+//     };
+//   };
+
+//   const getStatusIcon = (status: string) => {
+//     switch (status) {
+//       case 'delivered':
+//         return <CheckCircle className="w-5 h-5 text-green-500" />;
+//       case 'cancelled':
+//         return <XCircle className="w-5 h-5 text-red-500" />;
+//       case 'shipped':
+//         return <Truck className="w-5 h-5 text-blue-500" />;
+//       default:
+//         return <Clock className="w-5 h-5 text-orange-500" />;
+//     }
+//   };
+
+//   const getStatusColor = (status: string) => {
+//     switch (status) {
+//       case 'delivered':
+//         return 'bg-green-50 text-green-700 border-green-200';
+//       case 'cancelled':
+//         return 'bg-red-50 text-red-700 border-red-200';
+//       case 'shipped':
+//         return 'bg-blue-50 text-blue-700 border-blue-200';
+//       default:
+//         return 'bg-orange-50 text-orange-700 border-orange-200';
+//     }
+//   };
+
+//   const getLevelIcon = (level: string) => {
+//     switch (level) {
+//       case 'bronze':
+//         return <Award className="w-6 h-6 text-amber-600" />;
+//       case 'silver':
+//         return <Award className="w-6 h-6 text-gray-400" />;
+//       case 'gold':
+//         return <Crown className="w-6 h-6 text-yellow-500" />;
+//       case 'platinum':
+//         return <Crown className="w-6 h-6 text-blue-400" />;
+//       default:
+//         return <Award className="w-6 h-6 text-amber-600" />;
+//     }
+//   };
+
+//   const levelProgress = calculateNextLevelProgress();
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8" dir="rtl">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         {/* Header */}
+//         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
+//           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
+//             <div className="flex items-center space-x-4 mb-4 lg:mb-0">
+//               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+//                 {user?.name?.charAt(0) || 'م'}
+//               </div>
+//               <div>
+//                 <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+//                   مرحباً، {user?.name || 'مستخدم'}!
+//                 </h1>
+//                 <p className="text-gray-600 mt-1">نحن سعداء برؤيتك مرة أخرى</p>
+//               </div>
+//             </div>
+//             <div className="bg-white/60 rounded-xl p-4 border border-gray-200/50">
+//               <div className="text-sm text-gray-500 mb-1">عضو منذ</div>
+//               <div className="font-semibold text-gray-700 flex items-center">
+//                 <Calendar className="w-4 h-4 ml-2" />
+//                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-SA') : 'مؤخراً'}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+//           {/* Sidebar Navigation */}
+//           <div className="lg:col-span-1">
+//             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sticky top-8">
+//               <nav className="space-y-2">
+//                 <button
+//                   onClick={() => setActiveTab('profile')}
+//                   className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 group ${
+//                     activeTab === 'profile' 
+//                       ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
+//                       : 'text-gray-700 hover:bg-white/80 hover:shadow-md border border-transparent hover:border-gray-200'
+//                   }`}
+//                 >
+//                   <User className={`w-5 h-5 ml-3 transition-transform group-hover:scale-110 ${
+//                     activeTab === 'profile' ? 'text-white' : 'text-blue-500'
+//                   }`} />
+//                   <span className="font-medium">الملف الشخصي</span>
+//                 </button>
+                
+//                 <button
+//                   onClick={() => setActiveTab('orders')}
+//                   className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 group ${
+//                     activeTab === 'orders' 
+//                       ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
+//                       : 'text-gray-700 hover:bg-white/80 hover:shadow-md border border-transparent hover:border-gray-200'
+//                   }`}
+//                 >
+//                   <Package className={`w-5 h-5 ml-3 transition-transform group-hover:scale-110 ${
+//                     activeTab === 'orders' ? 'text-white' : 'text-blue-500'
+//                   }`} />
+//                   <span className="font-medium">طلباتي</span>
+//                 </button>
+                
+//                 <button
+//                   onClick={() => setActiveTab('settings')}
+//                   className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 group ${
+//                     activeTab === 'settings' 
+//                       ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
+//                       : 'text-gray-700 hover:bg-white/80 hover:shadow-md border border-transparent hover:border-gray-200'
+//                   }`}
+//                 >
+//                   <Settings className={`w-5 h-5 ml-3 transition-transform group-hover:scale-110 ${
+//                     activeTab === 'settings' ? 'text-white' : 'text-blue-500'
+//                   }`} />
+//                   <span className="font-medium">الإعدادات</span>
+//                 </button>
+                
+//                 <button
+//                   onClick={handleLogout}
+//                   className="w-full flex items-center px-4 py-4 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300 group border border-transparent hover:border-red-200 hover:shadow-md"
+//                 >
+//                   <LogOut className="w-5 h-5 ml-3 transition-transform group-hover:scale-110" />
+//                   <span className="font-medium">تسجيل الخروج</span>
+//                 </button>
+//               </nav>
+
+//               {/* Quick Stats */}
+//               <div className="mt-8 pt-6 border-t border-gray-200/50">
+//                 <div className="space-y-4">
+//                   <div className="flex justify-between items-center">
+//                     <span className="text-sm text-gray-600">النقاط</span>
+//                     <span className="font-bold text-blue-600">{user?.points || 0}</span>
+//                   </div>
+//                   <div className="flex justify-between items-center">
+//                     <span className="text-sm text-gray-600">الطلبات</span>
+//                     <span className="font-bold text-green-600">{user?.totalOrders || 0}</span>
+//                   </div>
+//                   <div className="flex justify-between items-center">
+//                     <span className="text-sm text-gray-600">المستوى</span>
+//                     <span className="font-bold text-purple-600 capitalize">
+//                       {user?.membershipLevel === 'bronze' ? 'برونزي' :
+//                        user?.membershipLevel === 'silver' ? 'فضي' :
+//                        user?.membershipLevel === 'gold' ? 'ذهبي' : 'بلاتينيوم'}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Main Content */}
+//           <div className="lg:col-span-3">
+//             {activeTab === 'profile' && (
+//               <div className="space-y-6">
+//                 {/* Profile Information */}
+//                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+//                   <div className="flex justify-between items-center mb-8">
+//                     <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+//                       الملف الشخصي
+//                     </h2>
+//                     <button 
+//                       onClick={() => setIsEditingProfile(!isEditingProfile)}
+//                       className="flex items-center px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+//                     >
+//                       <Edit className="w-4 h-4 ml-2" />
+//                       {isEditingProfile ? 'إلغاء التعديل' : 'تعديل البيانات'}
+//                     </button>
+//                   </div>
+                  
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+//                       <label className="block text-sm font-medium text-blue-700 mb-2">الاسم الكامل</label>
+//                       {isEditingProfile ? (
+//                         <input 
+//                           type="text" 
+//                           defaultValue={user?.name || ''}
+//                           className="w-full p-3 border border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//                         />
+//                       ) : (
+//                         <p className="text-gray-900 font-semibold text-lg">{user?.name || 'غير متوفر'}</p>
+//                       )}
+//                     </div>
+                    
+//                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+//                       <label className="block text-sm font-medium text-green-700 mb-2">البريد الإلكتروني</label>
+//                       {isEditingProfile ? (
+//                         <input 
+//                           type="email" 
+//                           defaultValue={user?.email || ''}
+//                           className="w-full p-3 border border-green-200 rounded-lg bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                         />
+//                       ) : (
+//                         <p className="text-gray-900 font-semibold text-lg">{user?.email || 'غير متوفر'}</p>
+//                       )}
+//                     </div>
+                    
+//                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+//                       <label className="block text-sm font-medium text-purple-700 mb-2">رقم الهاتف</label>
+//                       {isEditingProfile ? (
+//                         <input 
+//                           type="tel" 
+//                           defaultValue={user?.phone || ''}
+//                           className="w-full p-3 border border-purple-200 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+//                         />
+//                       ) : (
+//                         <p className="text-gray-900 font-semibold text-lg">{user?.phone || 'غير متوفر'}</p>
+//                       )}
+//                     </div>
+                    
+//                     <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-100">
+//                       <label className="block text-sm font-medium text-amber-700 mb-2">مستوى العضوية</label>
+//                       <div className="flex items-center">
+//                         {getLevelIcon(user?.membershipLevel || 'bronze')}
+//                         <p className="text-gray-900 font-semibold text-lg mr-3 capitalize">
+//                           {user?.membershipLevel === 'bronze' ? 'برونزي' :
+//                            user?.membershipLevel === 'silver' ? 'فضي' :
+//                            user?.membershipLevel === 'gold' ? 'ذهبي' : 'بلاتينيوم'}
+//                         </p>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* Address Information */}
+//                   <div className="mt-8">
+//                     <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+//                       <MapPin className="w-6 h-6 ml-2 text-blue-600" />
+//                       العنوان
+//                     </h3>
+//                     <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200">
+//                       <div className="flex items-start">
+//                         <MapPin className="w-6 h-6 text-blue-600 mt-1 ml-4" />
+//                         <div className="flex-1">
+//                           {user?.address ? (
+//                             <div className="space-y-2">
+//                               <p className="text-gray-900 text-lg font-medium">
+//                                 {user.address.city && `${user.address.city}, `}
+//                                 {user.address.district && `${user.address.district}, `}
+//                                 {user.address.area && user.address.area}
+//                               </p>
+//                               {user.address.landmark && (
+//                                 <p className="text-gray-600 text-sm">
+//                                   <span className="font-medium">قرب:</span> {user.address.landmark}
+//                                 </p>
+//                               )}
+//                             </div>
+//                           ) : (
+//                             <div className="text-center py-4">
+//                               <p className="text-gray-500 text-lg mb-3">لم يتم إضافة عنوان</p>
+//                               <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+//                                 إضافة عنوان
+//                               </button>
+//                             </div>
+//                           )}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Loyalty Program */}
+//                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+//                   <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-8">
+//                     برنامج الولاء
+//                   </h2>
+                  
+//                   {/* Points Display */}
+//                   <div className={`bg-gradient-to-r ${levelProgress.color} rounded-2xl p-8 text-white mb-8 shadow-lg`}>
+//                     <div className="flex flex-col md:flex-row justify-between items-center">
+//                       <div className="text-center md:text-right mb-6 md:mb-0">
+//                         <p className="text-sm opacity-90 mb-2">رصيد النقاط</p>
+//                         <p className="text-5xl font-bold mb-2">{user?.points || 0}</p>
+//                         <div className="flex items-center justify-center md:justify-start">
+//                           <TrendingUp className="w-5 h-5 ml-2" />
+//                           <span className="text-sm">+5 نقاط هذا الشهر</span>
+//                         </div>
+//                       </div>
+//                       <div className="text-center md:text-left">
+//                         <p className="text-sm opacity-90 mb-2">مستواك الحالي</p>
+//                         <div className="flex items-center justify-center md:justify-start">
+//                           {getLevelIcon(user?.membershipLevel || 'bronze')}
+//                           <p className="text-3xl font-bold mr-3">
+//                             {user?.membershipLevel === 'bronze' ? 'برونزي' :
+//                              user?.membershipLevel === 'silver' ? 'فضي' :
+//                              user?.membershipLevel === 'gold' ? 'ذهبي' : 'بلاتينيوم'}
+//                           </p>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* Level Progress */}
+//                   <div className="mb-8">
+//                     <div className="flex justify-between text-sm text-gray-600 mb-4">
+//                       <span className="font-medium">
+//                         {levelProgress.nextLevel ? 
+//                           `التقدم للوصول إلى المستوى ${levelProgress.nextLevel === 'silver' ? 'الفضي' :
+//                            levelProgress.nextLevel === 'gold' ? 'الذهبي' : 'البلاتينيوم'}` 
+//                           : 'لقد وصلت إلى أعلى مستوى!'}
+//                       </span>
+//                       <span className="font-semibold">{user?.totalOrders || 0} طلبات مكتملة</span>
+//                     </div>
+//                     <div className="w-full bg-gray-200 rounded-full h-4 mb-3 shadow-inner">
+//                       <div 
+//                         className={`h-4 rounded-full bg-gradient-to-r ${levelProgress.color} transition-all duration-1000 ease-out shadow-lg`}
+//                         style={{ width: `${levelProgress.progress}%` }}
+//                       ></div>
+//                     </div>
+//                     {levelProgress.nextLevel && (
+//                       <p className="text-sm text-gray-600 text-center">
+//                         تحتاج {levelProgress.needed} طلباً إضافياً للترقية
+//                       </p>
+//                     )}
+//                   </div>
+
+//                   {/* Benefits Grid */}
+//                   <div className="mt-8">
+//                     <h3 className="font-bold text-xl text-gray-900 mb-6 text-center">مزايا العضوية الحصرية</h3>
+//                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+//                       <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 text-center border border-blue-100">
+//                         <Star className="w-8 h-8 text-blue-500 mx-auto mb-3" />
+//                         <h4 className="font-semibold text-blue-700 mb-2">نقاط مكافآت</h4>
+//                         <p className="text-sm text-gray-600">اربح نقاطاً على كل عملية شراء</p>
+//                       </div>
+//                       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 text-center border border-green-100">
+//                         <CreditCard className="w-8 h-8 text-green-500 mx-auto mb-3" />
+//                         <h4 className="font-semibold text-green-700 mb-2">خصومات حصرية</h4>
+//                         <p className="text-sm text-gray-600">عروض خاصة لأعضاء البرنامج</p>
+//                       </div>
+//                       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 text-center border border-purple-100">
+//                         <User className="w-8 h-8 text-purple-500 mx-auto mb-3" />
+//                         <h4 className="font-semibold text-purple-700 mb-2">دعم مميز</h4>
+//                         <p className="text-sm text-gray-600">أولوية في خدمة العملاء</p>
+//                       </div>
+//                       <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 text-center border border-amber-100">
+//                         <Package className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+//                         <h4 className="font-semibold text-amber-700 mb-2">وصول مبكر</h4>
+//                         <p className="text-sm text-gray-600">للمنتجات والعروض الجديدة</p>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+
+//             {activeTab === 'orders' && (
+//               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+//                 <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-8">
+//                   سجل الطلبات
+//                 </h2>
+                
+//                 {ordersLoading ? (
+//                   <div className="text-center py-16">
+//                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+//                     <div className="text-gray-500 text-lg">جاري تحميل الطلبات...</div>
+//                   </div>
+//                 ) : orders.length === 0 ? (
+//                   <div className="text-center py-16">
+//                     <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+//                     <h3 className="text-2xl font-semibold text-gray-700 mb-4">لا توجد طلبات بعد</h3>
+//                     <p className="text-gray-500 text-lg mb-8">ابدأ رحلة التسوق لاكتشاف منتجاتنا المميزة</p>
+//                     <button 
+//                       onClick={() => navigate('/products')}
+//                       className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300"
+//                     >
+//       ابدأ التسوق الآن
+//                     </button>
+//                   </div>
+//                 ) : (
+//                   <div className="space-y-6">
+//                     {orders.map((order) => (
+//                       <div key={order.id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 group">
+//                         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
+//                           <div className="flex-1 mb-4 lg:mb-0">
+//                             <h3 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+//                               طلب #{order.order_number}
+//                             </h3>
+//                             <div className="flex items-center text-gray-600">
+//                               <Calendar className="w-4 h-4 ml-2" />
+//                               <span className="text-sm">
+//                                 {new Date(order.created_at).toLocaleDateString('ar-SA', {
+//                                   year: 'numeric',
+//                                   month: 'long',
+//                                   day: 'numeric'
+//                                 })}
+//                               </span>
+//                               <span className={`mx-3 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)} flex items-center`}>
+//                                 {getStatusIcon(order.status)}
+//                                 <span className="mr-1">
+//                                   {order.status === 'delivered' ? 'تم التوصيل' :
+//                                    order.status === 'cancelled' ? 'ملغي' :
+//                                    order.status === 'shipped' ? 'قيد الشحن' : 'قيد المعالجة'}
+//                                 </span>
+//                               </span>
+//                             </div>
+//                           </div>
+//                           <div className="text-left">
+//                             <p className="font-bold text-2xl text-gray-900">
+//                               {order.total_amount?.toLocaleString()} دينار
+//                             </p>
+//                             <p className="text-sm text-gray-600">{order.items?.length || 0} منتج</p>
+//                           </div>
+//                         </div>
+                        
+//                         {order.items && (
+//                           <div className="border-t pt-6">
+//                             <div className="space-y-3">
+//                               {order.items.slice(0, 3).map((item: any) => (
+//                                 <div key={item.id} className="flex items-center justify-between py-2">
+//                                   <div className="flex items-center space-x-4">
+//                                     <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+//                                       <Package className="w-5 h-5 text-gray-400" />
+//                                     </div>
+//                                     <div>
+//                                       <span className="font-medium text-gray-900">{item.name}</span>
+//                                       <span className="text-sm text-gray-500 mr-3">× {item.quantity}</span>
+//                                     </div>
+//                                   </div>
+//                                   <span className="font-semibold text-gray-900">{item.price?.toLocaleString()} دينار</span>
+//                                 </div>
+//                               ))}
+//                               {order.items.length > 3 && (
+//                                 <p className="text-center text-gray-500 text-sm pt-2">
+//                                   +{order.items.length - 3} منتجات أخرى
+//                                 </p>
+//                               )}
+//                             </div>
+//                           </div>
+//                         )}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {activeTab === 'settings' && (
+//               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+//                 <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-8">
+//                   إعدادات الحساب
+//                 </h2>
+                
+//                 <div className="space-y-8">
+//                   {/* Notification Settings */}
+//                   <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+//                     <h3 className="font-bold text-xl text-gray-900 mb-6 flex items-center">
+//                       <Bell className="w-6 h-6 ml-2 text-blue-600" />
+//                       الإشعارات
+//                     </h3>
+//                     <div className="space-y-4">
+//                       {[
+//                         { label: 'تحديثات حالة الطلبات', defaultChecked: true },
+//                         { label: 'العروض الترويجية والخصومات', defaultChecked: true },
+//                         { label: 'توصيات المنتجات المخصصة', defaultChecked: false },
+//                         { label: 'نشرة الأخبار الشهرية', defaultChecked: true }
+//                       ].map((item, index) => (
+//                         <label key={index} className="flex items-center p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-all duration-200 border border-white/50">
+//                           <input 
+//                             type="checkbox" 
+//                             className="rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 ml-3 transform scale-125" 
+//                             defaultChecked={item.defaultChecked} 
+//                           />
+//                           <span className="text-gray-700 font-medium flex-1">{item.label}</span>
+//                         </label>
+//                       ))}
+//                     </div>
+//                   </div>
+
+//                   {/* Privacy Settings */}
+//                   <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
+//                     <h3 className="font-bold text-xl text-gray-900 mb-6 flex items-center">
+//                       <Shield className="w-6 h-6 ml-2 text-green-600" />
+//                       الخصوصية والأمان
+//                     </h3>
+//                     <div className="space-y-4">
+//                       {[
+//                         { label: 'مشاركة البيانات لتحسين التجربة', description: 'مساعدتنا في تقديم تجربة تسوق أفضل', defaultChecked: true },
+//                         { label: 'الملف الشخصي العام', description: 'جعل معلوماتك الظاهرة للآخرين', defaultChecked: false },
+//                         { label: 'تخزين بيانات الدفع', description: 'حفظ طرق الدفع للمشتريات المستقبلية', defaultChecked: true }
+//                       ].map((item, index) => (
+//                         <label key={index} className="flex items-start p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-all duration-200 border border-white/50">
+//                           <input 
+//                             type="checkbox" 
+//                             className="rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 ml-3 mt-1 transform scale-125" 
+//                             defaultChecked={item.defaultChecked} 
+//                           />
+//                           <div className="flex-1 mr-3">
+//                             <span className="text-gray-700 font-medium block">{item.label}</span>
+//                             <span className="text-gray-500 text-sm">{item.description}</span>
+//                           </div>
+//                         </label>
+//                       ))}
+//                     </div>
+//                   </div>
+
+//                   {/* Security Actions */}
+//                   <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
+//                     <h3 className="font-bold text-xl text-gray-900 mb-6">إجراءات الأمان</h3>
+//                     <div className="space-y-4">
+//                       {[
+//                         { label: 'تغيير كلمة المرور', description: 'تحديث كلمة المرور الحالية', action: 'تغيير' },
+//                         { label: 'إدارة الأجهزة المتصلة', description: 'عرض وجميع الأجهزة النشطة', action: 'عرض' },
+//                         { label: 'نشاط تسجيل الدخول', description: 'سجل عمليات الدخول إلى حسابك', action: 'مراجعة' }
+//                       ].map((item, index) => (
+//                         <button key={index} className="w-full flex items-center justify-between p-4 bg-white/80 rounded-xl hover:bg-white transition-all duration-200 border border-white/50 text-right group">
+//                           <div className="text-left">
+//                             <span className="text-blue-600 text-sm font-medium group-hover:text-blue-700 transition-colors">
+//                               {item.action}
+//                             </span>
+//                           </div>
+//                           <div className="flex-1 mr-4">
+//                             <span className="text-gray-700 font-medium block">{item.label}</span>
+//                             <span className="text-gray-500 text-sm">{item.description}</span>
+//                           </div>
+//                         </button>
+//                       ))}
+//                     </div>
+//                   </div>
+
+//                   {/* Danger Zone */}
+//                   <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6 border border-red-100">
+//                     <h3 className="font-bold text-xl text-red-600 mb-6 flex items-center">
+//                       <Trash2 className="w-6 h-6 ml-2 text-red-600" />
+//                       منطقة الخطر
+//                     </h3>
+//                     <div className="space-y-4">
+//                       <button className="w-full bg-white/80 text-red-600 px-6 py-4 rounded-xl text-right hover:bg-white transition-all duration-200 border border-red-200 group">
+//                         <div className="flex items-center justify-between">
+//                           <Trash2 className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
+//                           <div className="flex-1 mr-4">
+//                             <span className="font-bold text-lg block">حذف الحساب</span>
+//                             <span className="text-red-500 text-sm">هذا الإجراء لا يمكن التراجع عنه</span>
+//                           </div>
+//                         </div>
+//                       </button>
+//                       <p className="text-xs text-red-500 text-center">
+//                         تحذير: سيتم حذف جميع بياناتك وطلباتك بشكل دائم ولا يمكن استعادتها.
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Account;
+
+
+
+
+
+// import React, { useState } from 'react';
+// import { useAuth } from '../hooks/useAuth';
+// import { useOrders } from '../hooks/useOrders';
+// import { useNavigate } from 'react-router-dom';
+// import { 
+//   User, 
+//   Package, 
+//   Settings, 
+//   LogOut, 
+//   Star, 
+//   MapPin,
+//   Calendar,
+//   CreditCard,
+//   Truck,
+//   CheckCircle,
+//   XCircle,
+//   Clock,
+//   Edit,
+//   Shield,
+//   Bell,
+//   Trash2,
+//   Award,
+//   TrendingUp,
+//   Crown,
+//   ChevronRight,
+//   Home,
+//   Plus,
+//   Save
+// } from 'lucide-react';
+
+// const Account: React.FC = () => {
+//   const { user, logout } = useAuth();
+//   const { orders, loading: ordersLoading } = useOrders();
+//   const navigate = useNavigate();
+//   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings'>('profile');
+//   const [isEditingProfile, setIsEditingProfile] = useState(false);
+//   const [formData, setFormData] = useState({
+//     name: user?.name || '',
+//     email: user?.email || '',
+//     phone: user?.phone || ''
+//   });
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate('/');
+//   };
+
+//   const handleFormChange = (field: string, value: string) => {
+//     setFormData(prev => ({ ...prev, [field]: value }));
+//   };
+
+//   const calculateNextLevelProgress = () => {
+//     const levels = {
+//       bronze: { min: 0, next: 'silver', threshold: 10 },
+//       silver: { min: 10, next: 'gold', threshold: 20 },
+//       gold: { min: 20, next: 'platinum', threshold: 50 },
+//       platinum: { min: 50, next: null, threshold: null }
+//     };
+
+//     const currentLevel = user?.membershipLevel || 'bronze';
+//     const currentOrders = user?.totalOrders || 0;
+//     const levelInfo = levels[currentLevel as keyof typeof levels];
+    
+//     if (!levelInfo.next) return { progress: 100, nextLevel: null, needed: 0 };
+
+//     const progress = ((currentOrders - levelInfo.min) / (levelInfo.threshold! - levelInfo.min)) * 100;
+    
+//     return {
+//       progress: Math.min(Math.max(progress, 0), 100),
+//       nextLevel: levelInfo.next,
+//       needed: levelInfo.threshold! - currentOrders
+//     };
+//   };
+
+//   const getStatusIcon = (status: string) => {
+//     switch (status) {
+//       case 'delivered':
+//         return <CheckCircle className="w-5 h-5 text-green-500" />;
+//       case 'cancelled':
+//         return <XCircle className="w-5 h-5 text-red-500" />;
+//       case 'shipped':
+//         return <Truck className="w-5 h-5 text-blue-500" />;
+//       default:
+//         return <Clock className="w-5 h-5 text-amber-500" />;
+//     }
+//   };
+
+//   const getStatusColor = (status: string) => {
+//     switch (status) {
+//       case 'delivered':
+//         return 'bg-green-50 text-green-700 border-green-200';
+//       case 'cancelled':
+//         return 'bg-red-50 text-red-700 border-red-200';
+//       case 'shipped':
+//         return 'bg-blue-50 text-blue-700 border-blue-200';
+//       default:
+//         return 'bg-amber-50 text-amber-700 border-amber-200';
+//     }
+//   };
+
+//   const getLevelBadge = (level: string) => {
+//     const badges: {[key: string]: {icon: React.ComponentType, label: string, color: string}} = {
+//       bronze: { icon: Award, label: 'برونزي', color: 'text-amber-600' },
+//       silver: { icon: Award, label: 'فضي', color: 'text-gray-500' },
+//       gold: { icon: Crown, label: 'ذهبي', color: 'text-yellow-500' },
+//       platinum: { icon: Crown, label: 'بلاتينيوم', color: 'text-blue-500' }
+//     };
+//     return badges[level] || badges.bronze;
+//   };
+
+//   const levelProgress = calculateNextLevelProgress();
+//   const levelBadge = getLevelBadge(user?.membershipLevel || 'bronze');
+//   const LevelIcon = levelBadge.icon;
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br mb-15" dir="rtl">
+//       {/* Navigation Bar */}
+//       <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+//           <nav className="flex items-center gap-2 text-sm text-gray-600">
+//             <button onClick={() => navigate('/')} className="text-gray-600 hover:text-gray-900 transition-colors">
+//               <Home className="w-4 h-4" />
+//             </button>
+//             <ChevronRight className="w-4 h-4 text-gray-400 rotate-180" />
+//             <span className="text-gray-900 font-semibold">حسابي</span>
+//           </nav>
+//         </div>
+//       </div>
+
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//         {/* Header Card */}
+//         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-2xl p-6 sm:p-8 mb-8 text-white overflow-hidden relative">
+//           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20" />
+//           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16" />
+          
+//           <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+//             <div className="flex items-center gap-4">
+//               <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-bold border border-white/30 backdrop-blur-sm">
+//                 {user?.name?.charAt(0).toUpperCase() || 'م'}
+//               </div>
+//               <div>
+//                 <h1 className="text-3xl font-bold">مرحباً، {user?.name || 'مستخدم'}</h1>
+//                 <p className="text-blue-100 text-sm mt-1">نحن سعداء برؤيتك</p>
+//               </div>
+//             </div>
+
+//             <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20">
+//               <div className="text-right">
+//                 <p className="text-blue-100 text-xs">المستوى الحالي</p>
+//                 <div className="flex items-center gap-2 mt-1">
+//                   <LevelIcon className={`w-5 h-5 ${levelBadge.color}`} />
+//                   <span className="font-bold text-lg">{levelBadge.label}</span>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+//           {/* Sidebar Navigation */}
+//           <div className="lg:col-span-1">
+//             <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-24">
+//               <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 border-b border-gray-200">
+//                 <h3 className="font-bold text-gray-900">القائمة</h3>
+//               </div>
+//               <nav className="p-4 space-y-2">
+//                 {[
+//                   { id: 'profile', icon: User, label: 'الملف الشخصي' },
+//                   { id: 'orders', icon: Package, label: 'طلباتي' },
+//                   { id: 'settings', icon: Settings, label: 'الإعدادات' }
+//                 ].map(item => {
+//                   const Icon = item.icon;
+//                   const isActive = activeTab === item.id;
+//                   return (
+//                     <button
+//                       key={item.id}
+//                       onClick={() => setActiveTab(item.id as any)}
+//                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+//                         isActive
+//                           ? 'bg-blue-600 text-white shadow-lg'
+//                           : 'text-gray-700 hover:bg-gray-100'
+//                       }`}
+//                     >
+//                       <Icon className="w-5 h-5" />
+//                       <span className="font-medium">{item.label}</span>
+//                     </button>
+//                   );
+//                 })}
+//               </nav>
+
+//               <div className="border-t border-gray-200 p-4">
+//                 <button
+//                   onClick={handleLogout}
+//                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300 font-medium"
+//                 >
+//                   <LogOut className="w-5 h-5" />
+//                   تسجيل الخروج
+//                 </button>
+//               </div>
+
+//               {/* Quick Stats */}
+//               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-t border-gray-200 p-4 space-y-3">
+//                 <div className="flex justify-between items-center">
+//                   <span className="text-sm text-gray-600">النقاط</span>
+//                   <span className="font-bold text-blue-600">{user?.points || 0}</span>
+//                 </div>
+//                 <div className="flex justify-between items-center">
+//                   <span className="text-sm text-gray-600">الطلبات</span>
+//                   <span className="font-bold text-green-600">{user?.totalOrders || 0}</span>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Main Content */}
+//           <div className="lg:col-span-3">
+//             {activeTab === 'profile' && (
+//               <div className="space-y-6">
+//                 {/* Personal Information */}
+//                 <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+//                   <div className="flex justify-between items-center mb-8">
+//                     <div>
+//                       <h2 className="text-2xl font-bold text-gray-900">معلوماتي الشخصية</h2>
+//                       <p className="text-gray-600 text-sm mt-1">إدارة بيانات حسابك</p>
+//                     </div>
+//                     <button
+//                       onClick={() => setIsEditingProfile(!isEditingProfile)}
+//                       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+//                         isEditingProfile
+//                           ? 'bg-green-100 text-green-700 hover:bg-green-200'
+//                           : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+//                       }`}
+//                     >
+//                       {isEditingProfile ? (
+//                         <>
+//                           <Save className="w-4 h-4" />
+//                           حفظ
+//                         </>
+//                       ) : (
+//                         <>
+//                           <Edit className="w-4 h-4" />
+//                           تعديل
+//                         </>
+//                       )}
+//                     </button>
+//                   </div>
+
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                     <div>
+//                       <label className="block text-sm font-semibold text-gray-700 mb-2">الاسم الكامل</label>
+//                       {isEditingProfile ? (
+//                         <input
+//                           type="text"
+//                           value={formData.name}
+//                           onChange={(e) => handleFormChange('name', e.target.value)}
+//                           className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+//                         />
+//                       ) : (
+//                         <p className="text-gray-900 font-medium text-lg">{user?.name || 'غير متوفر'}</p>
+//                       )}
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-semibold text-gray-700 mb-2">البريد الإلكتروني</label>
+//                       {isEditingProfile ? (
+//                         <input
+//                           type="email"
+//                           value={formData.email}
+//                           onChange={(e) => handleFormChange('email', e.target.value)}
+//                           className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+//                         />
+//                       ) : (
+//                         <p className="text-gray-900 font-medium text-lg">{user?.email || 'غير متوفر'}</p>
+//                       )}
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-semibold text-gray-700 mb-2">رقم الهاتف</label>
+//                       {isEditingProfile ? (
+//                         <input
+//                           type="tel"
+//                           value={formData.phone}
+//                           onChange={(e) => handleFormChange('phone', e.target.value)}
+//                           className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+//                         />
+//                       ) : (
+//                         <p className="text-gray-900 font-medium text-lg">{user?.phone || 'غير متوفر'}</p>
+//                       )}
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-semibold text-gray-700 mb-2">تاريخ الاشتراك</label>
+//                       <p className="text-gray-900 font-medium text-lg">
+//                         {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-SA') : 'مؤخراً'}
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Address Section */}
+//                 <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+//                   <div className="flex items-center justify-between mb-6">
+//                     <div>
+//                       <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+//                         <MapPin className="w-5 h-5 text-blue-600" />
+//                         العنوان الرئيسي
+//                       </h3>
+//                     </div>
+//                     <button className="flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+//                       <Plus className="w-4 h-4" />
+//                       إضافة عنوان
+//                     </button>
+//                   </div>
+
+//                   {user?.address ? (
+//                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+//                       <p className="text-gray-900 font-medium mb-1">
+//                         {user.address.city && `${user.address.city}, `}
+//                         {user.address.district && `${user.address.district}, `}
+//                         {user.address.area && user.address.area}
+//                       </p>
+//                       {user.address.landmark && (
+//                         <p className="text-gray-600 text-sm">قرب: {user.address.landmark}</p>
+//                       )}
+//                     </div>
+//                   ) : (
+//                     <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
+//                       <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+//                       <p className="text-gray-600 mb-4">لم يتم إضافة عنوان حتى الآن</p>
+//                       <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+//                         إضافة عنوان الآن
+//                       </button>
+//                     </div>
+//                   )}
+//                 </div>
+
+//                 {/* Loyalty Program */}
+//                 <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-lg p-6 sm:p-8 text-white overflow-hidden relative">
+//                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20" />
+//                   <div className="relative z-10">
+//                     <h2 className="text-2xl font-bold mb-2">برنامج الولاء والمكافآت</h2>
+//                     <p className="text-white/80 text-sm mb-8">اربح نقاطاً على كل عملية شراء وارتقِ بين مستويات العضوية</p>
+
+//                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+//                       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+//                         <p className="text-white/70 text-xs mb-1">النقاط الحالية</p>
+//                         <p className="text-3xl font-bold">{user?.points || 0}</p>
+//                       </div>
+//                       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+//                         <p className="text-white/70 text-xs mb-1">الطلبات</p>
+//                         <p className="text-3xl font-bold">{user?.totalOrders || 0}</p>
+//                       </div>
+//                       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+//                         <p className="text-white/70 text-xs mb-1">المستوى</p>
+//                         <p className="text-xl font-bold capitalize">{levelBadge.label}</p>
+//                       </div>
+//                       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+//                         <p className="text-white/70 text-xs mb-1">النسبة</p>
+//                         <p className="text-xl font-bold">{Math.floor(levelProgress.progress)}%</p>
+//                       </div>
+//                     </div>
+
+//                     <div>
+//                       <p className="text-sm text-white/80 mb-3">التقدم للمستوى التالي</p>
+//                       <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+//                         <div
+//                           className="h-full bg-gradient-to-r from-yellow-400 to-yellow-300 transition-all duration-1000"
+//                           style={{ width: `${levelProgress.progress}%` }}
+//                         />
+//                       </div>
+//                       {levelProgress.nextLevel && (
+//                         <p className="text-xs text-white/70 mt-2">
+//                           {levelProgress.needed} طلب إضافي للوصول للمستوى التالي
+//                         </p>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+
+//             {activeTab === 'orders' && (
+//               <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+//                 <h2 className="text-2xl font-bold text-gray-900 mb-8">سجل الطلبات</h2>
+
+//                 {ordersLoading ? (
+//                   <div className="text-center py-16">
+//                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+//                     <p className="text-gray-600">جاري تحميل الطلبات...</p>
+//                   </div>
+//                 ) : orders.length === 0 ? (
+//                   <div className="text-center py-16">
+//                     <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+//                     <h3 className="text-xl font-bold text-gray-700 mb-2">لا توجد طلبات</h3>
+//                     <p className="text-gray-600 mb-6">ابدأ التسوق الآن واستمتع بمزايا العضوية</p>
+//                     <button
+//                       onClick={() => navigate('/products')}
+//                       className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+//                     >
+//                       ابدأ التسوق
+//                     </button>
+//                   </div>
+//                 ) : (
+//                   <div className="space-y-4">
+//                     {orders.map(order => (
+//                       <div
+//                         key={order.id}
+//                         className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300 hover:border-blue-300"
+//                       >
+//                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+//                           <div className="flex-1">
+//                             <h4 className="font-bold text-gray-900 text-lg mb-2">طلب #{order.order_number}</h4>
+//                             <div className="flex items-center gap-3 flex-wrap">
+//                               <span className="text-sm text-gray-600 flex items-center gap-1">
+//                                 <Calendar className="w-4 h-4" />
+//                                 {new Date(order.created_at).toLocaleDateString('ar-SA')}
+//                               </span>
+//                               <span className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(order.status)}`}>
+//                                 {getStatusIcon(order.status)}
+//                                 {order.status === 'delivered' ? 'تم التوصيل' :
+//                                  order.status === 'cancelled' ? 'ملغي' :
+//                                  order.status === 'shipped' ? 'قيد الشحن' : 'قيد المعالجة'}
+//                               </span>
+//                             </div>
+//                           </div>
+//                           <div className="text-right">
+//                             <p className="font-bold text-2xl text-gray-900">{order.total_amount?.toLocaleString()} دينار</p>
+//                             <p className="text-sm text-gray-600">{order.items?.length || 0} منتجات</p>
+//                           </div>
+//                         </div>
+
+//                         {order.items && order.items.length > 0 && (
+//                           <div className="border-t pt-4">
+//                             <div className="space-y-2">
+//                               {order.items.slice(0, 2).map((item: any) => (
+//                                 <div key={item.id} className="flex justify-between items-center text-sm">
+//                                   <span className="text-gray-700">{item.name} × {item.quantity}</span>
+//                                   <span className="font-semibold text-gray-900">{item.price?.toLocaleString()} دينار</span>
+//                                 </div>
+//                               ))}
+//                               {order.items.length > 2 && (
+//                                 <p className="text-gray-500 text-sm">+{order.items.length - 2} منتجات أخرى</p>
+//                               )}
+//                             </div>
+//                           </div>
+//                         )}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {activeTab === 'settings' && (
+//               <div className="space-y-6">
+//                 {/* Notifications */}
+//                 <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+//                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
+//                     <Bell className="w-5 h-5 text-blue-600" />
+//                     تفضيلات الإشعارات
+//                   </h3>
+//                   <div className="space-y-3">
+//                     {[
+//                       'تحديثات حالة الطلبات',
+//                       'العروض والخصومات',
+//                       'المنتجات الجديدة',
+//                       'النشرة البريدية'
+//                     ].map((item, idx) => (
+//                       <label key={idx} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+//                         <input type="checkbox" defaultChecked className="w-4 h-4" />
+//                         <span className="mr-3 text-gray-700 font-medium">{item}</span>
+//                       </label>
+//                     ))}
+//                   </div>
+//                 </div>
+
+//                 {/* Security */}
+//                 <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+//                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
+//                     <Shield className="w-5 h-5 text-green-600" />
+//                     الأمان والخصوصية
+//                   </h3>
+//                   <div className="space-y-3">
+//                     {[
+//                       { label: 'تغيير كلمة المرور', icon: 'كلمة مرور' },
+//                       { label: 'المتصفحات النشطة', icon: 'متصفح' },
+//                       { label: 'سجل الدخول', icon: 'سجل' }
+//                     ].map((item, idx) => (
+//                       <button key={idx} className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors text-right group">
+//                         <span className="text-blue-600 font-medium text-sm group-hover:text-blue-700">تحديث</span>
+//                         <span className="text-gray-700 font-medium">{item.label}</span>
+//                       </button>
+//                     ))}
+//                   </div>
+//                 </div>
+
+//                 {/* Danger Zone */}
+//                 <div className="bg-red-50 border border-red-200 rounded-2xl shadow-lg p-6 sm:p-8">
+//                   <h3 className="text-xl font-bold text-red-600 flex items-center gap-2 mb-6">
+//                     <Trash2 className="w-5 h-5" />
+//                     منطقة الخطر
+//                   </h3>
+//                   <button className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors font-medium">
+//                     حذف الحساب بشكل دائم
+//                   </button>
+//                   <p className="text-xs text-red-600 mt-3 text-center">
+//                     تحذير: هذا الإجراء لا يمكن التراجع عنه
+//                   </p>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Account;
+
+
+
+
+
+
+
+
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useOrders } from '../hooks/useOrders';
@@ -789,7 +1934,11 @@ import {
   Trash2,
   Award,
   TrendingUp,
-  Crown
+  Crown,
+  ChevronRight,
+  Home,
+  Plus,
+  Save
 } from 'lucide-react';
 
 const Account: React.FC = () => {
@@ -798,34 +1947,41 @@ const Account: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings'>('profile');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || ''
+  });
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
+  const handleFormChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   const calculateNextLevelProgress = () => {
     const levels = {
-      bronze: { min: 0, next: 'silver', color: 'from-amber-600 to-amber-700' },
-      silver: { min: 10, next: 'gold', color: 'from-gray-400 to-gray-500' },
-      gold: { min: 20, next: 'platinum', color: 'from-yellow-500 to-yellow-600' },
-      platinum: { min: 50, next: null, color: 'from-blue-400 to-blue-600' }
+      bronze: { min: 0, next: 'silver', threshold: 10 },
+      silver: { min: 10, next: 'gold', threshold: 20 },
+      gold: { min: 20, next: 'platinum', threshold: 50 },
+      platinum: { min: 50, next: null, threshold: null }
     };
 
     const currentLevel = user?.membershipLevel || 'bronze';
     const currentOrders = user?.totalOrders || 0;
     const levelInfo = levels[currentLevel as keyof typeof levels];
     
-    if (!levelInfo.next) return { progress: 100, nextLevel: null, needed: 0, color: levelInfo.color };
+    if (!levelInfo.next) return { progress: 100, nextLevel: null, needed: 0 };
 
-    const nextLevelMin = levels[levelInfo.next as keyof typeof levels].min;
-    const progress = ((currentOrders - levelInfo.min) / (nextLevelMin - levelInfo.min)) * 100;
+    const progress = ((currentOrders - levelInfo.min) / (levelInfo.threshold! - levelInfo.min)) * 100;
     
     return {
       progress: Math.min(Math.max(progress, 0), 100),
       nextLevel: levelInfo.next,
-      needed: nextLevelMin - currentOrders,
-      color: levelInfo.color
+      needed: levelInfo.threshold! - currentOrders
     };
   };
 
@@ -838,7 +1994,7 @@ const Account: React.FC = () => {
       case 'shipped':
         return <Truck className="w-5 h-5 text-blue-500" />;
       default:
-        return <Clock className="w-5 h-5 text-orange-500" />;
+        return <Clock className="w-5 h-5 text-amber-500" />;
     }
   };
 
@@ -851,322 +2007,295 @@ const Account: React.FC = () => {
       case 'shipped':
         return 'bg-blue-50 text-blue-700 border-blue-200';
       default:
-        return 'bg-orange-50 text-orange-700 border-orange-200';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
     }
   };
 
-  const getLevelIcon = (level: string) => {
-    switch (level) {
-      case 'bronze':
-        return <Award className="w-6 h-6 text-amber-600" />;
-      case 'silver':
-        return <Award className="w-6 h-6 text-gray-400" />;
-      case 'gold':
-        return <Crown className="w-6 h-6 text-yellow-500" />;
-      case 'platinum':
-        return <Crown className="w-6 h-6 text-blue-400" />;
-      default:
-        return <Award className="w-6 h-6 text-amber-600" />;
-    }
+  const getLevelBadge = (level: string) => {
+    const badges: {[key: string]: {icon: React.ComponentType, label: string, color: string}} = {
+      bronze: { icon: Award, label: 'برونزي', color: 'text-amber-600' },
+      silver: { icon: Award, label: 'فضي', color: 'text-gray-500' },
+      gold: { icon: Crown, label: 'ذهبي', color: 'text-yellow-500' },
+      platinum: { icon: Crown, label: 'بلاتينيوم', color: 'text-blue-500' }
+    };
+    return badges[level] || badges.bronze;
   };
 
   const levelProgress = calculateNextLevelProgress();
+  const levelBadge = getLevelBadge(user?.membershipLevel || 'bronze');
+  const LevelIcon = levelBadge.icon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8" dir="rtl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
-            <div className="flex items-center space-x-4 mb-4 lg:mb-0">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                {user?.name?.charAt(0) || 'م'}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 " dir="rtl">
+      {/* Navigation Bar */}
+      {/* <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <nav className="flex items-center gap-2 text-sm text-gray-600">
+            <button onClick={() => navigate('/')} className="text-gray-600 hover:text-gray-900 transition-colors">
+              <Home className="w-4 h-4" />
+            </button>
+            <ChevronRight className="w-4 h-4 text-gray-400 rotate-180" />
+            <span className="text-gray-900 font-semibold">حسابي</span>
+          </nav>
+        </div>
+      </div> */}
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Card */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-2xl p-6 sm:p-8 mb-8 text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16" />
+          
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-bold border border-white/30 backdrop-blur-sm">
+                {user?.name?.charAt(0).toUpperCase() || 'م'}
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
-                  مرحباً، {user?.name || 'مستخدم'}!
-                </h1>
-                <p className="text-gray-600 mt-1">نحن سعداء برؤيتك مرة أخرى</p>
+                <h1 className="text-3xl font-bold">مرحباً، {user?.name || 'مستخدم'}</h1>
+                <p className="text-blue-100 text-sm mt-1">نحن سعداء برؤيتك</p>
               </div>
             </div>
-            <div className="bg-white/60 rounded-xl p-4 border border-gray-200/50">
-              <div className="text-sm text-gray-500 mb-1">عضو منذ</div>
-              <div className="font-semibold text-gray-700 flex items-center">
-                <Calendar className="w-4 h-4 ml-2" />
-                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-SA') : 'مؤخراً'}
+
+            <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20">
+              <div className="text-right">
+                <p className="text-blue-100 text-xs">المستوى الحالي</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <LevelIcon className={`w-5 h-5 ${levelBadge.color}`} />
+                  <span className="font-bold text-lg">{levelBadge.label}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sticky top-8">
-              <nav className="space-y-2">
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 group ${
-                    activeTab === 'profile' 
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
-                      : 'text-gray-700 hover:bg-white/80 hover:shadow-md border border-transparent hover:border-gray-200'
-                  }`}
-                >
-                  <User className={`w-5 h-5 ml-3 transition-transform group-hover:scale-110 ${
-                    activeTab === 'profile' ? 'text-white' : 'text-blue-500'
-                  }`} />
-                  <span className="font-medium">الملف الشخصي</span>
-                </button>
-                
-                <button
-                  onClick={() => setActiveTab('orders')}
-                  className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 group ${
-                    activeTab === 'orders' 
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
-                      : 'text-gray-700 hover:bg-white/80 hover:shadow-md border border-transparent hover:border-gray-200'
-                  }`}
-                >
-                  <Package className={`w-5 h-5 ml-3 transition-transform group-hover:scale-110 ${
-                    activeTab === 'orders' ? 'text-white' : 'text-blue-500'
-                  }`} />
-                  <span className="font-medium">طلباتي</span>
-                </button>
-                
-                <button
-                  onClick={() => setActiveTab('settings')}
-                  className={`w-full flex items-center px-4 py-4 rounded-xl transition-all duration-300 group ${
-                    activeTab === 'settings' 
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
-                      : 'text-gray-700 hover:bg-white/80 hover:shadow-md border border-transparent hover:border-gray-200'
-                  }`}
-                >
-                  <Settings className={`w-5 h-5 ml-3 transition-transform group-hover:scale-110 ${
-                    activeTab === 'settings' ? 'text-white' : 'text-blue-500'
-                  }`} />
-                  <span className="font-medium">الإعدادات</span>
-                </button>
-                
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center px-4 py-4 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300 group border border-transparent hover:border-red-200 hover:shadow-md"
-                >
-                  <LogOut className="w-5 h-5 ml-3 transition-transform group-hover:scale-110" />
-                  <span className="font-medium">تسجيل الخروج</span>
-                </button>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-24">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 border-b border-gray-200">
+                <h3 className="font-bold text-gray-900">القائمة</h3>
+              </div>
+              <nav className="p-4 space-y-2">
+                {[
+                  { id: 'profile', icon: User, label: 'الملف الشخصي' },
+                  { id: 'orders', icon: Package, label: 'طلباتي' },
+                  { id: 'settings', icon: Settings, label: 'الإعدادات' }
+                ].map(item => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id as any)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                        isActive
+                          ? 'bg-blue-600 text-white shadow-lg'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </button>
+                  );
+                })}
               </nav>
 
+              <div className="border-t border-gray-200 p-4">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300 font-medium"
+                >
+                  <LogOut className="w-5 h-5" />
+                  تسجيل الخروج
+                </button>
+              </div>
+
               {/* Quick Stats */}
-              <div className="mt-8 pt-6 border-t border-gray-200/50">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">النقاط</span>
-                    <span className="font-bold text-blue-600">{user?.points || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">الطلبات</span>
-                    <span className="font-bold text-green-600">{user?.totalOrders || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">المستوى</span>
-                    <span className="font-bold text-purple-600 capitalize">
-                      {user?.membershipLevel === 'bronze' ? 'برونزي' :
-                       user?.membershipLevel === 'silver' ? 'فضي' :
-                       user?.membershipLevel === 'gold' ? 'ذهبي' : 'بلاتينيوم'}
-                    </span>
-                  </div>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-t border-gray-200 p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">النقاط</span>
+                  <span className="font-bold text-blue-600">{user?.points || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">الطلبات</span>
+                  <span className="font-bold text-green-600">{user?.totalOrders || 0}</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 mb-25">
             {activeTab === 'profile' && (
               <div className="space-y-6">
-                {/* Profile Information */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+                {/* Personal Information */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
                   <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
-                      الملف الشخصي
-                    </h2>
-                    <button 
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">معلوماتي الشخصية</h2>
+                      <p className="text-gray-600 text-sm mt-1">إدارة بيانات حسابك</p>
+                    </div>
+                    <button
                       onClick={() => setIsEditingProfile(!isEditingProfile)}
-                      className="flex items-center px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        isEditingProfile
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                      }`}
                     >
-                      <Edit className="w-4 h-4 ml-2" />
-                      {isEditingProfile ? 'إلغاء التعديل' : 'تعديل البيانات'}
+                      {isEditingProfile ? (
+                        <>
+                          <Save className="w-4 h-4" />
+                          حفظ
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-4 h-4" />
+                          تعديل
+                        </>
+                      )}
                     </button>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-                      <label className="block text-sm font-medium text-blue-700 mb-2">الاسم الكامل</label>
-                      {isEditingProfile ? (
-                        <input 
-                          type="text" 
-                          defaultValue={user?.name || ''}
-                          className="w-full p-3 border border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900 font-semibold text-lg">{user?.name || 'غير متوفر'}</p>
-                      )}
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
-                      <label className="block text-sm font-medium text-green-700 mb-2">البريد الإلكتروني</label>
-                      {isEditingProfile ? (
-                        <input 
-                          type="email" 
-                          defaultValue={user?.email || ''}
-                          className="w-full p-3 border border-green-200 rounded-lg bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900 font-semibold text-lg">{user?.email || 'غير متوفر'}</p>
-                      )}
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
-                      <label className="block text-sm font-medium text-purple-700 mb-2">رقم الهاتف</label>
-                      {isEditingProfile ? (
-                        <input 
-                          type="tel" 
-                          defaultValue={user?.phone || ''}
-                          className="w-full p-3 border border-purple-200 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900 font-semibold text-lg">{user?.phone || 'غير متوفر'}</p>
-                      )}
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-100">
-                      <label className="block text-sm font-medium text-amber-700 mb-2">مستوى العضوية</label>
-                      <div className="flex items-center">
-                        {getLevelIcon(user?.membershipLevel || 'bronze')}
-                        <p className="text-gray-900 font-semibold text-lg mr-3 capitalize">
-                          {user?.membershipLevel === 'bronze' ? 'برونزي' :
-                           user?.membershipLevel === 'silver' ? 'فضي' :
-                           user?.membershipLevel === 'gold' ? 'ذهبي' : 'بلاتينيوم'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Address Information */}
-                  <div className="mt-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                      <MapPin className="w-6 h-6 ml-2 text-blue-600" />
-                      العنوان
-                    </h3>
-                    <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200">
-                      <div className="flex items-start">
-                        <MapPin className="w-6 h-6 text-blue-600 mt-1 ml-4" />
-                        <div className="flex-1">
-                          {user?.address ? (
-                            <div className="space-y-2">
-                              <p className="text-gray-900 text-lg font-medium">
-                                {user.address.city && `${user.address.city}, `}
-                                {user.address.district && `${user.address.district}, `}
-                                {user.address.area && user.address.area}
-                              </p>
-                              {user.address.landmark && (
-                                <p className="text-gray-600 text-sm">
-                                  <span className="font-medium">قرب:</span> {user.address.landmark}
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="text-center py-4">
-                              <p className="text-gray-500 text-lg mb-3">لم يتم إضافة عنوان</p>
-                              <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                                إضافة عنوان
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">الاسم الكامل</label>
+                      {isEditingProfile ? (
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => handleFormChange('name', e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium text-lg">{user?.name || 'غير متوفر'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">البريد الإلكتروني</label>
+                      {isEditingProfile ? (
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => handleFormChange('email', e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium text-lg">{user?.email || 'غير متوفر'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">رقم الهاتف</label>
+                      {isEditingProfile ? (
+                        <input
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => handleFormChange('phone', e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium text-lg">{user?.phone || 'غير متوفر'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">تاريخ الاشتراك</label>
+                      <p className="text-gray-900 font-medium text-lg">
+                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-SA') : 'مؤخراً'}
+                      </p>
                     </div>
                   </div>
                 </div>
 
+                {/* Address Section */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-blue-600" />
+                        العنوان الرئيسي
+                      </h3>
+                    </div>
+                    <button className="flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+                      <Plus className="w-4 h-4" />
+                      إضافة عنوان
+                    </button>
+                  </div>
+
+                  {user?.address ? (
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 space-y-3">
+                      <div>
+                        <p className="text-xs text-gray-600 font-semibold">الشارع</p>
+                        <p className="text-gray-900 font-medium">{user.address.street || 'غير محدد'}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-gray-600 font-semibold">المدينة</p>
+                          <p className="text-gray-900 font-medium">{user.address.city || 'غير محدد'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 font-semibold">المنطقة</p>
+                          <p className="text-gray-900 font-medium">{user.address.district || 'غير محدد'}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600 font-semibold">الرمز البريدي</p>
+                        <p className="text-gray-900 font-medium">{user.address.postalCode || 'غير محدد'}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
+                      <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-600 mb-4">لم يتم إضافة عنوان حتى الآن</p>
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        إضافة عنوان الآن
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Loyalty Program */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-8">
-                    برنامج الولاء
-                  </h2>
-                  
-                  {/* Points Display */}
-                  <div className={`bg-gradient-to-r ${levelProgress.color} rounded-2xl p-8 text-white mb-8 shadow-lg`}>
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                      <div className="text-center md:text-right mb-6 md:mb-0">
-                        <p className="text-sm opacity-90 mb-2">رصيد النقاط</p>
-                        <p className="text-5xl font-bold mb-2">{user?.points || 0}</p>
-                        <div className="flex items-center justify-center md:justify-start">
-                          <TrendingUp className="w-5 h-5 ml-2" />
-                          <span className="text-sm">+5 نقاط هذا الشهر</span>
-                        </div>
-                      </div>
-                      <div className="text-center md:text-left">
-                        <p className="text-sm opacity-90 mb-2">مستواك الحالي</p>
-                        <div className="flex items-center justify-center md:justify-start">
-                          {getLevelIcon(user?.membershipLevel || 'bronze')}
-                          <p className="text-3xl font-bold mr-3">
-                            {user?.membershipLevel === 'bronze' ? 'برونزي' :
-                             user?.membershipLevel === 'silver' ? 'فضي' :
-                             user?.membershipLevel === 'gold' ? 'ذهبي' : 'بلاتينيوم'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-lg p-6 sm:p-8 text-white overflow-hidden relative">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20" />
+                  <div className="relative z-10">
+                    <h2 className="text-2xl font-bold mb-2">برنامج الولاء والمكافآت</h2>
+                    <p className="text-white/80 text-sm mb-8">اربح نقاطاً على كل عملية شراء وارتقِ بين مستويات العضوية</p>
 
-                  {/* Level Progress */}
-                  <div className="mb-8">
-                    <div className="flex justify-between text-sm text-gray-600 mb-4">
-                      <span className="font-medium">
-                        {levelProgress.nextLevel ? 
-                          `التقدم للوصول إلى المستوى ${levelProgress.nextLevel === 'silver' ? 'الفضي' :
-                           levelProgress.nextLevel === 'gold' ? 'الذهبي' : 'البلاتينيوم'}` 
-                          : 'لقد وصلت إلى أعلى مستوى!'}
-                      </span>
-                      <span className="font-semibold">{user?.totalOrders || 0} طلبات مكتملة</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                        <p className="text-white/70 text-xs mb-1">النقاط الحالية</p>
+                        <p className="text-3xl font-bold">{user?.points || 0}</p>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                        <p className="text-white/70 text-xs mb-1">الطلبات</p>
+                        <p className="text-3xl font-bold">{user?.totalOrders || 0}</p>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                        <p className="text-white/70 text-xs mb-1">المستوى</p>
+                        <p className="text-xl font-bold capitalize">{levelBadge.label}</p>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                        <p className="text-white/70 text-xs mb-1">النسبة</p>
+                        <p className="text-xl font-bold">{Math.floor(levelProgress.progress)}%</p>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-4 mb-3 shadow-inner">
-                      <div 
-                        className={`h-4 rounded-full bg-gradient-to-r ${levelProgress.color} transition-all duration-1000 ease-out shadow-lg`}
-                        style={{ width: `${levelProgress.progress}%` }}
-                      ></div>
-                    </div>
-                    {levelProgress.nextLevel && (
-                      <p className="text-sm text-gray-600 text-center">
-                        تحتاج {levelProgress.needed} طلباً إضافياً للترقية
-                      </p>
-                    )}
-                  </div>
 
-                  {/* Benefits Grid */}
-                  <div className="mt-8">
-                    <h3 className="font-bold text-xl text-gray-900 mb-6 text-center">مزايا العضوية الحصرية</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 text-center border border-blue-100">
-                        <Star className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-                        <h4 className="font-semibold text-blue-700 mb-2">نقاط مكافآت</h4>
-                        <p className="text-sm text-gray-600">اربح نقاطاً على كل عملية شراء</p>
+                    <div>
+                      <p className="text-sm text-white/80 mb-3">التقدم للمستوى التالي</p>
+                      <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-yellow-400 to-yellow-300 transition-all duration-1000"
+                          style={{ width: `${levelProgress.progress}%` }}
+                        />
                       </div>
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 text-center border border-green-100">
-                        <CreditCard className="w-8 h-8 text-green-500 mx-auto mb-3" />
-                        <h4 className="font-semibold text-green-700 mb-2">خصومات حصرية</h4>
-                        <p className="text-sm text-gray-600">عروض خاصة لأعضاء البرنامج</p>
-                      </div>
-                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 text-center border border-purple-100">
-                        <User className="w-8 h-8 text-purple-500 mx-auto mb-3" />
-                        <h4 className="font-semibold text-purple-700 mb-2">دعم مميز</h4>
-                        <p className="text-sm text-gray-600">أولوية في خدمة العملاء</p>
-                      </div>
-                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 text-center border border-amber-100">
-                        <Package className="w-8 h-8 text-amber-500 mx-auto mb-3" />
-                        <h4 className="font-semibold text-amber-700 mb-2">وصول مبكر</h4>
-                        <p className="text-sm text-gray-600">للمنتجات والعروض الجديدة</p>
-                      </div>
+                      {levelProgress.nextLevel && (
+                        <p className="text-xs text-white/70 mt-2">
+                          {levelProgress.needed} طلب إضافي للوصول للمستوى التالي
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1174,85 +2303,66 @@ const Account: React.FC = () => {
             )}
 
             {activeTab === 'orders' && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-8">
-                  سجل الطلبات
-                </h2>
-                
+              <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-8">سجل الطلبات</h2>
+
                 {ordersLoading ? (
                   <div className="text-center py-16">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <div className="text-gray-500 text-lg">جاري تحميل الطلبات...</div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+                    <p className="text-gray-600">جاري تحميل الطلبات...</p>
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="text-center py-16">
-                    <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-                    <h3 className="text-2xl font-semibold text-gray-700 mb-4">لا توجد طلبات بعد</h3>
-                    <p className="text-gray-500 text-lg mb-8">ابدأ رحلة التسوق لاكتشاف منتجاتنا المميزة</p>
-                    <button 
+                    <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">لا توجد طلبات</h3>
+                    <p className="text-gray-600 mb-6">ابدأ التسوق الآن واستمتع بمزايا العضوية</p>
+                    <button
                       onClick={() => navigate('/products')}
-                      className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300"
+                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
-      ابدأ التسوق الآن
+                      ابدأ التسوق
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    {orders.map((order) => (
-                      <div key={order.id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 group">
-                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
-                          <div className="flex-1 mb-4 lg:mb-0">
-                            <h3 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                              طلب #{order.order_number}
-                            </h3>
-                            <div className="flex items-center text-gray-600">
-                              <Calendar className="w-4 h-4 ml-2" />
-                              <span className="text-sm">
-                                {new Date(order.created_at).toLocaleDateString('ar-SA', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric'
-                                })}
+                  <div className="space-y-4">
+                    {orders.map(order => (
+                      <div
+                        key={order.id}
+                        className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300 hover:border-blue-300"
+                      >
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                          <div className="flex-1">
+                            <h4 className="font-bold text-gray-900 text-lg mb-2">طلب #{order.order_number}</h4>
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className="text-sm text-gray-600 flex items-center gap-1">
+                                <Calendar className="w-4 h-4" />
+                                {new Date(order.created_at).toLocaleDateString('ar-SA')}
                               </span>
-                              <span className={`mx-3 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)} flex items-center`}>
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(order.status)}`}>
                                 {getStatusIcon(order.status)}
-                                <span className="mr-1">
-                                  {order.status === 'delivered' ? 'تم التوصيل' :
-                                   order.status === 'cancelled' ? 'ملغي' :
-                                   order.status === 'shipped' ? 'قيد الشحن' : 'قيد المعالجة'}
-                                </span>
+                                {order.status === 'delivered' ? 'تم التوصيل' :
+                                 order.status === 'cancelled' ? 'ملغي' :
+                                 order.status === 'shipped' ? 'قيد الشحن' : 'قيد المعالجة'}
                               </span>
                             </div>
                           </div>
-                          <div className="text-left">
-                            <p className="font-bold text-2xl text-gray-900">
-                              {order.total_amount?.toLocaleString()} دينار
-                            </p>
-                            <p className="text-sm text-gray-600">{order.items?.length || 0} منتج</p>
+                          <div className="text-right">
+                            <p className="font-bold text-2xl text-gray-900">{order.total_amount?.toLocaleString()} دينار</p>
+                            <p className="text-sm text-gray-600">{order.items?.length || 0} منتجات</p>
                           </div>
                         </div>
-                        
-                        {order.items && (
-                          <div className="border-t pt-6">
-                            <div className="space-y-3">
-                              {order.items.slice(0, 3).map((item: any) => (
-                                <div key={item.id} className="flex items-center justify-between py-2">
-                                  <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                      <Package className="w-5 h-5 text-gray-400" />
-                                    </div>
-                                    <div>
-                                      <span className="font-medium text-gray-900">{item.name}</span>
-                                      <span className="text-sm text-gray-500 mr-3">× {item.quantity}</span>
-                                    </div>
-                                  </div>
+
+                        {order.items && order.items.length > 0 && (
+                          <div className="border-t pt-4">
+                            <div className="space-y-2">
+                              {order.items.slice(0, 2).map((item: any) => (
+                                <div key={item.id} className="flex justify-between items-center text-sm">
+                                  <span className="text-gray-700">{item.name} × {item.quantity}</span>
                                   <span className="font-semibold text-gray-900">{item.price?.toLocaleString()} دينار</span>
                                 </div>
                               ))}
-                              {order.items.length > 3 && (
-                                <p className="text-center text-gray-500 text-sm pt-2">
-                                  +{order.items.length - 3} منتجات أخرى
-                                </p>
+                              {order.items.length > 2 && (
+                                <p className="text-gray-500 text-sm">+{order.items.length - 2} منتجات أخرى</p>
                               )}
                             </div>
                           </div>
@@ -1265,109 +2375,60 @@ const Account: React.FC = () => {
             )}
 
             {activeTab === 'settings' && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-8">
-                  إعدادات الحساب
-                </h2>
-                
-                <div className="space-y-8">
-                  {/* Notification Settings */}
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                    <h3 className="font-bold text-xl text-gray-900 mb-6 flex items-center">
-                      <Bell className="w-6 h-6 ml-2 text-blue-600" />
-                      الإشعارات
-                    </h3>
-                    <div className="space-y-4">
-                      {[
-                        { label: 'تحديثات حالة الطلبات', defaultChecked: true },
-                        { label: 'العروض الترويجية والخصومات', defaultChecked: true },
-                        { label: 'توصيات المنتجات المخصصة', defaultChecked: false },
-                        { label: 'نشرة الأخبار الشهرية', defaultChecked: true }
-                      ].map((item, index) => (
-                        <label key={index} className="flex items-center p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-all duration-200 border border-white/50">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 ml-3 transform scale-125" 
-                            defaultChecked={item.defaultChecked} 
-                          />
-                          <span className="text-gray-700 font-medium flex-1">{item.label}</span>
-                        </label>
-                      ))}
-                    </div>
+              <div className="space-y-6">
+                {/* Notifications */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
+                    <Bell className="w-5 h-5 text-blue-600" />
+                    تفضيلات الإشعارات
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      'تحديثات حالة الطلبات',
+                      'العروض والخصومات',
+                      'المنتجات الجديدة',
+                      'النشرة البريدية'
+                    ].map((item, idx) => (
+                      <label key={idx} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                        <input type="checkbox" defaultChecked className="w-4 h-4" />
+                        <span className="mr-3 text-gray-700 font-medium">{item}</span>
+                      </label>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Privacy Settings */}
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
-                    <h3 className="font-bold text-xl text-gray-900 mb-6 flex items-center">
-                      <Shield className="w-6 h-6 ml-2 text-green-600" />
-                      الخصوصية والأمان
-                    </h3>
-                    <div className="space-y-4">
-                      {[
-                        { label: 'مشاركة البيانات لتحسين التجربة', description: 'مساعدتنا في تقديم تجربة تسوق أفضل', defaultChecked: true },
-                        { label: 'الملف الشخصي العام', description: 'جعل معلوماتك الظاهرة للآخرين', defaultChecked: false },
-                        { label: 'تخزين بيانات الدفع', description: 'حفظ طرق الدفع للمشتريات المستقبلية', defaultChecked: true }
-                      ].map((item, index) => (
-                        <label key={index} className="flex items-start p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-all duration-200 border border-white/50">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 ml-3 mt-1 transform scale-125" 
-                            defaultChecked={item.defaultChecked} 
-                          />
-                          <div className="flex-1 mr-3">
-                            <span className="text-gray-700 font-medium block">{item.label}</span>
-                            <span className="text-gray-500 text-sm">{item.description}</span>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Security Actions */}
-                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
-                    <h3 className="font-bold text-xl text-gray-900 mb-6">إجراءات الأمان</h3>
-                    <div className="space-y-4">
-                      {[
-                        { label: 'تغيير كلمة المرور', description: 'تحديث كلمة المرور الحالية', action: 'تغيير' },
-                        { label: 'إدارة الأجهزة المتصلة', description: 'عرض وجميع الأجهزة النشطة', action: 'عرض' },
-                        { label: 'نشاط تسجيل الدخول', description: 'سجل عمليات الدخول إلى حسابك', action: 'مراجعة' }
-                      ].map((item, index) => (
-                        <button key={index} className="w-full flex items-center justify-between p-4 bg-white/80 rounded-xl hover:bg-white transition-all duration-200 border border-white/50 text-right group">
-                          <div className="text-left">
-                            <span className="text-blue-600 text-sm font-medium group-hover:text-blue-700 transition-colors">
-                              {item.action}
-                            </span>
-                          </div>
-                          <div className="flex-1 mr-4">
-                            <span className="text-gray-700 font-medium block">{item.label}</span>
-                            <span className="text-gray-500 text-sm">{item.description}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Danger Zone */}
-                  <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6 border border-red-100">
-                    <h3 className="font-bold text-xl text-red-600 mb-6 flex items-center">
-                      <Trash2 className="w-6 h-6 ml-2 text-red-600" />
-                      منطقة الخطر
-                    </h3>
-                    <div className="space-y-4">
-                      <button className="w-full bg-white/80 text-red-600 px-6 py-4 rounded-xl text-right hover:bg-white transition-all duration-200 border border-red-200 group">
-                        <div className="flex items-center justify-between">
-                          <Trash2 className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
-                          <div className="flex-1 mr-4">
-                            <span className="font-bold text-lg block">حذف الحساب</span>
-                            <span className="text-red-500 text-sm">هذا الإجراء لا يمكن التراجع عنه</span>
-                          </div>
-                        </div>
+                {/* Security */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    الأمان والخصوصية
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'تغيير كلمة المرور', icon: 'كلمة مرور' },
+                      { label: 'المتصفحات النشطة', icon: 'متصفح' },
+                      { label: 'سجل الدخول', icon: 'سجل' }
+                    ].map((item, idx) => (
+                      <button key={idx} className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors text-right group">
+                        <span className="text-blue-600 font-medium text-sm group-hover:text-blue-700">تحديث</span>
+                        <span className="text-gray-700 font-medium">{item.label}</span>
                       </button>
-                      <p className="text-xs text-red-500 text-center">
-                        تحذير: سيتم حذف جميع بياناتك وطلباتك بشكل دائم ولا يمكن استعادتها.
-                      </p>
-                    </div>
+                    ))}
                   </div>
+                </div>
+
+                {/* Danger Zone */}
+                <div className="bg-red-50 border border-red-200 rounded-2xl shadow-lg p-6 sm:p-8">
+                  <h3 className="text-xl font-bold text-red-600 flex items-center gap-2 mb-6">
+                    <Trash2 className="w-5 h-5" />
+                    منطقة الخطر
+                  </h3>
+                  <button className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors font-medium">
+                    حذف الحساب بشكل دائم
+                  </button>
+                  <p className="text-xs text-red-600 mt-3 text-center">
+                    تحذير: هذا الإجراء لا يمكن التراجع عنه
+                  </p>
                 </div>
               </div>
             )}

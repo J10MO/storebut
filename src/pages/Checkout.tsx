@@ -1738,7 +1738,7 @@ const Checkout: React.FC = () => {
         total_amount: getTotalPrice(),
       };
 
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch('https://markt-x51r.onrender.com/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1780,14 +1780,14 @@ const Checkout: React.FC = () => {
   const deliveryAddress = getDeliveryAddress();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8" dir="rtl">
+    <div className="min-h-screen bg-gray-50 py-8 mb-15" dir="rtl">
       <div className="container mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">إتمام الطلب</h1>
           <p className="text-gray-600">أكمل بياناتك لإتمام عملية الشراء</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-15">
           {/* نموذج بيانات التوصيل */}
           <div className="lg:col-span-2 space-y-6">
             {/* معلومات المستلم */}

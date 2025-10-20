@@ -3510,8 +3510,1456 @@
 
 
 
+// // components/products/ProductCard.tsx
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Card,
+//   CardContent,
+//   CardFooter,
+//   CardHeader,
+// } from '../ui/card';
+// import { Button } from '../ui/button';
+// import { Badge } from '../ui/badge';
+// import type { Product } from '../../api/types/product.types';
+// import { useCart } from '../../hooks/useCart';
+// import { useFavorites } from '../../hooks/useFavorites';
+// import { useAuth } from '../../hooks/useAuth';
+// import ProductDetailDialog from './Product/Productdaialog';
+// import { ShoppingCart, Eye, Star, Package, Loader2, Heart } from 'lucide-react';
+// import { toast } from 'sonner';
+// import { useNavigate } from 'react-router-dom';
+
+// interface ProductCardProps {
+//   product: Product;
+//   variant?: 'vertical' | 'horizontal';
+// }
+
+// const ProductCard: React.FC<ProductCardProps> = ({ 
+//   product, 
+//   variant = 'vertical' 
+// }) => {
+//   const { addToCart, isLoading } = useCart();
+//   const { toggleFavorite, isFavorite } = useFavorites();
+//   const { isAuthenticated } = useAuth();
+//   const navigate = useNavigate();
+  
+//   const [isDialogOpen, setIsDialogOpen] = useState(false);
+//   const [isAddingToCart, setIsAddingToCart] = useState(false);
+//   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+//   const [imageError, setImageError] = useState(false);
+//   const [imageLoading, setImageLoading] = useState(true);
+
+//   const isWishlisted = isFavorite(product.id);
+
+//   const handleAddToCart = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+    
+//     if (!product.in_stock || isAddingToCart) return;
+
+//     try {
+//       setIsAddingToCart(true);
+//       await addToCart(product, 1);
+//       toast.success('تمت الإضافة إلى السلة!', {
+//         description: `${product.name_ar || product.name}`,
+//         duration: 3000,
+//       });
+//     } catch (error) {
+//       toast.error('فشل الإضافة إلى السلة', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     } finally {
+//       setIsAddingToCart(false);
+//     }
+//   };
+
+//   const handleViewDetails = () => {
+//     setIsDialogOpen(true);
+//   };
+
+//   const handleAddToCartFromDialog = async (product: Product, quantity: number) => {
+//     try {
+//       await addToCart(product, quantity);
+//       toast.success('تمت الإضافة إلى السلة!', {
+//         description: `${product.name_ar || product.name} | الكمية: ${quantity}`,
+//         duration: 3000,
+//       });
+//     } catch (error) {
+//       toast.error('فشل الإضافة إلى السلة', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     }
+//   };
+
+//   const toggleWishlist = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+    
+//     if (!isAuthenticated) {
+//       navigate('/login');
+//       return;
+//     }
+
+//     setIsFavoriteLoading(true);
+//     try {
+//       await toggleFavorite(product.id);
+//     } catch (error) {
+//       console.error('Error toggling favorite:', error);
+//       toast.error('فشل في العملية', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     } finally {
+//       setIsFavoriteLoading(false);
+//     }
+//   };
+
+//   const handleImageError = () => {
+//     setImageError(true);
+//     setImageLoading(false);
+//   };
+
+//   const handleImageLoad = () => {
+//     setImageError(false);
+//     setImageLoading(false);
+//   };
+
+//   const getFullImageUrl = (imageUrl: string | null) => {
+//     if (!imageUrl) return null;
+    
+//     if (imageUrl.startsWith('http')) {
+//       return imageUrl;
+//     }
+    
+//     if (imageUrl.startsWith('/')) {
+//       return `http://localhost:5000${imageUrl}`;
+//     }
+    
+//     return `http://localhost:5000/uploads/products/${imageUrl}`;
+//   };
+
+//   const fullImageUrl = getFullImageUrl(product.image_url);
+
+//   const renderStars = (rating: number) => {
+//     return Array.from({ length: 5 }, (_, index) => (
+//       <Star
+//         key={index}
+//         className={`w-3 h-3 ${
+//           index < Math.floor(rating)
+//             ? 'fill-yellow-400 text-yellow-400'
+//             : 'text-gray-300'
+//         }`}
+//       />
+//     ));
+//   };
+
+//   const formatPrice = (price: string) => {
+//     return parseFloat(price).toLocaleString('ar-IQ', {
+//       minimumFractionDigits: 2,
+//       maximumFractionDigits: 2
+//     });
+//   };
+
+//   // العرض الأفقي (List) - تصميم منظم
+//   if (variant === 'horizontal') {
+//     return (
+//       <>
+//         <Card className="flex flex-row hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl h-48 min-h-[192px]">
+//           {/* الصورة */}
+//           <div className="relative w-48 h-48 bg-gray-100 overflow-hidden flex-shrink-0 rounded-l-xl">
+//             {fullImageUrl && !imageError ? (
+//               <>
+//                 {imageLoading && (
+//                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+//                     <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+//                   </div>
+//                 )}
+//                 <img
+//                   src={fullImageUrl}
+//                   alt={product.name}
+//                   className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+//                     imageLoading ? 'opacity-0' : 'opacity-100'
+//                   }`}
+//                   loading="lazy"
+//                   onError={handleImageError}
+//                   onLoad={handleImageLoad}
+//                 />
+//               </>
+//             ) : (
+//               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+//                 {product.emoji_icon ? (
+//                   <span className="text-3xl">{product.emoji_icon}</span>
+//                 ) : (
+//                   <Package className="w-12 h-12 text-gray-400" />
+//                 )}
+//               </div>
+//             )}
+            
+//             {/* البادجات على الصورة */}
+//             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+//               {product.badge && (
+//                 <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
+//                   {product.badge}
+//                 </Badge>
+//               )}
+//               {product.discount > 0 && (
+//                 <Badge className="bg-red-600 text-white text-xs px-2 py-1">
+//                   {product.discount}% خصم
+//                 </Badge>
+//               )}
+//             </div>
+
+//             {/* زر المفضلة */}
+//             <button
+//               onClick={toggleWishlist}
+//               disabled={isFavoriteLoading}
+//               className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors disabled:opacity-50"
+//               title={isWishlisted ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+//             >
+//               <Heart
+//                 className={`w-4 h-4 transition-all ${
+//                   isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+//                 } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
+//               />
+//             </button>
+//           </div>
+
+//           {/* المحتوى */}
+//           <div className="flex-1 p-6 flex flex-col justify-between min-w-0">
+//             <div className="flex-1">
+//               <div className="flex justify-between items-start mb-2">
+//                 <h3 className="font-semibold text-lg line-clamp-2 text-gray-900 leading-tight flex-1 mr-3">
+//                   {product.name_ar || product.name}
+//                 </h3>
+//               </div>
+              
+//               <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+//                 {product.description || product.name}
+//               </p>
+              
+//               {/* التقييم */}
+//               <div className="flex items-center gap-2 mb-3">
+//                 <div className="flex items-center gap-1">
+//                   {renderStars(parseFloat(product.rating))}
+//                 </div>
+//                 <span className="text-sm text-gray-600">
+//                   {parseFloat(product.rating).toFixed(1)} ({product.reviews_count})
+//                 </span>
+//               </div>
+//             </div>
+
+//             <div className="flex items-center justify-between">
+//               <div className="flex items-center gap-3">
+//                 <span className="text-xl font-bold text-green-600">
+//                   {formatPrice(product.price)} د.ع
+//                 </span>
+//                 {product.discount > 0 && product.original_price && (
+//                   <span className="text-sm text-gray-400 line-through">
+//                     {formatPrice(product.original_price)} د.ع
+//                   </span>
+//                 )}
+//               </div>
+              
+//               <div className="flex items-center gap-2">
+//                 <Button
+//                   onClick={handleViewDetails}
+//                   variant="outline"
+//                   className="h-10 px-4 border-gray-300 hover:bg-gray-50"
+//                 >
+//                   <Eye className="w-4 h-4 ml-1" />
+//                   عرض
+//                 </Button>
+
+//                 <Button
+//                   onClick={handleAddToCart}
+//                   disabled={!product.in_stock || isAddingToCart || isLoading}
+//                   className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white"
+//                 >
+//                   {isAddingToCart ? (
+//                     <Loader2 className="w-4 h-4 animate-spin" />
+//                   ) : product.in_stock ? (
+//                     <ShoppingCart className="w-4 h-4" />
+//                   ) : (
+//                     'غير متوفر'
+//                   )}
+//                 </Button>
+//               </div>
+//             </div>
+//           </div>
+//         </Card>
+
+//         <ProductDetailDialog
+//           product={product}
+//           open={isDialogOpen}
+//           onOpenChange={setIsDialogOpen}
+//           onAddToCart={handleAddToCartFromDialog}
+//         />
+//       </>
+//     );
+//   }
+
+//   // العرض العمودي (Grid) - تصميم مضغوط
+//   return (
+//     <>
+//       <Card
+//         className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl flex flex-col h-full"
+//         onClick={handleViewDetails}
+//       >
+//         {/* البادجات */}
+//         <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+//           {product.badge && (
+//             <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
+//               {product.badge}
+//             </Badge>
+//           )}
+//           {product.discount > 0 && (
+//             <Badge className="bg-red-600 text-white text-xs px-2 py-1">
+//               {product.discount}% خصم
+//             </Badge>
+//           )}
+//         </div>
+
+//         {/* زر المفضلة */}
+//         <button
+//           onClick={toggleWishlist}
+//           disabled={isFavoriteLoading}
+//           className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors disabled:opacity-50"
+//           title={isWishlisted ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+//         >
+//           <Heart
+//             className={`w-4 h-4 transition-all ${
+//               isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+//             } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
+//           />
+//         </button>
+
+//         {/* حالة التوفر */}
+//         {!product.in_stock && (
+//           <div className="absolute top-12 right-2 z-10">
+//             <Badge variant="destructive" className="text-xs px-2 py-1">
+//               غير متوفر
+//             </Badge>
+//           </div>
+//         )}
+
+//         {/* صورة المنتج */}
+//         <div className="relative aspect-square bg-gray-100 overflow-hidden">
+//           {fullImageUrl && !imageError ? (
+//             <>
+//               {imageLoading && (
+//                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+//                   <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+//                 </div>
+//               )}
+//               <img
+//                 src={fullImageUrl}
+//                 alt={product.name}
+//                 className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+//                   imageLoading ? 'opacity-0' : 'opacity-100'
+//                 }`}
+//                 loading="lazy"
+//                 onError={handleImageError}
+//                 onLoad={handleImageLoad}
+//               />
+//             </>
+//           ) : (
+//             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+//               {product.emoji_icon ? (
+//                 <span className="text-3xl transition-transform duration-300 group-hover:scale-110 mb-2">
+//                   {product.emoji_icon}
+//                 </span>
+//               ) : (
+//                 <Package className="w-12 h-12 text-gray-400 mb-2" />
+//               )}
+//               <span className="text-xs text-gray-500 text-center">
+//                 {imageError ? 'خطأ في تحميل الصورة' : 'لا توجد صورة'}
+//               </span>
+//             </div>
+//           )}
+
+//           {/* زر العرض السريع */}
+//           <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+//             <Button
+//               size="sm"
+//               className="h-8 text-xs bg-black/70 text-white hover:bg-black/90 backdrop-blur-sm"
+//               onClick={(e) => {
+//                 e.stopPropagation();
+//                 handleViewDetails();
+//               }}
+//             >
+//               <Eye className="w-3 h-3 ml-1" />
+//               عرض سريع
+//             </Button>
+//           </div>
+//         </div>
+
+//         {/* محتوى البطاقة */}
+//         <CardHeader className="pb-3 px-4 pt-4 flex-1">
+//           <h3 className="font-semibold text-sm line-clamp-2 text-gray-900 leading-tight min-h-[2.5rem] mb-1">
+//             {product.name_ar || product.name}
+//           </h3>
+//           <p className="text-xs text-gray-600 line-clamp-1">
+//             {product.name}
+//           </p>
+//         </CardHeader>
+
+//         <CardContent className="pb-3 px-4 space-y-2 flex-1">
+//           {/* التقييم */}
+//           <div className="flex items-center gap-1">
+//             <div className="flex items-center gap-0.5">
+//               {renderStars(parseFloat(product.rating))}
+//             </div>
+//             <span className="text-xs text-gray-600">
+//               {parseFloat(product.rating).toFixed(1)}
+//             </span>
+//           </div>
+
+//           {/* السعر */}
+//           <div className="space-y-1">
+//             <div className="flex items-center gap-2">
+//               <span className="text-base font-bold text-green-600">
+//                 {formatPrice(product.price)} د.ع
+//               </span>
+//               {product.discount > 0 && product.original_price && (
+//                 <span className="text-xs text-gray-400 line-through">
+//                   {formatPrice(product.original_price)} د.ع
+//                 </span>
+//               )}
+//             </div>
+//             {product.discount > 0 && product.original_price && (
+//               <p className="text-xs text-red-600 font-medium">
+//                 وفر {formatPrice((parseFloat(product.original_price) - parseFloat(product.price)).toString())} د.ع
+//               </p>
+//             )}
+//           </div>
+//         </CardContent>
+
+//         <CardFooter className="pt-0 px-4 pb-4">
+//           <Button
+//             onClick={handleAddToCart}
+//             disabled={!product.in_stock || isAddingToCart || isLoading}
+//             className={`w-full h-9 text-sm transition-all duration-300 ${
+//               product.in_stock
+//                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
+//                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+//             }`}
+//           >
+//             {isAddingToCart ? (
+//               <>
+//                 <Loader2 className="w-4 h-4 ml-1 animate-spin" />
+//                 جاري الإضافة...
+//               </>
+//             ) : product.in_stock ? (
+//               <>
+//                 <ShoppingCart className="w-4 h-4 ml-1" />
+//                 أضف إلى السلة
+//               </>
+//             ) : (
+//               'غير متوفر'
+//             )}
+//           </Button>
+//         </CardFooter>
+//       </Card>
+
+//       {/* ديالوج تفاصيل المنتج */}
+//       <ProductDetailDialog
+//         product={product}
+//         open={isDialogOpen}
+//         onOpenChange={setIsDialogOpen}
+//         onAddToCart={handleAddToCartFromDialog}
+//       />
+//     </>
+//   );
+// };
+
+// export default ProductCard;
+
+
+
+
+// // components/products/ProductCard.tsx
+// import React, { useState } from 'react';
+// import {
+//   Card,
+//   CardContent,
+//   CardFooter,
+//   CardHeader,
+// } from '../ui/card';
+// import { Button } from '../ui/button';
+// import { Badge } from '../ui/badge';
+// import type { Product } from '../../api/types/product.types';
+// import { useCart } from '../../hooks/useCart';
+// import { useAuth } from '../../hooks/useAuth';
+// import ProductDetailDialog from './Product/Productdaialog';
+// import { ShoppingCart, Eye, Star, Package, Loader2, Heart } from 'lucide-react';
+// import { toast } from 'sonner';
+// import { useNavigate } from 'react-router-dom';
+
+// interface ProductCardProps {
+//   product: Product;
+//   variant?: 'vertical' | 'horizontal';
+//   isFavorite: boolean;
+//   onToggleFavorite: (productId: number) => Promise<boolean>;
+// }
+
+// const ProductCard: React.FC<ProductCardProps> = ({ 
+//   product, 
+//   variant = 'vertical',
+//   isFavorite,
+//   onToggleFavorite
+// }) => {
+//   const { addToCart, isLoading } = useCart();
+//   const { isAuthenticated } = useAuth();
+//   const navigate = useNavigate();
+  
+//   const [isDialogOpen, setIsDialogOpen] = useState(false);
+//   const [isAddingToCart, setIsAddingToCart] = useState(false);
+//   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+//   const [imageError, setImageError] = useState(false);
+//   const [imageLoading, setImageLoading] = useState(true);
+
+//   const handleAddToCart = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+    
+//     if (!product.in_stock || isAddingToCart) return;
+
+//     try {
+//       setIsAddingToCart(true);
+//       await addToCart(product, 1);
+//       toast.success('تمت الإضافة إلى السلة!', {
+//         description: `${product.name_ar || product.name}`,
+//         duration: 3000,
+//       });
+//     } catch (error) {
+//       toast.error('فشل الإضافة إلى السلة', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     } finally {
+//       setIsAddingToCart(false);
+//     }
+//   };
+
+//   const handleViewDetails = () => {
+//     setIsDialogOpen(true);
+//   };
+
+//   const handleAddToCartFromDialog = async (product: Product, quantity: number) => {
+//     try {
+//       await addToCart(product, quantity);
+//       toast.success('تمت الإضافة إلى السلة!', {
+//         description: `${product.name_ar || product.name} | الكمية: ${quantity}`,
+//         duration: 3000,
+//       });
+//     } catch (error) {
+//       toast.error('فشل الإضافة إلى السلة', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     }
+//   };
+
+//   const toggleWishlist = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+    
+//     if (!isAuthenticated) {
+//       navigate('/login');
+//       return;
+//     }
+
+//     setIsFavoriteLoading(true);
+//     try {
+//       await onToggleFavorite(product.id);
+//       toast.success(
+//         isFavorite ? 'تمت الإزالة من المفضلة' : 'تمت الإضافة إلى المفضلة',
+//         {
+//           description: product.name_ar || product.name,
+//           duration: 2000,
+//         }
+//       );
+//     } catch (error) {
+//       console.error('Error toggling favorite:', error);
+//       toast.error('فشل في العملية', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     } finally {
+//       setIsFavoriteLoading(false);
+//     }
+//   };
+
+//   const handleImageError = () => {
+//     setImageError(true);
+//     setImageLoading(false);
+//   };
+
+//   const handleImageLoad = () => {
+//     setImageError(false);
+//     setImageLoading(false);
+//   };
+
+//   const getFullImageUrl = (imageUrl: string | null) => {
+//     if (!imageUrl) return null;
+    
+//     if (imageUrl.startsWith('http')) {
+//       return imageUrl;
+//     }
+    
+//     if (imageUrl.startsWith('/')) {
+//       return `http://localhost:5000${imageUrl}`;
+//     }
+    
+//     return `http://localhost:5000/uploads/products/${imageUrl}`;
+//   };
+
+//   const fullImageUrl = getFullImageUrl(product.image_url);
+
+//   const renderStars = (rating: number) => {
+//     return Array.from({ length: 5 }, (_, index) => (
+//       <Star
+//         key={index}
+//         className={`w-3 h-3 ${
+//           index < Math.floor(rating)
+//             ? 'fill-yellow-400 text-yellow-400'
+//             : 'text-gray-300'
+//         }`}
+//       />
+//     ));
+//   };
+
+//   const formatPrice = (price: string) => {
+//     return parseFloat(price).toLocaleString('ar-IQ', {
+//       minimumFractionDigits: 2,
+//       maximumFractionDigits: 2
+//     });
+//   };
+
+//   // العرض الأفقي (List)
+//   if (variant === 'horizontal') {
+//     return (
+//       <>
+//         <Card className="flex flex-row hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl h-48 min-h-[192px]">
+//           {/* الصورة */}
+//           <div className="relative w-48 h-48 bg-gray-100 overflow-hidden flex-shrink-0 rounded-l-xl">
+//             {fullImageUrl && !imageError ? (
+//               <>
+//                 {imageLoading && (
+//                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+//                     <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+//                   </div>
+//                 )}
+//                 <img
+//                   src={fullImageUrl}
+//                   alt={product.name}
+//                   className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+//                     imageLoading ? 'opacity-0' : 'opacity-100'
+//                   }`}
+//                   loading="lazy"
+//                   onError={handleImageError}
+//                   onLoad={handleImageLoad}
+//                 />
+//               </>
+//             ) : (
+//               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+//                 {product.emoji_icon ? (
+//                   <span className="text-3xl">{product.emoji_icon}</span>
+//                 ) : (
+//                   <Package className="w-12 h-12 text-gray-400" />
+//                 )}
+//               </div>
+//             )}
+            
+//             {/* البادجات */}
+//             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+//               {product.badge && (
+//                 <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
+//                   {product.badge}
+//                 </Badge>
+//               )}
+//               {product.discount > 0 && (
+//                 <Badge className="bg-red-600 text-white text-xs px-2 py-1">
+//                   {product.discount}% خصم
+//                 </Badge>
+//               )}
+//             </div>
+
+//             {/* زر المفضلة */}
+//             <button
+//               onClick={toggleWishlist}
+//               disabled={isFavoriteLoading}
+//               className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors disabled:opacity-50"
+//               title={isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+//             >
+//               <Heart
+//                 className={`w-4 h-4 transition-all ${
+//                   isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+//                 } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
+//               />
+//             </button>
+//           </div>
+
+//           {/* المحتوى */}
+//           <div className="flex-1 p-6 flex flex-col justify-between min-w-0">
+//             <div className="flex-1">
+//               <div className="flex justify-between items-start mb-2">
+//                 <h3 className="font-semibold text-lg line-clamp-2 text-gray-900 leading-tight flex-1 mr-3">
+//                   {product.name_ar || product.name}
+//                 </h3>
+//               </div>
+              
+//               <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+//                 {product.description || product.name}
+//               </p>
+              
+//               {/* التقييم */}
+//               <div className="flex items-center gap-2 mb-3">
+//                 <div className="flex items-center gap-1">
+//                   {renderStars(parseFloat(product.rating))}
+//                 </div>
+//                 <span className="text-sm text-gray-600">
+//                   {parseFloat(product.rating).toFixed(1)} ({product.reviews_count})
+//                 </span>
+//               </div>
+//             </div>
+
+//             <div className="flex items-center justify-between">
+//               <div className="flex items-center gap-3">
+//                 <span className="text-xl font-bold text-green-600">
+//                   {formatPrice(product.price)} د.ع
+//                 </span>
+//                 {product.discount > 0 && product.original_price && (
+//                   <span className="text-sm text-gray-400 line-through">
+//                     {formatPrice(product.original_price)} د.ع
+//                   </span>
+//                 )}
+//               </div>
+              
+//               <div className="flex items-center gap-2">
+//                 <Button
+//                   onClick={handleViewDetails}
+//                   variant="outline"
+//                   className="h-10 px-4 border-gray-300 hover:bg-gray-50"
+//                 >
+//                   <Eye className="w-4 h-4 ml-1" />
+//                   عرض
+//                 </Button>
+
+//                 <Button
+//                   onClick={handleAddToCart}
+//                   disabled={!product.in_stock || isAddingToCart || isLoading}
+//                   className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white"
+//                 >
+//                   {isAddingToCart ? (
+//                     <Loader2 className="w-4 h-4 animate-spin" />
+//                   ) : product.in_stock ? (
+//                     <ShoppingCart className="w-4 h-4" />
+//                   ) : (
+//                     'غير متوفر'
+//                   )}
+//                 </Button>
+//               </div>
+//             </div>
+//           </div>
+//         </Card>
+
+//         <ProductDetailDialog
+//           product={product}
+//           open={isDialogOpen}
+//           onOpenChange={setIsDialogOpen}
+//           onAddToCart={handleAddToCartFromDialog}
+//         />
+//       </>
+//     );
+//   }
+
+//   // العرض العمودي (Grid)
+//   return (
+//     <>
+//       <Card
+//         className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl flex flex-col h-full"
+//         onClick={handleViewDetails}
+//       >
+//         {/* البادجات */}
+//         <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+//           {product.badge && (
+//             <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
+//               {product.badge}
+//             </Badge>
+//           )}
+//           {product.discount > 0 && (
+//             <Badge className="bg-red-600 text-white text-xs px-2 py-1">
+//               {product.discount}% خصم
+//             </Badge>
+//           )}
+//         </div>
+
+//         {/* زر المفضلة */}
+//         <button
+//           onClick={toggleWishlist}
+//           disabled={isFavoriteLoading}
+//           className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors disabled:opacity-50"
+//           title={isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+//         >
+//           <Heart
+//             className={`w-4 h-4 transition-all ${
+//               isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+//             } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
+//           />
+//         </button>
+
+//         {/* حالة التوفر */}
+//         {!product.in_stock && (
+//           <div className="absolute top-12 right-2 z-10">
+//             <Badge variant="destructive" className="text-xs px-2 py-1">
+//               غير متوفر
+//             </Badge>
+//           </div>
+//         )}
+
+//         {/* صورة المنتج */}
+//         <div className="relative aspect-square bg-gray-100 overflow-hidden">
+//           {fullImageUrl && !imageError ? (
+//             <>
+//               {imageLoading && (
+//                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+//                   <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+//                 </div>
+//               )}
+//               <img
+//                 src={fullImageUrl}
+//                 alt={product.name}
+//                 className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+//                   imageLoading ? 'opacity-0' : 'opacity-100'
+//                 }`}
+//                 loading="lazy"
+//                 onError={handleImageError}
+//                 onLoad={handleImageLoad}
+//               />
+//             </>
+//           ) : (
+//             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+//               {product.emoji_icon ? (
+//                 <span className="text-3xl transition-transform duration-300 group-hover:scale-110 mb-2">
+//                   {product.emoji_icon}
+//                 </span>
+//               ) : (
+//                 <Package className="w-12 h-12 text-gray-400 mb-2" />
+//               )}
+//               <span className="text-xs text-gray-500 text-center">
+//                 {imageError ? 'خطأ في تحميل الصورة' : 'لا توجد صورة'}
+//               </span>
+//             </div>
+//           )}
+
+//           {/* زر العرض السريع */}
+//           <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+//             <Button
+//               size="sm"
+//               className="h-8 text-xs bg-black/70 text-white hover:bg-black/90 backdrop-blur-sm"
+//               onClick={(e) => {
+//                 e.stopPropagation();
+//                 handleViewDetails();
+//               }}
+//             >
+//               <Eye className="w-3 h-3 ml-1" />
+//               عرض سريع
+//             </Button>
+//           </div>
+//         </div>
+
+//         {/* محتوى البطاقة */}
+//         <CardHeader className="pb-3 px-4 pt-4 flex-1">
+//           <h3 className="font-semibold text-sm line-clamp-2 text-gray-900 leading-tight min-h-[2.5rem] mb-1">
+//             {product.name_ar || product.name}
+//           </h3>
+//           <p className="text-xs text-gray-600 line-clamp-1">
+//             {product.name}
+//           </p>
+//         </CardHeader>
+
+//         <CardContent className="pb-3 px-4 space-y-2 flex-1">
+//           {/* التقييم */}
+//           <div className="flex items-center gap-1">
+//             <div className="flex items-center gap-0.5">
+//               {renderStars(parseFloat(product.rating))}
+//             </div>
+//             <span className="text-xs text-gray-600">
+//               {parseFloat(product.rating).toFixed(1)}
+//             </span>
+//           </div>
+
+//           {/* السعر */}
+//           <div className="space-y-1">
+//             <div className="flex items-center gap-2">
+//               <span className="text-base font-bold text-green-600">
+//                 {formatPrice(product.price)} د.ع
+//               </span>
+//               {product.discount > 0 && product.original_price && (
+//                 <span className="text-xs text-gray-400 line-through">
+//                   {formatPrice(product.original_price)} د.ع
+//                 </span>
+//               )}
+//             </div>
+//             {product.discount > 0 && product.original_price && (
+//               <p className="text-xs text-red-600 font-medium">
+//                 وفر {formatPrice((parseFloat(product.original_price) - parseFloat(product.price)).toString())} د.ع
+//               </p>
+//             )}
+//           </div>
+//         </CardContent>
+
+//         <CardFooter className="pt-0 px-4 pb-4">
+//           <Button
+//             onClick={handleAddToCart}
+//             disabled={!product.in_stock || isAddingToCart || isLoading}
+//             className={`w-full h-9 text-sm transition-all duration-300 ${
+//               product.in_stock
+//                 ? 'bg-blue-600 hover:bg-blue-700 text-white'
+//                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+//             }`}
+//           >
+//             {isAddingToCart ? (
+//               <>
+//                 <Loader2 className="w-4 h-4 ml-1 animate-spin" />
+//                 جاري الإضافة...
+//               </>
+//             ) : product.in_stock ? (
+//               <>
+//                 <ShoppingCart className="w-4 h-4 ml-1" />
+//                 أضف إلى السلة
+//               </>
+//             ) : (
+//               'غير متوفر'
+//             )}
+//           </Button>
+//         </CardFooter>
+//       </Card>
+
+//       {/* ديالوج تفاصيل المنتج */}
+//       <ProductDetailDialog
+//         product={product}
+//         open={isDialogOpen}
+//         onOpenChange={setIsDialogOpen}
+//         onAddToCart={handleAddToCartFromDialog}
+//       />
+//     </>
+//   );
+// };
+
+// export default ProductCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // components/products/ProductCard.tsx
+// import React, { useState } from 'react';
+// import {
+//   Card,
+//   CardContent,
+//   CardFooter,
+//   CardHeader,
+// } from '../ui/card';
+// import { Button } from '../ui/button';
+// import { Badge } from '../ui/badge';
+// import type { Product } from '../../api/types/product.types';
+// import { useCart } from '../../hooks/useCart';
+// import { useAuth } from '../../hooks/useAuth';
+// import ProductDetailDialog from './Product/Productdaialog';
+// import { ShoppingCart, Eye, Star, Package, Loader2, Heart } from 'lucide-react';
+// import { toast } from 'sonner';
+// import { useNavigate } from 'react-router-dom';
+
+// interface ProductCardProps {
+//   product: Product;
+//   variant?: 'vertical' | 'horizontal';
+//   isFavorite: boolean;
+//   onToggleFavorite: (productId: number) => Promise<boolean>;
+// }
+
+// const ProductCard: React.FC<ProductCardProps> = ({ 
+//   product, 
+//   variant = 'vertical',
+//   isFavorite,
+//   onToggleFavorite
+// }) => {
+//   const { addToCart, isLoading } = useCart();
+//   const { isAuthenticated } = useAuth();
+//   const navigate = useNavigate();
+  
+//   const [isDialogOpen, setIsDialogOpen] = useState(false);
+//   const [isAddingToCart, setIsAddingToCart] = useState(false);
+//   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+//   const [imageError, setImageError] = useState(false);
+//   const [imageLoading, setImageLoading] = useState(true);
+
+//   const handleAddToCart = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+    
+//     if (!product.in_stock || isAddingToCart) return;
+
+//     try {
+//       setIsAddingToCart(true);
+//       await addToCart(product, 1);
+//       toast.success('تمت الإضافة إلى السلة!', {
+//         description: `${product.name_ar || product.name}`,
+//         duration: 3000,
+//       });
+//     } catch (error) {
+//       toast.error('فشل الإضافة إلى السلة', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     } finally {
+//       setIsAddingToCart(false);
+//     }
+//   };
+
+//   const handleViewDetails = () => {
+//     setIsDialogOpen(true);
+//   };
+
+//   const handleAddToCartFromDialog = async (product: Product, quantity: number) => {
+//     try {
+//       await addToCart(product, quantity);
+//       toast.success('تمت الإضافة إلى السلة!', {
+//         description: `${product.name_ar || product.name} | الكمية: ${quantity}`,
+//         duration: 3000,
+//       });
+//     } catch (error) {
+//       toast.error('فشل الإضافة إلى السلة', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     }
+//   };
+
+//   const toggleWishlist = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+    
+//     if (!isAuthenticated) {
+//       navigate('/login');
+//       return;
+//     }
+
+//     setIsFavoriteLoading(true);
+//     try {
+//       await onToggleFavorite(product.id);
+//       toast.success(
+//         isFavorite ? 'تمت الإزالة من المفضلة' : 'تمت الإضافة إلى المفضلة',
+//         {
+//           description: product.name_ar || product.name,
+//           duration: 2000,
+//         }
+//       );
+//     } catch (error) {
+//       console.error('Error toggling favorite:', error);
+//       toast.error('فشل في العملية', {
+//         description: 'يرجى المحاولة مرة أخرى.',
+//         duration: 3000,
+//       });
+//     } finally {
+//       setIsFavoriteLoading(false);
+//     }
+//   };
+
+//   const handleImageError = () => {
+//     setImageError(true);
+//     setImageLoading(false);
+//   };
+
+//   const handleImageLoad = () => {
+//     setImageError(false);
+//     setImageLoading(false);
+//   };
+
+//   const getFullImageUrl = (imageUrl: string | null) => {
+//     if (!imageUrl) return null;
+    
+//     if (imageUrl.startsWith('http')) {
+//       return imageUrl;
+//     }
+    
+//     if (imageUrl.startsWith('/')) {
+//       return `http://localhost:5000${imageUrl}`;
+//     }
+    
+//     return `http://localhost:5000/uploads/products/${imageUrl}`;
+//   };
+
+//   const fullImageUrl = getFullImageUrl(product.image_url);
+
+//   const renderStars = (rating: number) => {
+//     return Array.from({ length: 5 }, (_, index) => (
+//       <Star
+//         key={index}
+//         className={`w-3 h-3 ${
+//           index < Math.floor(rating)
+//             ? 'fill-yellow-400 text-yellow-400'
+//             : 'text-gray-300'
+//         }`}
+//       />
+//     ));
+//   };
+
+//   const formatPrice = (price: string) => {
+//     return parseInt(price).toLocaleString('ar-IQ', {
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     });
+//   };
+
+//   const calculateDiscount = () => {
+//     if (product.discount > 0 && product.original_price) {
+//       const original = parseFloat(product.original_price);
+//       const current = parseFloat(product.price);
+//       return original - current;
+//     }
+//     return 0;
+//   };
+
+//   // العرض الأفقي (List)
+//   if (variant === 'horizontal') {
+//     return (
+//       <>
+//         <Card className="group flex flex-row hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-gray-200 bg-white rounded-2xl overflow-hidden h-40">
+//           {/* الصورة - حجم ثابت */}
+//           <div className="relative w-40 h-40 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden flex-shrink-0">
+//             {fullImageUrl && !imageError ? (
+//               <>
+//                 {imageLoading && (
+//                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+//                     <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+//                   </div>
+//                 )}
+//                 <img
+//                   src={fullImageUrl}
+//                   alt={product.name}
+//                   className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${
+//                     imageLoading ? 'opacity-0' : 'opacity-100'
+//                   }`}
+//                   loading="lazy"
+//                   onError={handleImageError}
+//                   onLoad={handleImageLoad}
+//                 />
+//               </>
+//             ) : (
+//               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+//                 {product.emoji_icon ? (
+//                   <span className="text-3xl">{product.emoji_icon}</span>
+//                 ) : (
+//                   <Package className="w-12 h-12 text-gray-400" />
+//                 )}
+//               </div>
+//             )}
+            
+//             {/* البادجات */}
+//             <div className="absolute top-3 left-3 flex flex-col gap-2">
+//               {product.badge && (
+//                 <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2 py-1 rounded-full shadow-lg border-0">
+//                   {product.badge}
+//                 </Badge>
+//               )}
+//               {product.discount > 0 && (
+//                 <Badge className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs px-2 py-1 rounded-full shadow-lg border-0">
+//                   {product.discount}%
+//                 </Badge>
+//               )}
+//             </div>
+
+//             {/* زر المفضلة */}
+//             <button
+//               onClick={toggleWishlist}
+//               disabled={isFavoriteLoading}
+//               className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 disabled:opacity-50"
+//             >
+//               <Heart
+//                 className={`w-4 h-4 transition-all ${
+//                   isFavorite 
+//                     ? 'fill-red-500 text-red-500 scale-110' 
+//                     : 'text-gray-600 group-hover:text-red-400'
+//                 } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
+//               />
+//             </button>
+//           </div>
+
+//           {/* المحتوى - حجم ثابت */}
+//           <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+//             <div className="flex-1 min-h-0">
+//               <h3 className="font-bold text-base line-clamp-2 text-gray-900 leading-tight text-right h-12 mb-2">
+//                 {product.name_ar || product.name}
+//               </h3>
+              
+//               {/* التقييم - حجم ثابت */}
+//               <div className="flex items-center gap-2 mb-3 justify-end h-6">
+//                 <span className="text-xs text-gray-600 whitespace-nowrap">
+//                   ({product.reviews_count})
+//                 </span>
+//                 <span className="text-xs text-gray-600 whitespace-nowrap">
+//                   {parseFloat(product.rating).toFixed(1)}
+//                 </span>
+//                 <div className="flex items-center gap-0.5">
+//                   {renderStars(parseFloat(product.rating))}
+//                 </div>
+//               </div>
+
+//               {/* السعر - حجم ثابت */}
+//               <div className="space-y-1 text-right h-12 flex flex-col justify-center">
+//                 <div className="flex items-center gap-2 justify-end">
+//                   {product.discount > 0 && product.original_price && (
+//                     <span className="text-xs text-gray-400 line-through whitespace-nowrap">
+//                       {formatPrice(product.original_price)}
+//                     </span>
+//                   )}
+//                   <span className="text-lg font-bold text-green-600 whitespace-nowrap">
+//                     {formatPrice(product.price)} د.ع
+//                   </span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="flex items-center justify-between gap-2 h-9">
+//               <div className="flex-1">
+//                 {!product.in_stock && (
+//                   <Badge variant="destructive" className="text-xs px-2 py-1 bg-gray-500 border-0 whitespace-nowrap">
+//                     غير متوفر
+//                   </Badge>
+//                 )}
+//               </div>
+              
+//               <div className="flex items-center gap-2">
+//                 <Button
+//                   onClick={handleViewDetails}
+//                   variant="outline"
+//                   size="sm"
+//                   className="h-9 px-3 rounded-lg border-2 border-gray-200 hover:border-blue-500 text-gray-700 hover:text-blue-600 text-xs"
+//                 >
+//                   <Eye className="w-3 h-3 ml-1" />
+//                   عرض
+//                 </Button>
+//                 <Button
+//                   onClick={handleAddToCart}
+//                   disabled={!product.in_stock || isAddingToCart || isLoading}
+//                   className="h-9 px-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 text-xs whitespace-nowrap"
+//                 >
+//                   {isAddingToCart ? (
+//                     <Loader2 className="w-3 h-3 animate-spin" />
+//                   ) : product.in_stock ? (
+//                     <ShoppingCart className="w-3 h-3" />
+//                   ) : (
+//                     'غير متوفر'
+//                   )}
+//                 </Button>
+//               </div>
+//             </div>
+//           </div>
+//         </Card>
+
+//         <ProductDetailDialog
+//           product={product}
+//           open={isDialogOpen}
+//           onOpenChange={setIsDialogOpen}
+//           onAddToCart={handleAddToCartFromDialog}
+//         />
+//       </>
+//     );
+//   }
+
+//   // العرض العمودي (Grid)
+//   return (
+//     <>
+//       <Card
+//         className="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer border-2 border-gray-200/60 bg-white rounded-3xl shadow-lg hover:border-blue-200/80 flex flex-col h-full"
+//         onClick={() => handleViewDetails()}
+//       >
+//         {/* البادجات */}
+//         <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+//           {product.badge && (
+//             <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-3 py-1.5 rounded-full shadow-xl border-0 whitespace-nowrap">
+//               ⚡ {product.badge}
+//             </Badge>
+//           )}
+//           {product.discount > 0 && (
+//             <Badge className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs px-3 py-1.5 rounded-full shadow-xl border-0 whitespace-nowrap">
+//               🔥 {product.discount}%
+//             </Badge>
+//           )}
+//         </div>
+
+//         {/* زر المفضلة */}
+//         <button
+//           onClick={toggleWishlist}
+//           disabled={isFavoriteLoading}
+//           className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-white hover:scale-110 transition-all duration-300 border border-white/50 disabled:opacity-50"
+//         >
+//           <Heart
+//             className={`w-5 h-5 transition-all ${
+//               isFavorite 
+//                 ? 'fill-red-500 text-red-500 scale-110' 
+//                 : 'text-gray-600 group-hover:text-red-400'
+//             } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
+//           />
+//         </button>
+
+//         {/* حالة التوفر */}
+//         {!product.in_stock && (
+//           <div className="absolute top-16 right-4 z-10">
+//             <Badge className="text-xs px-3 py-1.5 bg-gray-500/90 text-white rounded-full shadow-lg border-0 backdrop-blur-sm whitespace-nowrap">
+//               غير متوفر
+//             </Badge>
+//           </div>
+//         )}
+
+//         {/* صورة المنتج - حجم ثابت */}
+//         <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden flex-shrink-0">
+//           {fullImageUrl && !imageError ? (
+//             <>
+//               {imageLoading && (
+//                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+//                   <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+//                 </div>
+//               )}
+//               <img
+//                 src={fullImageUrl}
+//                 alt={product.name}
+//                 className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${
+//                   imageLoading ? 'opacity-0' : 'opacity-100'
+//                 }`}
+//                 loading="lazy"
+//                 onError={handleImageError}
+//                 onLoad={handleImageLoad}
+//               />
+//             </>
+//           ) : (
+//             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+//               {product.emoji_icon ? (
+//                 <span className="text-6xl transition-transform duration-300 group-hover:scale-110 mb-2">
+//                   {product.emoji_icon}
+//                 </span>
+//               ) : (
+//                 <Package className="w-16 h-16 text-gray-400 mb-2" />
+//               )}
+//               <span className="text-xs text-gray-500 text-center">
+//                 {imageError ? 'خطأ في التحميل' : 'لا توجد صورة'}
+//               </span>
+//             </div>
+//           )}
+
+//           {/* طبقة hover */}
+//           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-500" />
+
+//           {/* زر العرض السريع */}
+//           <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+//             <Button
+//               size="sm"
+//               className="h-10 text-xs bg-black/80 hover:bg-black text-white backdrop-blur-sm border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+//               onClick={(e) => {
+//                 e.stopPropagation();
+//                 handleViewDetails();
+//               }}
+//             >
+//               <Eye className="w-4 h-4 ml-2" />
+//               عرض سريع
+//             </Button>
+//           </div>
+//         </div>
+
+//         {/* محتوى البطاقة - حجم ثابت */}
+//         <CardHeader className="pb-3 px-4 pt-4 flex-shrink-0">
+//           <h3 className="font-bold text-base line-clamp-2 text-gray-900 leading-tight h-14 text-right">
+//             {product.name_ar || product.name}
+//           </h3>
+//         </CardHeader>
+
+//         <CardContent className="pb-3 px-4 space-y-3 flex-shrink-0">
+//           {/* التقييم - حجم ثابت */}
+//           <div className="flex items-center gap-2 justify-end h-5">
+//             <span className="text-xs text-gray-600 whitespace-nowrap">
+//               ({product.reviews_count})
+//             </span>
+//             <span className="text-xs text-gray-600 whitespace-nowrap">
+//               {parseFloat(product.rating).toFixed(1)}
+//             </span>
+//             <div className="flex items-center gap-1">
+//               {renderStars(parseFloat(product.rating))}
+//             </div>
+//           </div>
+
+//           {/* السعر - حجم ثابت */}
+//        <div className="space-y-2 text-right h-20 flex flex-col justify-center" dir='rtl'>
+//   <div className="flex items-center gap-2 justify-end">
+//     {product.discount > 0 && product.original_price && (
+//       <span className="text-xs text-gray-400 line-through whitespace-nowrap">
+//         {formatPrice(product.original_price)}
+//       </span>
+//     )}
+//     <span className="text-xl font-bold text-green-600 whitespace-nowrap">
+//       {formatPrice(product.price)} د.ع
+//     </span>
+//   </div>
+//   {product.discount > 0 && product.original_price && (
+//     <p className="text-xs text-red-600 font-medium bg-red-50 px-3 py-1.5 rounded-full inline-block w-fit border border-red-100">
+//       وفر {formatPrice(calculateDiscount().toString())} د.ع
+//     </p>
+//   )}
+// </div>
+//         </CardContent>
+
+//         {/* الزر - حجم ثابت */}
+//         <CardFooter className="pt-0 px-4 pb-4 mt-auto flex-shrink-0">
+//           <Button
+//             onClick={handleAddToCart}
+//             disabled={!product.in_stock || isAddingToCart || isLoading}
+//             className={`w-full h-11 text-base transition-all duration-500 rounded-2xl font-bold shadow-lg hover:shadow-xl ${
+//               product.in_stock
+//                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white hover:scale-105'
+//                 : 'bg-gray-200 text-gray-500 cursor-not-allowed hover:scale-100'
+//             }`}
+//           >
+//             {isAddingToCart ? (
+//               <>
+//                 <Loader2 className="w-5 h-5 ml-2 animate-spin" />
+//                 جاري...
+//               </>
+//             ) : product.in_stock ? (
+//               <>
+//                 <ShoppingCart className="w-5 h-5 ml-2" />
+//                 أضف إلى السلة
+//               </>
+//             ) : (
+//               'غير متوفر'
+//             )}
+//           </Button>
+//         </CardFooter>
+//       </Card>
+
+//       <ProductDetailDialog
+//         product={product}
+//         open={isDialogOpen}
+//         onOpenChange={setIsDialogOpen}
+//         onAddToCart={handleAddToCartFromDialog}
+//       />
+//     </>
+//   );
+// };
+
+// export default ProductCard;
+
+
+
+
+
+
 // components/products/ProductCard.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -3522,7 +4970,6 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import type { Product } from '../../api/types/product.types';
 import { useCart } from '../../hooks/useCart';
-import { useFavorites } from '../../hooks/useFavorites';
 import { useAuth } from '../../hooks/useAuth';
 import ProductDetailDialog from './Product/Productdaialog';
 import { ShoppingCart, Eye, Star, Package, Loader2, Heart } from 'lucide-react';
@@ -3532,14 +4979,17 @@ import { useNavigate } from 'react-router-dom';
 interface ProductCardProps {
   product: Product;
   variant?: 'vertical' | 'horizontal';
+  isFavorite: boolean;
+  onToggleFavorite: (productId: number) => Promise<boolean>;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ 
   product, 
-  variant = 'vertical' 
+  variant = 'vertical',
+  isFavorite,
+  onToggleFavorite
 }) => {
   const { addToCart, isLoading } = useCart();
-  const { toggleFavorite, isFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
@@ -3548,8 +4998,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-
-  const isWishlisted = isFavorite(product.id);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -3602,7 +5050,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     setIsFavoriteLoading(true);
     try {
-      await toggleFavorite(product.id);
+      await onToggleFavorite(product.id);
+      toast.success(
+        isFavorite ? 'تمت الإزالة من المفضلة' : 'تمت الإضافة إلى المفضلة',
+        {
+          description: product.name_ar || product.name,
+          duration: 2000,
+        }
+      );
     } catch (error) {
       console.error('Error toggling favorite:', error);
       toast.error('فشل في العملية', {
@@ -3654,30 +5109,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const formatPrice = (price: string) => {
-    return parseFloat(price).toLocaleString('ar-IQ', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+    return parseInt(price).toLocaleString('ar-IQ', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     });
   };
 
-  // العرض الأفقي (List) - تصميم منظم
+  const calculateDiscount = () => {
+    if (product.discount > 0 && product.original_price) {
+      const original = parseFloat(product.original_price);
+      const current = parseFloat(product.price);
+      return original - current;
+    }
+    return 0;
+  };
+
+  // العرض الأفقي (List)
   if (variant === 'horizontal') {
     return (
       <>
-        <Card className="flex flex-row hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl h-48 min-h-[192px]">
-          {/* الصورة */}
-          <div className="relative w-48 h-48 bg-gray-100 overflow-hidden flex-shrink-0 rounded-l-xl">
+        <Card className="group flex flex-col sm:flex-row hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl sm:rounded-2xl overflow-hidden">
+          {/* الصورة - حجم ثابت */}
+          <div className="relative w-full sm:w-48 h-40 sm:h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden flex-shrink-0">
             {fullImageUrl && !imageError ? (
               <>
                 {imageLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                    <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                   </div>
                 )}
                 <img
                   src={fullImageUrl}
                   alt={product.name}
-                  className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                  className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${
                     imageLoading ? 'opacity-0' : 'opacity-100'
                   }`}
                   loading="lazy"
@@ -3688,23 +5152,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                 {product.emoji_icon ? (
-                  <span className="text-3xl">{product.emoji_icon}</span>
+                  <span className="text-4xl sm:text-3xl">{product.emoji_icon}</span>
                 ) : (
                   <Package className="w-12 h-12 text-gray-400" />
                 )}
               </div>
             )}
             
-            {/* البادجات على الصورة */}
-            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+            {/* البادجات */}
+            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 flex flex-col gap-1.5">
               {product.badge && (
-                <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
+                <Badge className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full shadow-md border-0">
                   {product.badge}
                 </Badge>
               )}
               {product.discount > 0 && (
-                <Badge className="bg-red-600 text-white text-xs px-2 py-1">
-                  {product.discount}% خصم
+                <Badge className="bg-red-500 text-white text-xs px-2 py-1 rounded-full shadow-md border-0">
+                  {product.discount}%
                 </Badge>
               )}
             </div>
@@ -3713,50 +5177,67 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               onClick={toggleWishlist}
               disabled={isFavoriteLoading}
-              className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors disabled:opacity-50"
-              title={isWishlisted ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+              className="absolute top-2 sm:top-3 right-2 sm:right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white hover:scale-110 transition-all duration-300 disabled:opacity-50"
             >
               <Heart
                 className={`w-4 h-4 transition-all ${
-                  isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                  isFavorite 
+                    ? 'fill-red-500 text-red-500' 
+                    : 'text-gray-600 group-hover:text-red-400'
                 } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
               />
             </button>
           </div>
 
           {/* المحتوى */}
-          <div className="flex-1 p-6 flex flex-col justify-between min-w-0">
+          <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
             <div className="flex-1">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold text-lg line-clamp-2 text-gray-900 leading-tight flex-1 mr-3">
-                  {product.name_ar || product.name}
-                </h3>
-              </div>
+              <h3 className="font-semibold text-base sm:text-lg line-clamp-2 text-gray-900 text-right mb-2">
+                {product.name_ar || product.name}
+              </h3>
               
-              <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+              <p className="text-xs sm:text-sm text-gray-600 line-clamp-1 mb-3 text-right">
                 {product.description || product.name}
               </p>
               
               {/* التقييم */}
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2 mb-3 justify-end">
+                <span className="text-xs text-gray-600">({product.reviews_count})</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  {parseFloat(product.rating).toFixed(1)}
+                </span>
+                <div className="flex items-center gap-0.5">
                   {renderStars(parseFloat(product.rating))}
                 </div>
-                <span className="text-sm text-gray-600">
-                  {parseFloat(product.rating).toFixed(1)} ({product.reviews_count})
-                </span>
+              </div>
+
+              {/* السعر */}
+              <div className="text-right mb-3">
+                <div className="flex items-center gap-2 justify-end mb-1">
+                  {product.discount > 0 && product.original_price && (
+                    <span className="text-xs sm:text-sm text-gray-400 line-through">
+                      {formatPrice(product.original_price)} د.ع
+                    </span>
+                  )}
+                  <span className="text-lg sm:text-xl font-bold text-green-600">
+                    {formatPrice(product.price)} د.ع
+                  </span>
+                </div>
+                {product.discount > 0 && product.original_price && (
+                  <p className="text-xs text-red-600 font-medium">
+                    وفر {formatPrice(calculateDiscount().toString())} د.ع
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold text-green-600">
-                  {formatPrice(product.price)} د.ع
-                </span>
-                {product.discount > 0 && product.original_price && (
-                  <span className="text-sm text-gray-400 line-through">
-                    {formatPrice(product.original_price)} د.ع
-                  </span>
+            {/* الأزرار */}
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                {!product.in_stock && (
+                  <Badge className="text-xs px-3 py-1 bg-gray-500 text-white border-0">
+                    غير متوفر
+                  </Badge>
                 )}
               </div>
               
@@ -3764,23 +5245,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Button
                   onClick={handleViewDetails}
                   variant="outline"
-                  className="h-10 px-4 border-gray-300 hover:bg-gray-50"
+                  size="sm"
+                  className="h-9 px-3 rounded-lg border border-gray-300 hover:border-blue-500 text-gray-700 hover:text-blue-600 text-xs whitespace-nowrap"
                 >
-                  <Eye className="w-4 h-4 ml-1" />
+                  <Eye className="w-3 h-3 ml-1" />
                   عرض
                 </Button>
-
                 <Button
                   onClick={handleAddToCart}
                   disabled={!product.in_stock || isAddingToCart || isLoading}
-                  className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="h-9 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs whitespace-nowrap transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {isAddingToCart ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : product.in_stock ? (
-                    <ShoppingCart className="w-4 h-4" />
+                    <Loader2 className="w-3 h-3 animate-spin" />
                   ) : (
-                    'غير متوفر'
+                    <>
+                      <ShoppingCart className="w-3 h-3 ml-1" />
+                      أضف
+                    </>
                   )}
                 </Button>
               </div>
@@ -3798,23 +5280,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
     );
   }
 
-  // العرض العمودي (Grid) - تصميم مضغوط
+  // العرض العمودي (Grid)
   return (
     <>
       <Card
-        className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-xl flex flex-col h-full"
-        onClick={handleViewDetails}
+        className="group relative overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 bg-white rounded-2xl flex flex-col h-full"
+        onClick={() => handleViewDetails()}
       >
         {/* البادجات */}
-        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
           {product.badge && (
-            <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
+            <Badge className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-full shadow-lg border-0">
               {product.badge}
             </Badge>
           )}
           {product.discount > 0 && (
-            <Badge className="bg-red-600 text-white text-xs px-2 py-1">
-              {product.discount}% خصم
+            <Badge className="bg-red-500 text-white text-xs px-3 py-1.5 rounded-full shadow-lg border-0">
+              {product.discount}%
             </Badge>
           )}
         </div>
@@ -3823,38 +5305,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <button
           onClick={toggleWishlist}
           disabled={isFavoriteLoading}
-          className="absolute top-2 right-2 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors disabled:opacity-50"
-          title={isWishlisted ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+          className="absolute top-3 right-3 z-10 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 border border-white/50 disabled:opacity-50"
         >
           <Heart
-            className={`w-4 h-4 transition-all ${
-              isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+            className={`w-5 h-5 transition-all ${
+              isFavorite 
+                ? 'fill-red-500 text-red-500' 
+                : 'text-gray-600 group-hover:text-red-400'
             } ${isFavoriteLoading ? 'animate-pulse' : ''}`}
           />
         </button>
 
         {/* حالة التوفر */}
         {!product.in_stock && (
-          <div className="absolute top-12 right-2 z-10">
-            <Badge variant="destructive" className="text-xs px-2 py-1">
+          <div className="absolute top-14 right-3 z-10">
+            <Badge className="text-xs px-3 py-1.5 bg-gray-500 text-white rounded-full shadow-md border-0">
               غير متوفر
             </Badge>
           </div>
         )}
 
         {/* صورة المنتج */}
-        <div className="relative aspect-square bg-gray-100 overflow-hidden">
+        <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden flex-shrink-0">
           {fullImageUrl && !imageError ? (
             <>
               {imageLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                  <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+                  <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
                 </div>
               )}
               <img
                 src={fullImageUrl}
                 alt={product.name}
-                className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${
                   imageLoading ? 'opacity-0' : 'opacity-100'
                 }`}
                 loading="lazy"
@@ -3865,93 +5348,90 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
               {product.emoji_icon ? (
-                <span className="text-3xl transition-transform duration-300 group-hover:scale-110 mb-2">
-                  {product.emoji_icon}
-                </span>
+                <span className="text-6xl mb-2">{product.emoji_icon}</span>
               ) : (
-                <Package className="w-12 h-12 text-gray-400 mb-2" />
+                <Package className="w-16 h-16 text-gray-400 mb-2" />
               )}
               <span className="text-xs text-gray-500 text-center">
-                {imageError ? 'خطأ في تحميل الصورة' : 'لا توجد صورة'}
+                {imageError ? 'خطأ في التحميل' : 'لا توجد صورة'}
               </span>
             </div>
           )}
 
           {/* زر العرض السريع */}
-          <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
             <Button
               size="sm"
-              className="h-8 text-xs bg-black/70 text-white hover:bg-black/90 backdrop-blur-sm"
+              className="h-9 text-xs bg-black/80 hover:bg-black text-white backdrop-blur-sm border-0 rounded-lg shadow-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 handleViewDetails();
               }}
             >
-              <Eye className="w-3 h-3 ml-1" />
+              <Eye className="w-4 h-4 ml-2" />
               عرض سريع
             </Button>
           </div>
         </div>
 
         {/* محتوى البطاقة */}
-        <CardHeader className="pb-3 px-4 pt-4 flex-1">
-          <h3 className="font-semibold text-sm line-clamp-2 text-gray-900 leading-tight min-h-[2.5rem] mb-1">
+        <CardHeader className="pb-2 px-4 pt-4 flex-shrink-0">
+          <h3 className="font-bold text-base line-clamp-2 text-gray-900 text-right">
             {product.name_ar || product.name}
           </h3>
-          <p className="text-xs text-gray-600 line-clamp-1">
-            {product.name}
-          </p>
         </CardHeader>
 
-        <CardContent className="pb-3 px-4 space-y-2 flex-1">
+        <CardContent className="pb-2 px-4 space-y-2 flex-shrink-0">
           {/* التقييم */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5 justify-end">
+            <span className="text-xs text-gray-600">({product.reviews_count})</span>
+            <span className="text-xs text-gray-600 font-medium">
+              {parseFloat(product.rating).toFixed(1)}
+            </span>
             <div className="flex items-center gap-0.5">
               {renderStars(parseFloat(product.rating))}
             </div>
-            <span className="text-xs text-gray-600">
-              {parseFloat(product.rating).toFixed(1)}
-            </span>
           </div>
 
           {/* السعر */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-bold text-green-600">
-                {formatPrice(product.price)} د.ع
-              </span>
+          <div className="text-right space-y-1">
+            <div className="flex items-center gap-2 justify-end">
               {product.discount > 0 && product.original_price && (
                 <span className="text-xs text-gray-400 line-through">
-                  {formatPrice(product.original_price)} د.ع
+                  {formatPrice(product.original_price)}
                 </span>
               )}
+              <span className="text-lg font-bold text-green-600">
+                {formatPrice(product.price)} د.ع
+              </span>
             </div>
             {product.discount > 0 && product.original_price && (
               <p className="text-xs text-red-600 font-medium">
-                وفر {formatPrice((parseFloat(product.original_price) - parseFloat(product.price)).toString())} د.ع
+                وفر {formatPrice(calculateDiscount().toString())} د.ع
               </p>
             )}
           </div>
         </CardContent>
 
-        <CardFooter className="pt-0 px-4 pb-4">
+        {/* الزر */}
+        <CardFooter className="pt-2 px-4 pb-4 mt-auto flex-shrink-0">
           <Button
             onClick={handleAddToCart}
             disabled={!product.in_stock || isAddingToCart || isLoading}
-            className={`w-full h-9 text-sm transition-all duration-300 ${
+            className={`w-full h-10 text-base transition-all duration-300 rounded-lg font-semibold shadow-md ${
               product.in_stock
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
           >
             {isAddingToCart ? (
               <>
-                <Loader2 className="w-4 h-4 ml-1 animate-spin" />
-                جاري الإضافة...
+                <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                جاري...
               </>
             ) : product.in_stock ? (
               <>
-                <ShoppingCart className="w-4 h-4 ml-1" />
+                <ShoppingCart className="w-4 h-4 ml-2" />
                 أضف إلى السلة
               </>
             ) : (
@@ -3961,7 +5441,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </CardFooter>
       </Card>
 
-      {/* ديالوج تفاصيل المنتج */}
       <ProductDetailDialog
         product={product}
         open={isDialogOpen}

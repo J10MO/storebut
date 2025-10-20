@@ -82,6 +82,7 @@ import { useCategories } from '../../../hooks/useCategory';
 import CategoryCircleList from './CategoryList';
 import { Button } from '../../ui/button';
 import { RefreshCw, Star, Package, TrendingUp } from 'lucide-react';
+import ProductsList from '../Product/ProductsList';
 
 const CategoriesOverview: React.FC = () => {
   const { categories, isLoading, error, refetch } = useCategories();
@@ -120,6 +121,7 @@ const CategoriesOverview: React.FC = () => {
   const activeCategories = categories.filter(cat => parseInt(cat.product_count || '0') > 0).length;
 
   return (
+    <div>
     <section className="w-full bg-white py-6 rounded-2xl shadow-sm border border-gray-100">
       <div className="container mx-auto px-4">
         {/* الإحصائيات السريعة */}
@@ -166,6 +168,8 @@ const CategoriesOverview: React.FC = () => {
         </div>
       </div>
     </section>
+    <ProductsList/>
+    </div>
   );
 };
 
