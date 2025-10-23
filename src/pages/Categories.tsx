@@ -30,7 +30,7 @@ const CategoryProducts: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">جاري تحميل التصنيف...</p>
+          <p className="text-gray-600 text-lg">جاري تحميل ال��صنيف...</p>
         </div>
       </div>
     );

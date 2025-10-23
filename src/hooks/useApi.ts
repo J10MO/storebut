@@ -1,84 +1,84 @@
-// import { useState, useCallback } from 'react';
+"use client"
 
-// interface UseApiState<T> {
-//   data: T | null;
-//   loading: boolean;
-//   error: string | null;
-// }
+import { useState, useEffect, useCallback, useRef } from "react"
 
-// export const useApi = <T>() => {
-//   const [state, setState] = useState<UseApiState<T>>({
-//     data: null,
-//     loading: false,
-//     error: null,
-//   });
+interface UseApiOptions<T> {
+  enabled?: boolean
+  onSuccess?: (data: T) => void
+  onError?: (error: string) => void
+}
 
-//   const execute = useCallback(async (
-//     apiCall: () => Promise<T>,
-//     onSuccess?: (data: T) => void,
-//     onError?: (error: string) => void
-//   ) => {
-//     setState({ data: null, loading: true, error: null });
+export const useApi = <T,>(apiCall: () => Promise<any>, dependencies: any[] = [], options: UseApiOptions<T> = {}) => {
+  const { enabled = true, onSuccess, onError } = options
 
-//     try {
-//       const result = await apiCall();
-//       setState({ data: result, loading: false, error: null });
-//       onSuccess?.(result);
-//       return result;
-//     } catch (error) {
-//       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-//       setState({ data: null, loading: false, error: errorMessage });
-//       onError?.(errorMessage);
-//       throw error;
-//     }
-//   }, []);
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-//   return {
-//     ...state,
-//     execute,
-//   };
-// };
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const isMountedRef = useRef(true)
 
+  const fetchData = useCallback(async () => {
+    if (!enabled || !isMountedRef.current) return
 
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
 
+    abortControllerRef.current = new AbortController()
 
-import { useState, useEffect } from 'react';
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await apiCall()
 
-export const useApi = <T>(apiCall: () => Promise<any>, dependencies: any[] = []) => {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+      if (abortControllerRef.current?.signal.aborted) {
+        return
+      }
+
+      const responseData = response?.data || response
+
+      if (isMountedRef.current) {
+        setData(responseData)
+        if (onSuccess) {
+          onSuccess(responseData)
+        }
+      }
+    } catch (err: any) {
+      if (abortControllerRef.current?.signal.aborted) {
+        return
+      }
+
+      const errorMessage = err.response?.data?.error || err.message || "Something went wrong"
+
+      if (isMountedRef.current) {
+        setError(errorMessage)
+        if (onError) {
+          onError(errorMessage)
+        }
+      }
+    } finally {
+      if (isMountedRef.current && !abortControllerRef.current?.signal.aborted) {
+        setLoading(false)
+      }
+    }
+  }, [apiCall, enabled, onSuccess, onError])
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await apiCall();
-        setData(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Something went wrong');
-      } finally {
-        setLoading(false);
-      }
-    };
+    isMountedRef.current = true
+    fetchData()
 
-    fetchData();
-  }, dependencies);
-
-  return { data, loading, error, refetch: () => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await apiCall();
-        setData(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || 'Something went wrong');
-      } finally {
-        setLoading(false);
+    return () => {
+      isMountedRef.current = false
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
       }
-    };
-    fetchData();
-  } };
-};
+    }
+  }, [fetchData, ...dependencies])
+
+  const refetch = useCallback(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { data, loading, error, refetch }
+}

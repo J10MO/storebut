@@ -1,8 +1,8 @@
 // pages/OrderSuccess.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 import { CheckCircle, Package, Home, Phone } from 'lucide-react';
 
 const OrderSuccess: React.FC = () => {
@@ -14,7 +14,7 @@ const OrderSuccess: React.FC = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+        const response = await fetch(`http://localhost:5001/api/orders/${orderId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },

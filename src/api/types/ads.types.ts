@@ -1,5 +1,3 @@
-
-
 export interface Ad {
   id: number;
   product_id: number;

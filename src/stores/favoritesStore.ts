@@ -1,34 +1,44 @@
-// stores/favoritesStore.ts
-import create from 'zustand';
+import { create } from "zustand"
 
 interface FavoritesStore {
-  favoriteIds: Set<number>;
-  loading: boolean;
-  initialized: boolean;
-  setFavorites: (ids: Set<number>) => void;
-  addFavorite: (id: number) => void;
-  removeFavorite: (id: number) => void;
-  markInitialized: () => void;
+  favoriteIds: number[]
+  loading: boolean
+  initialized: boolean
+  setFavorites: (ids: number[]) => void
+  addFavorite: (id: number) => void
+  removeFavorite: (id: number) => void
+  hasFavorite: (id: number) => boolean
+  getFavoritesCount: () => number
+  markInitialized: () => void
 }
 
-export const useFavoritesStore = create<FavoritesStore>((set) => ({
-  favoriteIds: new Set(),
+export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
+  favoriteIds: [],
   loading: false,
   initialized: false,
-  
+
   setFavorites: (ids) => set({ favoriteIds: ids, initialized: true }),
-  
-  addFavorite: (id) => set((state) => {
-    const newIds = new Set(state.favoriteIds);
-    newIds.add(id);
-    return { favoriteIds: newIds };
-  }),
-  
-  removeFavorite: (id) => set((state) => {
-    const newIds = new Set(state.favoriteIds);
-    newIds.delete(id);
-    return { favoriteIds: newIds };
-  }),
-  
-  markInitialized: () => set({ initialized: true })
-}));
+
+  addFavorite: (id) =>
+    set((state) => {
+      if (state.favoriteIds.includes(id)) {
+        return state
+      }
+      return { favoriteIds: [...state.favoriteIds, id] }
+    }),
+
+  removeFavorite: (id) =>
+    set((state) => ({
+      favoriteIds: state.favoriteIds.filter((favId) => favId !== id),
+    })),
+
+  hasFavorite: (id) => {
+    return get().favoriteIds.includes(id)
+  },
+
+  getFavoritesCount: () => {
+    return get().favoriteIds.length
+  },
+
+  markInitialized: () => set({ initialized: true }),
+}))

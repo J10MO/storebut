@@ -1,125 +1,178 @@
-// import { useState, useEffect } from 'react';
-// import { productsAPI } from '../api';
-// import type { Product } from '../api/types/product.types';
+"use client"
 
-// export const useProducts = () => {
-//   const [products, setProducts] = useState<Product[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
+import { productsAPI, type ProductSearchParams } from "../api/products"
+import type { Product } from "../api/types/product.types"
 
-//   const fetchProducts = async () => {
-//     try {
-//       setLoading(true);
-//       const response = await productsAPI.getAll();
-//       setProducts(response.products);
-//       setError(null);
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : 'Failed to fetch products');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+interface UseProductsReturn {
+  products: Product[]
+  loading: boolean
+  error: string | null
+  refetch: () => Promise<void>
+  hasMore: boolean
+}
 
-//   useEffect(() => {
-//     fetchProducts();
-//   }, []);
+export const useProducts = (params?: ProductSearchParams | number): UseProductsReturn => {
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState<boolean>(false)
 
-//   return {
-//     products,
-//     loading,
-//     error,
-//     refetch: fetchProducts,
-//   };
-// };
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const isMountedRef = useRef(true)
 
-
-
-
-
-// import { useState, useEffect } from 'react';
-// import { productsAPI } from '../api/products';
-
-// export const useProducts = (categoryId?: string | number) => {
-//   const [products, setProducts] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     const fetchProducts = async () => {
-//       try {
-//         setLoading(true);
-//         const response = categoryId 
-//           ? await productsAPI.getByCategory(categoryId)
-//           : await productsAPI.getProducts();
-//         setProducts(response.data);
-//       } catch (err: any) {
-//         setError(err.response?.data?.error || 'Failed to fetch products');
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProducts();
-//   }, [categoryId]);
-
-//   return { products, loading, error, refetch: () => {
-//     const fetchProducts = async () => {
-//       try {
-//         setLoading(true);
-//         const response = categoryId 
-//           ? await productsAPI.getByCategory(categoryId)
-//           : await productsAPI.getProducts();
-//         setProducts(response.data);
-//       } catch (err: any) {
-//         setError(err.response?.data?.error || 'Failed to fetch products');
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchProducts();
-//   } };
-// };
-
-
-
-
-
-
-// hooks/useProducts.ts
-import { useState, useEffect } from 'react';
-import { productsAPI } from '../api/products';
-
-export const useProducts = (categoryId?: string | number) => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = categoryId
-        ? await productsAPI.getByCategory(categoryId)
-        : await productsAPI.getProducts();
-
-      // Normalize to array
-      const data = response?.data ?? [];
-      const normalized = Array.isArray(data) ? data : Array.isArray(data?.products) ? data.products : data;
-
-      setProducts(normalized ?? []);
-      // If API returns { products: [...] }, adjust accordingly
-      // e.g., if you know the shape: const normalized = data.products ?? data;
-    } catch (err: any) {
-      setError(err?.response?.data?.error ?? 'Failed to fetch products');
-      setProducts([]); // reset to safe default
-    } finally {
-      setLoading(false);
+  const normalizedParams = useMemo(() => {
+    if (typeof params === "number") {
+      return { category: params }
     }
-  };
+    return params
+  }, [params])
+
+  const paramsKey = useMemo(() => JSON.stringify(normalizedParams), [normalizedParams])
+
+  const fetchProducts = useCallback(async () => {
+    if (!isMountedRef.current) return
+
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
+    abortControllerRef.current = new AbortController()
+
+    try {
+      setLoading(true)
+      setError(null)
+
+      let data
+      if (normalizedParams?.category) {
+        data = await productsAPI.getByCategory(normalizedParams.category)
+      } else {
+        data = await productsAPI.getProducts(normalizedParams)
+      }
+
+      if (abortControllerRef.current?.signal.aborted) {
+        return
+      }
+
+      // Handle different response structures
+      const productsList = Array.isArray(data) ? data : data.products || []
+
+      if (isMountedRef.current) {
+        setProducts(productsList)
+
+        // Check if there are more products
+        if ("total" in data && "page" in data && "limit" in data) {
+          const totalPages = Math.ceil(data.total / data.limit)
+          setHasMore(data.page < totalPages)
+        }
+      }
+    } catch (err) {
+      if (abortControllerRef.current?.signal.aborted) {
+        return
+      }
+
+      const errorMessage = err instanceof Error ? err.message : "فشل في تحميل المنتجات"
+
+      if (isMountedRef.current) {
+        setError(errorMessage)
+        setProducts([])
+      }
+    } finally {
+      if (isMountedRef.current && !abortControllerRef.current?.signal.aborted) {
+        setLoading(false)
+      }
+    }
+  }, [paramsKey, normalizedParams])
 
   useEffect(() => {
-    fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId]);
+    isMountedRef.current = true
+    fetchProducts()
 
-  return { products, loading, error, refetch: fetchProducts };
-};
+    return () => {
+      isMountedRef.current = false
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [fetchProducts])
+
+  return {
+    products,
+    loading,
+    error,
+    refetch: fetchProducts,
+    hasMore,
+  }
+}
+
+// Hook for single product
+export const useProduct = (id: string | number) => {
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const isMountedRef = useRef(true)
+
+  const fetchProduct = useCallback(async () => {
+    if (!isMountedRef.current) return
+
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
+    abortControllerRef.current = new AbortController()
+
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await productsAPI.getProduct(id)
+
+      if (abortControllerRef.current?.signal.aborted) {
+        return
+      }
+
+      if (isMountedRef.current) {
+        setProduct(data)
+      }
+    } catch (err) {
+      if (abortControllerRef.current?.signal.aborted) {
+        return
+      }
+
+      const errorMessage = err instanceof Error ? err.message : "فشل في تحميل المنتج"
+
+      if (isMountedRef.current) {
+        setError(errorMessage)
+        setProduct(null)
+      }
+    } finally {
+      if (isMountedRef.current && !abortControllerRef.current?.signal.aborted) {
+        setLoading(false)
+      }
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (id) {
+      isMountedRef.current = true
+      fetchProduct()
+    }
+
+    return () => {
+      isMountedRef.current = false
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [id, fetchProduct])
+
+  return {
+    product,
+    loading,
+    error,
+    refetch: fetchProduct,
+  }
+}

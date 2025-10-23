@@ -1,44 +1,53 @@
-// import { apiClient } from '../client';
-// import type { Product, ProductsResponse } from '../types/product.types';
+import { apiClient } from "../../lib/api-client"
+import type { Product } from "../types/product.types"
 
-// export const productsAPI = {
-//   getAll: async (page = 1, limit = 20): Promise<ProductsResponse> => {
-//     const response = await apiClient.get<ProductsResponse>(`/products?page=${page}&limit=${limit}`);
-//     return response.data;
-//   },
+export interface ProductsResponse {
+  products: Product[]
+  total: number
+  page: number
+  limit: number
+}
 
-//   getById: async (id: number): Promise<Product> => {
-//     const response = await apiClient.get<Product>(`/products/${id}`);
-//     return response.data;
-//   },
-// };
-
-
-
-
-// api/products/indexedDB.ts
-import { apiClient } from '../client';
+export interface ProductSearchParams {
+  q?: string
+  category?: string | number
+  minPrice?: number
+  maxPrice?: number
+  inStock?: boolean
+  page?: number
+  limit?: number
+}
 
 export const productsAPI = {
-  // Get all products
-  getProducts: (params?: any) => 
-    apiClient.get('/products', { params }),
+  // Get all products with optional filters
+  getProducts: async (params?: ProductSearchParams) => {
+    const response = await apiClient.get<ProductsResponse>("/products", { params })
+    return response.data
+  },
 
-  // Get product by ID
-  getProduct: (id: string | number) => 
-    apiClient.get(`/products/${id}`),
+  // Get single product by ID
+  getProduct: async (id: string | number) => {
+    const response = await apiClient.get<Product>(`/products/${id}`)
+    return response.data
+  },
 
   // Search products
-  searchProducts: (query: string, params?: any) => 
-    apiClient.get('/products/search', { 
-      params: { ...params, q: query } 
-    }),
+  searchProducts: async (query: string, params?: Omit<ProductSearchParams, "q">) => {
+    const response = await apiClient.get<ProductsResponse>("/products/search", {
+      params: { ...params, q: query },
+    })
+    return response.data
+  },
 
   // Get featured products
-  getFeatured: () => 
-    apiClient.get('/products/featured'),
+  getFeatured: async () => {
+    const response = await apiClient.get<Product[]>("/products/featured")
+    return response.data
+  },
 
   // Get products by category
-  getByCategory: (categoryId: string | number) => 
-    apiClient.get(`/categories/${categoryId}/products`),
-};
+  getByCategory: async (categoryId: string | number) => {
+    const response = await apiClient.get<ProductsResponse>(`/categories/${categoryId}/products`)
+    return response.data
+  },
+}

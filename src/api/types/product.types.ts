@@ -1,5 +1,3 @@
-
-
 export interface Product {
   id: number;
   name: string;
@@ -14,7 +12,7 @@ export interface Product {
   emoji_icon: string | null;
   rating: string;
   reviews_count: number;
-  in_stock: boolean;
+  stock_quantity: boolean;
   discount: number;
   badge: string;
   created_at: string;

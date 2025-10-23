@@ -1,692 +1,164 @@
-// import React from 'react';
-// import { Link, useLocation } from 'react-router-dom';
+"use client"
 
-// const Footer: React.FC = () => {
-//   const location = useLocation();
+import type React from "react"
+import { useMemo } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "../../hooks/useAuth"
+import { useCart } from "../../hooks/useCart"
+import { useFavorites } from "../../hooks/useFavorites"
+import { Home, Search, ShoppingCart, User, Heart } from "lucide-react"
 
-//   const isActive = (path: string) => {
-//     return location.pathname === path;
-//   };
-
-//   return (
-//     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4">
-//       <div className="flex justify-between items-center">
-//         {/* Home Button */}
-//         <Link 
-//           to="/dashboard" 
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-//             isActive('/dashboard') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-//           </svg>
-//           <span className="text-xs mt-1">Home</span>
-//         </Link>
-
-//         {/* Search Button */}
-//         <Link 
-//           to="/search" 
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-//             isActive('/search') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-//           </svg>
-//           <span className="text-xs mt-1">Search</span>
-//         </Link>
-
-//         {/* Cart Button */}
-//         <Link 
-//           to="/cart" 
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-//             isActive('/cart') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <div className="relative">
-//             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5.5M7 13l2.5 5.5m0 0L17 21" />
-//             </svg>
-//             {/* Cart badge - you can dynamically update the count */}
-//             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-//               0
-//             </span>
-//           </div>
-//           <span className="text-xs mt-1">Cart</span>
-//         </Link>
-
-//         {/* Account Button */}
-//         <Link 
-//           to="/account" 
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-//             isActive('/account') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-//           </svg>
-//           <span className="text-xs mt-1">Account</span>
-//         </Link>
-//       </div>
-//     </footer>
-//   );
-// };
-
-// export default Footer;
-
-
-
-
-// import React from 'react';
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import { useAuth } from '../../hooks/useAuth';
-// import { useState, useEffect } from 'react';
-
-// const Footer: React.FC = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const { isAuthenticated } = useAuth();
-//   const [cartItemCount, setCartItemCount] = useState(0);
-
-//   const isActive = (path: string) => {
-//     return location.pathname === path;
-//   };
-
-//   const fetchCartCount = async () => {
-//     try {
-//       const token = localStorage.getItem('token');
-//       if (!token) {
-//         // For non-logged in users, get cart from localStorage or context
-//         const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
-//         const totalQuantity = guestCart.reduce((acc: number, item: any) => acc + item.quantity, 0);
-//         setCartItemCount(totalQuantity);
-//         return;
-//       }
-
-//       const response = await fetch('http://localhost:5000/api/cart', {
-//         headers: {
-//           'Authorization': `Bearer ${token}`
-//         }
-//       });
-      
-//       if (response.ok) {
-//         const cartData = await response.json();
-//         const totalQuantity = cartData.reduce((acc: number, item: any) => acc + item.quantity, 0);
-//         setCartItemCount(totalQuantity);
-//       }
-//     } catch (error) {
-//       console.error('Error fetching cart count:', error);
-//       setCartItemCount(0);
-//     }
-//   };
-
-//   const handleCartClick = () => {
-//     navigate('/cart');
-//   };
-
-//   const handleAccountClick = () => {
-//     if (isAuthenticated) {
-//       navigate('/account');
-//     } else {
-//       navigate('/login');
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchCartCount();
-
-//     const handleCartUpdate = () => {
-//       fetchCartCount();
-//     };
-
-//     window.addEventListener('cartUpdated', handleCartUpdate);
-//     window.addEventListener('authStateChanged', fetchCartCount);
-
-//     return () => {
-//       window.removeEventListener('cartUpdated', handleCartUpdate);
-//       window.removeEventListener('authStateChanged', fetchCartCount);
-//     };
-//   }, [isAuthenticated]);
-
-//   return (
-//     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 safe-area-bottom">
-//       <div className="flex justify-between items-center max-w-md mx-auto">
-//         {/* Home Button */}
-//         <Link 
-//           to="/home" 
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors flex-1 text-center ${
-//             isActive('/home') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-//           </svg>
-//           <span className="text-xs mt-1">Home</span>
-//         </Link>
-
-//         {/* Categories Button */}
-//         <Link 
-//           to="/categories" 
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors flex-1 text-center ${
-//             isActive('/categories') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-//           </svg>
-//           <span className="text-xs mt-1">Categories</span>
-//         </Link>
-
-//         {/* Cart Button */}
-//         <button
-//           onClick={handleCartClick}
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors flex-1 text-center ${
-//             isActive('/cart') ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <div className="relative">
-//             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5.5M7 13l2.5 5.5m0 0L17 21" />
-//             </svg>
-//             {cartItemCount > 0 && (
-//               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-//                 {cartItemCount}
-//               </span>
-//             )}
-//           </div>
-//           <span className="text-xs mt-1">Cart</span>
-//         </button>
-
-//         {/* Account Button */}
-//         <button
-//           onClick={handleAccountClick}
-//           className={`flex flex-col items-center p-2 rounded-lg transition-colors flex-1 text-center ${
-//             (isActive('/account') || isActive('/login')) ? 'text-blue-600' : 'text-gray-600'
-//           }`}
-//         >
-//           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-//           </svg>
-//           <span className="text-xs mt-1">
-//             {isAuthenticated ? 'Account' : 'Login'}
-//           </span>
-//         </button>
-//       </div>
-//     </footer>
-//   );
-// };
-
-// export default Footer;
-
-
-
-
-// import React from 'react';
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import { useAuth } from '../../hooks/useAuth';
-// import { useCart } from '../../hooks/useCart';
-// import { useState, useEffect } from 'react';
-// import { Home, Grid, ShoppingCart, User } from 'lucide-react';
-
-// const Footer: React.FC = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const { isAuthenticated } = useAuth();
-//   const { getTotalItems } = useCart();
-//   const [cartItemCount, setCartItemCount] = useState(0);
-
-//   const isActive = (path: string) => {
-//     return location.pathname === path;
-//   };
-
-//   const handleCartClick = () => {
-//     navigate('/cart');
-//   };
-
-//   const handleAccountClick = () => {
-//     if (isAuthenticated) {
-//       navigate('/account');
-//     } else {
-//       navigate('/login');
-//     }
-//   };
-
-//   // تحديث عداد السلة عند تغيير عدد العناصر
-//   useEffect(() => {
-//     setCartItemCount(getTotalItems());
-//   }, [getTotalItems]);
-
-//   return (
-//     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 safe-area-bottom shadow-lg z-50">
-//       <div className="flex justify-between items-center max-w-md mx-auto">
-//         {/* زر الرئيسية */}
-//         <Link 
-//           to="/home" 
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-//             isActive('/home') 
-//               ? 'text-blue-600 bg-blue-50' 
-//               : 'text-gray-600 hover:text-blue-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/home') ? 'bg-blue-100' : 'group-hover:bg-blue-50'
-//           }`}>
-//             <Home className="w-5 h-5" />
-//           </div>
-//           <span className="text-xs mt-1 font-medium">الرئيسية</span>
-//         </Link>
-
-//         {/* زر التصنيفات */}
-//         <Link 
-//           to="/categories" 
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-//             isActive('/categories') 
-//               ? 'text-green-600 bg-green-50' 
-//               : 'text-gray-600 hover:text-green-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/categories') ? 'bg-green-100' : 'group-hover:bg-green-50'
-//           }`}>
-//             <Grid className="w-5 h-5" />
-//           </div>
-//           <span className="text-xs mt-1 font-medium">التصنيفات</span>
-//         </Link>
-
-//         {/* زر السلة */}
-//         <button
-//           onClick={handleCartClick}
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
-//             isActive('/cart') 
-//               ? 'text-orange-600 bg-orange-50' 
-//               : 'text-gray-600 hover:text-orange-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/cart') ? 'bg-orange-100' : 'group-hover:bg-orange-50'
-//           }`}>
-//             <ShoppingCart className="w-5 h-5" />
-//             {cartItemCount > 0 && (
-//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
-//                 {cartItemCount > 99 ? '99+' : cartItemCount}
-//               </span>
-//             )}
-//           </div>
-//           <span className="text-xs mt-1 font-medium">السلة</span>
-//         </button>
-
-//         {/* زر الحساب */}
-//         <button
-//           onClick={handleAccountClick}
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-//             (isActive('/account') || isActive('/login')) 
-//               ? 'text-purple-600 bg-purple-50' 
-//               : 'text-gray-600 hover:text-purple-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             (isActive('/account') || isActive('/login')) ? 'bg-purple-100' : 'group-hover:bg-purple-50'
-//           }`}>
-//             <User className="w-5 h-5" />
-//           </div>
-//           <span className="text-xs mt-1 font-medium">
-//             {isAuthenticated ? 'حسابي' : 'تسجيل'}
-//           </span>
-//         </button>
-//       </div>
-//     </footer>
-//   );
-// };
-
-// export default Footer;
-
-
-
-
-
-// // components/layout/Footer.tsx
-// import React from 'react';
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import { useAuth } from '../../hooks/useAuth';
-// import { useCart } from '../../hooks/useCart';
-// import { useFavorites } from '../../hooks/useFavorites';
-// import { useState, useEffect } from 'react';
-// import { Home, Search, ShoppingCart, User, Heart } from 'lucide-react';
-
-// const Footer: React.FC = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const { isAuthenticated } = useAuth();
-//   const { getTotalItems } = useCart();
-//   const { favorites } = useFavorites();
-//   const [cartItemCount, setCartItemCount] = useState(0);
-//   // const [favoritesCount, setFavoritesCount] = useState(0);
-//     const { favoritesCount, isFavorite } = useFavorites(); // استخدام favoritesCount مباشرة
-
-//   const isActive = (path: string) => {
-//     return location.pathname === path;
-//   };
-
-//   const handleCartClick = () => {
-//     navigate('/cart');
-//   };
-
-//   const handleAccountClick = () => {
-//     if (isAuthenticated) {
-//       navigate('/account');
-//     } else {
-//       navigate('/login');
-//     }
-//   };
-
-//   const handleFavoritesClick = () => {
-//     navigate('/favorites');
-//   };
-
-//   // تحديث العدادين عند تغيير عدد العناصر
-//   useEffect(() => {
-//     setCartItemCount(getTotalItems());
-//   }, [getTotalItems]);
-
-//   return (
-//     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 safe-area-bottom shadow-lg z-50">
-//       <div className="flex justify-between items-center max-w-md mx-auto">
-//         {/* زر الرئيسية */}
-//         <Link 
-//           to="/home" 
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-//             isActive('/home') 
-//               ? 'text-blue-600 bg-blue-50' 
-//               : 'text-gray-600 hover:text-blue-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/home') ? 'bg-blue-100' : 'group-hover:bg-blue-50'
-//           }`}>
-//             <Home className="w-5 h-5" />
-//           </div>
-//           <span className="text-xs mt-1 font-medium">الرئيسية</span>
-//         </Link>
-
-//         {/* زر البحث */}
-//         <Link 
-//           to="/search" 
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-//             isActive('/search') 
-//               ? 'text-green-600 bg-green-50' 
-//               : 'text-gray-600 hover:text-green-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/search') ? 'bg-green-100' : 'group-hover:bg-green-50'
-//           }`}>
-//             <Search className="w-5 h-5" />
-//           </div>
-//           <span className="text-xs mt-1 font-medium">البحث</span>
-//         </Link>
-
-//         {/* زر المفضلة */}
-//      <button
-//           onClick={handleFavoritesClick}
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
-//             isActive('/favorites') 
-//               ? 'text-pink-600 bg-pink-50' 
-//               : 'text-gray-600 hover:text-pink-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/favorites') ? 'bg-pink-100' : 'group-hover:bg-pink-50'
-//           }`}>
-//             <Heart className="w-5 h-5" />
-//             {favoritesCount > 0 && (
-//               <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
-//                 {favoritesCount > 99 ? '99+' : favoritesCount}
-//               </span>
-//             )}
-//           </div>
-//           <span className="text-xs mt-1 font-medium">المفضلة</span>
-//         </button>
-//         {/* زر السلة */}
-//         <button
-//           onClick={handleCartClick}
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group relative ${
-//             isActive('/cart') 
-//               ? 'text-orange-600 bg-orange-50' 
-//               : 'text-gray-600 hover:text-orange-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             isActive('/cart') ? 'bg-orange-100' : 'group-hover:bg-orange-50'
-//           }`}>
-//             <ShoppingCart className="w-5 h-5" />
-//             {cartItemCount > 0 && (
-//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white shadow-sm">
-//                 {cartItemCount > 99 ? '99+' : cartItemCount}
-//               </span>
-//             )}
-//           </div>
-//           <span className="text-xs mt-1 font-medium">السلة</span>
-//         </button>
-
-//         {/* زر الحساب */}
-//         <button
-//           onClick={handleAccountClick}
-//           className={`flex flex-col items-center p-2 rounded-xl transition-all duration-300 flex-1 text-center group ${
-//             (isActive('/account') || isActive('/login')) 
-//               ? 'text-purple-600 bg-purple-50' 
-//               : 'text-gray-600 hover:text-purple-500 hover:bg-gray-50'
-//           }`}
-//         >
-//           <div className={`p-2 rounded-lg transition-all duration-300 ${
-//             (isActive('/account') || isActive('/login')) ? 'bg-purple-100' : 'group-hover:bg-purple-50'
-//           }`}>
-//             <User className="w-5 h-5" />
-//           </div>
-//           <span className="text-xs mt-1 font-medium">
-//             {isAuthenticated ? 'حسابي' : 'تسجيل'}
-//           </span>
-//         </button>
-//       </div>
-//     </footer>
-//   );
-// };
-
-// export default Footer;
-
-
-
-
-
-// components/layout/Footer.tsx
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { useCart } from '../../hooks/useCart';
-import { useFavorites } from '../../hooks/useFavorites';
-import { Home, Search, ShoppingCart, User, Heart } from 'lucide-react';
+interface NavItem {
+  id: string
+  label: string
+  icon: typeof Home
+  path: string
+  color: string
+  onClick: () => void
+  badge?: number | null
+}
 
 const Footer: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const { getTotalItems } = useCart();
-  const { favoritesCount } = useFavorites();
-  
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
+  const { getTotalItems } = useCart()
+  const { favoritesCount } = useFavorites()
 
-  const handleCartClick = () => {
-    navigate('/cart');
-  };
+  const cartItemCount = getTotalItems()
 
-  const handleAccountClick = () => {
-    if (isAuthenticated) {
-      navigate('/account');
-    } else {
-      navigate('/login');
-    }
-  };
+  const isActive = (path: string) => location.pathname === path
 
-  const handleFavoritesClick = () => {
-    navigate('/favorites');
-  };
+  const navItems: NavItem[] = useMemo(
+    () => [
+      {
+        id: "home",
+        label: "الرئيسية",
+        icon: Home,
+        path: "/home",
+        color: "blue",
+        onClick: () => navigate("/home"),
+      },
+      {
+        id: "search",
+        label: "البحث",
+        icon: Search,
+        path: "/search",
+        color: "emerald",
+        onClick: () => navigate("/search"),
+      },
+      {
+        id: "favorites",
+        label: "المفضلة",
+        icon: Heart,
+        path: "/favorites",
+        color: "rose",
+        onClick: () => navigate("/favorites"),
+        badge: favoritesCount > 0 ? favoritesCount : null,
+      },
+      {
+        id: "cart",
+        label: "السلة",
+        icon: ShoppingCart,
+        path: "/cart",
+        color: "amber",
+        onClick: () => navigate("/cart"),
+        badge: cartItemCount > 0 ? cartItemCount : null,
+      },
+      {
+        id: "account",
+        label: isAuthenticated ? "حسابي" : "تسجيل",
+        icon: User,
+        path: isAuthenticated ? "/account" : "/login",
+        color: "violet",
+        onClick: () => navigate(isAuthenticated ? "/account" : "/login"),
+      },
+    ],
+    [navigate, favoritesCount, cartItemCount, isAuthenticated],
+  )
 
-  const handleSearchClick = () => {
-    navigate('/search');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-
-  // Update cart count when items change
-  useEffect(() => {
-    setCartItemCount(getTotalItems());
-  }, [getTotalItems]);
-
-  const navItems = [
-    {
-      id: 'home',
-      label: 'الرئيسية',
-      icon: Home,
-      path: '/home',
-      color: 'blue',
-      onClick: handleHomeClick,
-    },
-    {
-      id: 'search',
-      label: 'البحث',
-      icon: Search,
-      path: '/search',
-      color: 'green',
-      onClick: handleSearchClick,
-    },
-    {
-      id: 'favorites',
-      label: 'المفضلة',
-      icon: Heart,
-      path: '/favorites',
-      color: 'pink',
-      onClick: handleFavoritesClick,
-      badge: favoritesCount > 0 ? favoritesCount : null,
-    },
-    {
-      id: 'cart',
-      label: 'السلة',
-      icon: ShoppingCart,
-      path: '/cart',
-      color: 'orange',
-      onClick: handleCartClick,
-      badge: cartItemCount > 0 ? cartItemCount : null,
-    },
-    {
-      id: 'account',
-      label: isAuthenticated ? 'حسابي' : 'تسجيل',
-      icon: User,
-      path: isAuthenticated ? '/account' : '/login',
-      color: 'purple',
-      onClick: handleAccountClick,
-    },
-  ];
-
-  const getColorClasses = (color: string, isActive: boolean) => {
-    const colors: { [key: string]: { active: string; inactive: string; bg: string } } = {
+  // Fixed color mapping function
+  const getColorClasses = (color: string, active: boolean) => {
+    const colorMap: Record<string, { text: string; bg: string }> = {
       blue: {
-        active: 'text-blue-600 bg-blue-50',
-        inactive: 'text-gray-600 hover:text-blue-500 hover:bg-blue-50',
-        bg: 'bg-blue-100',
+        text: active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400",
+        bg: active ? "bg-blue-50 dark:bg-blue-900/30" : "bg-transparent",
       },
-      green: {
-        active: 'text-green-600 bg-green-50',
-        inactive: 'text-gray-600 hover:text-green-500 hover:bg-green-50',
-        bg: 'bg-green-100',
+      emerald: {
+        text: active ? "text-emerald-600 dark:text-emerald-400" : "text-gray-500 dark:text-gray-400",
+        bg: active ? "bg-emerald-50 dark:bg-emerald-900/30" : "bg-transparent",
       },
-      pink: {
-        active: 'text-pink-600 bg-pink-50',
-        inactive: 'text-gray-600 hover:text-pink-500 hover:bg-pink-50',
-        bg: 'bg-pink-100',
+      rose: {
+        text: active ? "text-rose-600 dark:text-rose-400" : "text-gray-500 dark:text-gray-400",
+        bg: active ? "bg-rose-50 dark:bg-rose-900/30" : "bg-transparent",
       },
-      orange: {
-        active: 'text-orange-600 bg-orange-50',
-        inactive: 'text-gray-600 hover:text-orange-500 hover:bg-orange-50',
-        bg: 'bg-orange-100',
+      amber: {
+        text: active ? "text-amber-600 dark:text-amber-400" : "text-gray-500 dark:text-gray-400",
+        bg: active ? "bg-amber-50 dark:bg-amber-900/30" : "bg-transparent",
       },
-      purple: {
-        active: 'text-purple-600 bg-purple-50',
-        inactive: 'text-gray-600 hover:text-purple-500 hover:bg-purple-50',
-        bg: 'bg-purple-100',
+      violet: {
+        text: active ? "text-violet-600 dark:text-violet-400" : "text-gray-500 dark:text-gray-400",
+        bg: active ? "bg-violet-50 dark:bg-violet-900/30" : "bg-transparent",
       },
-    };
+    }
 
-    const colorSet = colors[color] || colors.blue;
-    return isActive ? colorSet.active : colorSet.inactive;
-  };
-
-  const getBgColorClass = (color: string, isActive: boolean) => {
-    const colors: { [key: string]: { active: string; hover: string } } = {
-      blue: { active: 'bg-blue-100', hover: 'group-hover:bg-blue-50' },
-      green: { active: 'bg-green-100', hover: 'group-hover:bg-green-50' },
-      pink: { active: 'bg-pink-100', hover: 'group-hover:bg-pink-50' },
-      orange: { active: 'bg-orange-100', hover: 'group-hover:bg-orange-50' },
-      purple: { active: 'bg-purple-100', hover: 'group-hover:bg-purple-50' },
-    };
-
-    const colorSet = colors[color] || colors.blue;
-    return isActive ? colorSet.active : colorSet.hover;
-  };
+    return colorMap[color] || colorMap.blue
+  }
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50 safe-area-bottom">
-      <div className="max-w-lg mx-auto px-2 py-2">
-        <div className="flex justify-between items-center gap-1">
+    <footer className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 shadow-2xl z-50 safe-area-bottom transition-colors duration-300 ">
+      <div className="max-w-lg mx-auto px-4 pt-2 ">
+        <div className="flex justify-between items-center gap-2">
           {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            
+            const Icon = item.icon
+            const active = isActive(item.path)
+            const colorClasses = getColorClasses(item.color, active)
+
             return (
               <button
                 key={item.id}
                 onClick={item.onClick}
-                className={`flex flex-col items-center flex-1 rounded-2xl transition-all duration-300 group relative py-2 ${getColorClasses(
-                  item.color,
+                className={`flex flex-col items-center flex-1 rounded-2xl transition-all duration-300 group relative py-2 px-2 ${
                   active
-                )}`}
-                title={item.label}
+                    ? colorClasses.text
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+                aria-label={item.label}
               >
                 <div
-                  className={`p-2.5 rounded-xl transition-all duration-300 ${getBgColorClass(
-                    item.color,
+                  className={`p-2.5 rounded-xl transition-all duration-300 ${
                     active
-                  )}`}
+                      ? colorClasses.bg
+                      : "bg-transparent group-hover:bg-gray-50 dark:group-hover:bg-gray-800"
+                  }`}
                 >
-                  <Icon className="w-5 h-5" strokeWidth={2} />
+                  <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 2} />
                 </div>
 
-                {/* Badge for notifications */}
                 {item.badge && (
                   <span
-                    className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-md ${
-                      active ? 'animate-pulse' : ''
-                    }`}
+                    className="absolute top-0 right-1 bg-gradient-to-br from-red-500 to-red-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center border-2 border-white dark:border-gray-900 shadow-lg animate-in fade-in zoom-in duration-300"
+                    aria-label={`${item.badge} عنصر`}
                   >
-                    {item.badge > 99 ? '99+' : item.badge}
+                    {item.badge > 99 ? "99+" : item.badge}
                   </span>
                 )}
 
-                <span className="text-xs mt-1.5 font-semibold leading-none whitespace-nowrap">
+                <span
+                  className={`text-[11px] mt-1 font-medium leading-none whitespace-nowrap transition-all duration-300 ${
+                    active ? "font-semibold" : ""
+                  }`}
+                >
                   {item.label}
                 </span>
               </button>
-            );
+            )
           })}
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
