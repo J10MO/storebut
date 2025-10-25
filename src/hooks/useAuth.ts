@@ -234,10 +234,11 @@ export const useAuthLogic = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ phone })
+        
       });
       
       const result = await response.json();
-      console.log('OTP response:', result);
+      // console.log('OTP response:', result);
       
       if (response.ok && result.success) {
         return { success: true, data: result };

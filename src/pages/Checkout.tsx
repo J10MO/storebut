@@ -176,7 +176,8 @@ const Checkout: React.FC = () => {
           quantity: item.quantity,
           price: item.product.price,
         })),
-        total_amount: getTotalPrice(),
+        total_amount: getTotalPrice() + shippingCost,
+        shipping_cost: shippingCost,
       }
 
       console.log("[v0] Submitting order with data:", orderData)
@@ -223,7 +224,7 @@ const Checkout: React.FC = () => {
         error.message || error.response?.data?.message || error.response?.data?.error || "حدث خطأ في إرسال الطلب"
 
       toast.error(errorMessage, {
-        description: "الرجاء ��لتحقق من البيانات والمحاولة مرة أخرى",
+        description: "الرجاء التحقق من البيانات والمحاولة مرة أخرى",
       })
     } finally {
       setLoading(false)
@@ -236,37 +237,42 @@ const Checkout: React.FC = () => {
   const deliveryAddress = getDeliveryAddress()
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 mb-15" dir="rtl">
+    <div className="min-h-screen bg-gray-50 dark:bg-black py-8 mb-15 transition-colors duration-300" dir="rtl">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">إتمام الطلب</h1>
-          <p className="text-gray-600">أكمل بياناتك لإتمام عملية الشراء</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">إتمام الطلب</h1>
+          <p className="text-gray-600 dark:text-gray-400">أكمل بياناتك لإتمام عملية الشراء</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-15">
           {/* نموذج بيانات التوصيل */}
           <div className="lg:col-span-2 space-y-6">
             {/* معلومات المستلم */}
-            <Card>
+            <Card className="dark:bg-gray-900/90 dark:border-gray-800">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 dark:text-white">
                   <User className="w-5 h-5" />
                   معلومات المستلم
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">اسم المستلم *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    اسم المستلم *
+                  </label>
                   <Input
                     type="text"
                     name="delivery_name"
                     value={formData.delivery_name}
                     onChange={handleInputChange}
                     placeholder="اسم الشخص الذي سيتسلم الطلب"
+                    className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    رقم الهاتف *
+                  </label>
                   <div className="relative">
                     <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input
@@ -275,7 +281,7 @@ const Checkout: React.FC = () => {
                       value={formData.delivery_phone}
                       onChange={handleInputChange}
                       placeholder="07XX XXX XXXX"
-                      className="pr-10"
+                      className="pr-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       dir="ltr"
                     />
                   </div>
@@ -284,16 +290,21 @@ const Checkout: React.FC = () => {
             </Card>
 
             {/* عنوان التوصيل */}
-            <Card>
+            <Card className="dark:bg-gray-900/90 dark:border-gray-800">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 dark:text-white">
                     <MapPin className="w-5 h-5" />
                     عنوان التوصيل
                   </CardTitle>
                   <div className="flex gap-2">
                     {!useCustomAddress && (
-                      <Button variant="outline" size="sm" onClick={() => setIsEditingAddress(!isEditingAddress)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditingAddress(!isEditingAddress)}
+                        className="dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
+                      >
                         {isEditingAddress ? <X className="w-4 h-4 ml-1" /> : <Edit className="w-4 h-4 ml-1" />}
                         {isEditingAddress ? "إلغاء" : "تعديل"}
                       </Button>
@@ -302,13 +313,18 @@ const Checkout: React.FC = () => {
                       variant={useCustomAddress ? "default" : "outline"}
                       size="sm"
                       onClick={() => setUseCustomAddress(!useCustomAddress)}
+                      className={
+                        useCustomAddress
+                          ? "bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+                          : "dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
+                      }
                     >
                       {useCustomAddress ? "استخدام عنواني" : "عنوان مختلف"}
                     </Button>
                   </div>
                 </div>
                 {!useCustomAddress && !isEditingAddress && userAddress.area && (
-                  <CardDescription>{formatAddress(userAddress)}</CardDescription>
+                  <CardDescription className="dark:text-gray-400">{formatAddress(userAddress)}</CardDescription>
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
@@ -316,11 +332,13 @@ const Checkout: React.FC = () => {
                   // نموذج العنوان المخصص
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">المحافظة *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        المحافظة *
+                      </label>
                       <select
                         value={customAddress.governorate}
                         onChange={(e) => handleCustomAddressChange("governorate", e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-right bg-white"
+                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-right bg-white dark:bg-gray-800 dark:text-white"
                       >
                         <option value="">اختر المحافظة</option>
                         {governorates.map((gov) => (
@@ -332,35 +350,41 @@ const Checkout: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">القضاء / المنطقة *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        المنطقة او القضاء *
+                      </label>
                       <Input
                         type="text"
                         value={customAddress.district}
                         onChange={(e) => handleCustomAddressChange("district", e.target.value)}
                         placeholder="اسم القضاء أو المنطقة"
-                        className="text-right"
+                        className="text-right dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">الحي *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        اسم الشارع او الحي *
+                      </label>
                       <Input
                         type="text"
                         value={customAddress.area}
                         onChange={(e) => handleCustomAddressChange("area", e.target.value)}
-                        placeholder="اسم الحي"
-                        className="text-right"
+                        placeholder="اسم الحي أو الشارع"
+                        className="text-right dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">أقرب نقطة دالة</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        أقرب نقطة دالة
+                      </label>
                       <Input
                         type="text"
                         value={customAddress.landmark}
                         onChange={(e) => handleCustomAddressChange("landmark", e.target.value)}
                         placeholder="مقابل، بجانب..."
-                        className="text-right"
+                        className="text-right dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
                   </div>
@@ -368,11 +392,13 @@ const Checkout: React.FC = () => {
                   // نموذج تعديل العنوان الأساسي
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">المحافظة *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        المحافظة *
+                      </label>
                       <select
                         value={userAddress.governorate}
                         onChange={(e) => handleUserAddressChange("governorate", e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-right bg-white"
+                        className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-right bg-white dark:bg-gray-800 dark:text-white"
                       >
                         <option value="">اختر المحافظة</option>
                         {governorates.map((gov) => (
@@ -384,44 +410,57 @@ const Checkout: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">القضاء / المنطقة *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        المنطقة او القضاء *
+                      </label>
                       <Input
                         type="text"
                         value={userAddress.district}
                         onChange={(e) => handleUserAddressChange("district", e.target.value)}
                         placeholder="اسم القضاء أو المنطقة"
-                        className="text-right"
+                        className="text-right dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">الحي *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        اسم الشارع او الحي *
+                      </label>
                       <Input
                         type="text"
                         value={userAddress.area}
                         onChange={(e) => handleUserAddressChange("area", e.target.value)}
-                        placeholder="اسم الحي"
-                        className="text-right"
+                        placeholder="اسم الحي أو الشارع"
+                        className="text-right dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">أقرب نقطة دالة</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        أقرب نقطة دالة
+                      </label>
                       <Input
                         type="text"
                         value={userAddress.landmark}
                         onChange={(e) => handleUserAddressChange("landmark", e.target.value)}
                         placeholder="مقابل، بجانب..."
-                        className="text-right"
+                        className="text-right dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
 
                     <div className="flex gap-2">
-                      <Button onClick={saveUserAddress} className="flex-1">
+                      <Button
+                        onClick={saveUserAddress}
+                        className="flex-1 bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+                      >
                         <Check className="w-4 h-4 ml-1" />
                         حفظ العنوان
                       </Button>
-                      <Button variant="outline" onClick={cancelEditAddress} className="flex-1 bg-transparent">
+                      <Button
+                        variant="outline"
+                        onClick={cancelEditAddress}
+                        className="flex-1 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 bg-transparent"
+                      >
                         <X className="w-4 h-4 ml-1" />
                         إلغاء
                       </Button>
@@ -429,17 +468,17 @@ const Checkout: React.FC = () => {
                   </div>
                 ) : userAddress.area ? (
                   // عرض العنوان الحالي
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-green-600 mt-0.5" />
+                      <MapPin className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-medium text-green-800 mb-2">عنوان التوصيل الحالي</h4>
-                        <p className="text-green-700 text-sm leading-relaxed">
+                        <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">عنوان التوصيل الحالي</h4>
+                        <p className="text-green-700 dark:text-green-400 text-sm leading-relaxed">
                           {formatAddress(userAddress)}
                           {userAddress.landmark && (
                             <>
                               <br />
-                              <span className="text-green-600">قرب: {userAddress.landmark}</span>
+                              <span className="text-green-600 dark:text-green-500">قرب: {userAddress.landmark}</span>
                             </>
                           )}
                         </p>
@@ -449,9 +488,12 @@ const Checkout: React.FC = () => {
                 ) : (
                   // لا يوجد عنوان
                   <div className="text-center py-8">
-                    <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 mb-4">لا يوجد عنوان مسجل في ملفك الشخصي</p>
-                    <Button onClick={() => setIsEditingAddress(true)}>
+                    <MapPin className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">لا يوجد عنوان مسجل في ملفك الشخصي</p>
+                    <Button
+                      onClick={() => setIsEditingAddress(true)}
+                      className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+                    >
                       <Edit className="w-4 h-4 ml-1" />
                       إضافة عنوان
                     </Button>
@@ -460,22 +502,25 @@ const Checkout: React.FC = () => {
 
                 {/* ملاحظات إضافية */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">ملاحظات إضافية (اختيارية)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    ملاحظات إضافية (اختيارية)
+                  </label>
                   <Textarea
                     name="notes"
                     value={formData.notes}
                     onChange={handleInputChange}
                     placeholder="أي ملاحظات أو تعليمات خاصة للتوصيل..."
                     rows={2}
+                    className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* طريقة الدفع */}
-            <Card>
+            <Card className="dark:bg-gray-900/90 dark:border-gray-800">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 dark:text-white">
                   <CreditCard className="w-5 h-5" />
                   طريقة الدفع
                 </CardTitle>
@@ -485,25 +530,29 @@ const Checkout: React.FC = () => {
                   onClick={() => setFormData({ ...formData, paymentMethod: "cash" })}
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.paymentMethod === "cash"
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-amber-600 dark:border-amber-500 bg-amber-50 dark:bg-amber-900/30"
+                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          formData.paymentMethod === "cash" ? "border-blue-600" : "border-gray-300"
+                          formData.paymentMethod === "cash"
+                            ? "border-amber-600 dark:border-amber-500"
+                            : "border-gray-300 dark:border-gray-600"
                         }`}
                       >
-                        {formData.paymentMethod === "cash" && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                        {formData.paymentMethod === "cash" && (
+                          <div className="w-3 h-3 rounded-full bg-amber-600 dark:bg-amber-500" />
+                        )}
                       </div>
                       <div>
-                        <p className="font-medium">الدفع عند الاستلام</p>
-                        <p className="text-sm text-gray-600">ادفع نقداً عند استلام الطلب</p>
+                        <p className="font-medium dark:text-white">الدفع عند الاستلام</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">ادفع نقداً عند استلام الطلب</p>
                       </div>
                     </div>
-                    <Truck className="w-6 h-6 text-gray-400" />
+                    <Truck className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
               </CardContent>
@@ -512,9 +561,9 @@ const Checkout: React.FC = () => {
 
           {/* ملخص الطلب */}
           <div className="space-y-6">
-            <Card>
+            <Card className="dark:bg-gray-900/90 dark:border-gray-800">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 dark:text-white">
                   <ShoppingBag className="w-5 h-5" />
                   ملخص الطلب
                 </CardTitle>
@@ -523,7 +572,7 @@ const Checkout: React.FC = () => {
                 {items.map((item) => (
                   <div key={item.product.id} className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center">
                         {item.product.image ? (
                           <img
                             src={item.product.image || "/placeholder.svg"}
@@ -535,27 +584,29 @@ const Checkout: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-sm">{item.product.name}</p>
-                        <p className="text-gray-600 text-sm">الكمية: {item.quantity}</p>
+                        <p className="font-medium text-sm dark:text-white">{item.product.name}</p>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">الكمية: {item.quantity}</p>
                       </div>
                     </div>
-                    <p className="font-medium">{(item.product.price * item.quantity).toLocaleString()} دينار</p>
+                    <p className="font-medium dark:text-white">
+                      {(item.product.price * item.quantity).toLocaleString()} دينار
+                    </p>
                   </div>
                 ))}
 
-                <Separator />
+                <Separator className="dark:bg-gray-800" />
 
                 <div className="space-y-2">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between dark:text-gray-300">
                     <span>المجموع الفرعي</span>
                     <span>{getTotalPrice().toLocaleString()} دينار</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between dark:text-gray-300">
                     <span>تكلفة التوصيل</span>
                     <span>{shippingCost === 0 ? "مجاني" : `${shippingCost.toLocaleString()} دينار`}</span>
                   </div>
-                  <Separator />
-                  <div className="flex justify-between font-bold text-lg">
+                  <Separator className="dark:bg-gray-800" />
+                  <div className="flex justify-between font-bold text-lg dark:text-white">
                     <span>الإجمالي</span>
                     <span>{totalWithShipping.toLocaleString()} دينار</span>
                   </div>
@@ -564,7 +615,7 @@ const Checkout: React.FC = () => {
                 <Button
                   onClick={handleSubmitOrder}
                   disabled={loading || !deliveryAddress.area}
-                  className="w-full mt-4"
+                  className="w-full mt-4 bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
                   size="lg"
                 >
                   {loading ? (
