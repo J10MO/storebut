@@ -12,7 +12,8 @@ export interface Product {
   emoji_icon: string | null;
   rating: string;
   reviews_count: number;
-  stock_quantity: boolean;
+  stock_quantity: number;
+  in_stock: boolean;
   discount: number;
   badge: string;
   created_at: string;

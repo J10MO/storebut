@@ -186,7 +186,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = "vertical"
             )}
 
             {/* البادجات */}
-            <div className="absolute top-3 left-3 flex flex-col gap-2">
+            <div className="absolute top-3 left-3 flex flex-col gap-1">
               {product.badge && (
                 <Badge className="bg-gradient-to-r from-amber-600 to-amber-700 text-white text-xs px-3 py-1.5 rounded-full shadow-lg border-0">
                   ⚡ {product.badge}
@@ -307,15 +307,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = "vertical"
         onClick={() => handleViewDetails()}
       >
         {/* البادجات */}
-        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-          {product.badge && (
-            <Badge className="bg-gradient-to-r from-amber-600 to-amber-700 text-white text-xs px-3 py-1.5 rounded-full shadow-xl border-0 whitespace-nowrap">
+        <div className="absolute top-2 left-1 z-10 flex flex-col gap-2">
+          {/* {product.badge && (
+            <Badge className="bg-gradient-to-r from-amber-200 to-amber-400 text-white text-xs px-1 py-0.5 rounded-full shadow-xl border-0 whitespace-nowrap">
               ⚡ {product.badge}
             </Badge>
-          )}
+          )} */}
           {product.discount > 0 && (
             <Badge className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs px-3 py-1.5 rounded-full shadow-xl border-0 whitespace-nowrap">
-              🔥 {product.discount}%
+              {product.discount}%
             </Badge>
           )}
         </div>
@@ -324,7 +324,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = "vertical"
         <button
           onClick={toggleWishlist}
           disabled={isFavoriteLoading}
-          className="absolute top-3 right-3 z-10 w-10 h-10 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-white dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 border border-white/50 dark:border-gray-700/50 disabled:opacity-50"
+          className="absolute top-3 right-3 z-10 w-10 h-10  dark: backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl hover:bg-white dark:hover:bg-gray-00 hover:scale-110 transition-all duration-300 border  dark:border-none disabled:opacity-50"
         >
           <Heart
             className={`w-5 h-5 transition-all ${
