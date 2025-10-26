@@ -444,10 +444,10 @@ export const AdsCarousel: React.FC<AdsCarouselProps> = ({ className = "" }) => {
                   </div>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                {/* <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
                   <h3 className="text-white font-semibold text-sm line-clamp-2">{ad.title_ar || ad.title}</h3>
                   {ad.product_price && <p className="text-green-400 font-bold text-lg mt-1">${ad.product_price}</p>}
-                </div>
+                </div> */}
               </Card>
             </div>
           ))}
