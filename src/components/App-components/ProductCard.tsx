@@ -1753,7 +1753,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = "vertical"
               <img
                 src={fullImageUrl || "/placeholder.svg"}
                 alt={product.name}
-                className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${
+                className={`w-full h-full object-fit transition-transform duration-700 group-hover:scale-110 ${
                   imageLoading ? "opacity-0" : "opacity-100"
                 }`}
                 loading="lazy"
@@ -1825,8 +1825,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = "vertical"
           </div>
         </CardContent>
 
-        <CardFooter className="pt-2 px-3 pb-3 mt-auto flex-shrink-0">
-          <div className="flex items-center gap-2 w-full">
+        <CardFooter className="pt-2 px-2 pb-3 mt-auto  flex-shrink-0">
+          <div className="flex items-center  gap-2 w-full">
             
 
             <Button

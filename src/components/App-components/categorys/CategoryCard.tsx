@@ -148,11 +148,11 @@ const CategoryCircleCard: React.FC<CategoryCircleCardProps> = ({
           </div>
 
           {/* Product Count Badge */}
-          {productCount > 0 && (
+          {/* {productCount > 0 && (
             <div className="absolute top-1 right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] md:text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center shadow-md border-2 border-white dark:border-gray-800 animate-pulse">
               {productCount > 99 ? "99+" : productCount}
             </div>
-          )}
+          )} */}
 
           {/* Hover Overlay */}
           <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/10 dark:group-hover:bg-white/10 transition-all duration-300" />
