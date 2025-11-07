@@ -90,7 +90,7 @@ const SearchPage: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-8">
           <form onSubmit={handleSubmit}>
-            <div className="relative p-[2px] rounded-[24px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+            <div className="relative p-[2px] rounded-[24px] bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <div className="relative bg-white dark:bg-gray-900 rounded-[22px] overflow-hidden">
                 <Search className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-6 h-6 z-10" />
                 <Input
@@ -105,11 +105,11 @@ const SearchPage: React.FC = () => {
           </form>
         </div>
 
-        <div className="mb-8 flex flex-wrap items-center gap-3">
+        <div className="mb-8 flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 transition-all"
+            className="flex items-center gap-1 px-3 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 transition-all"
           >
             <ArrowUpDown className="w-4 h-4" />
             <span className="font-medium">ترتيب</span>
@@ -118,7 +118,7 @@ const SearchPage: React.FC = () => {
 
           <Button
             variant="outline"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 transition-all"
+            className="flex items-center gap-1 px-3 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 transition-all"
           >
             <Calendar className="w-4 h-4" />
             <span className="font-medium">التاريخ</span>
@@ -128,7 +128,7 @@ const SearchPage: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 transition-all"
+            className="flex items-center gap-1 px-3 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 transition-all"
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span className="font-medium">الفلاتر</span>
@@ -138,9 +138,7 @@ const SearchPage: React.FC = () => {
               </Badge>
             )}
           </Button>
-
-          <div className="mr-auto flex items-center gap-2">
-            <Button
+ <Button
               variant="ghost"
               size="sm"
               onClick={() => handleViewModeChange("grid")}
@@ -164,7 +162,9 @@ const SearchPage: React.FC = () => {
             >
               <List className="w-5 h-5" />
             </Button>
-          </div>
+          {/* <div className="mr-auto flex items-center gap-2">
+           
+          </div> */}
         </div>
 
         {hasActiveFilters && (
@@ -271,7 +271,7 @@ const SearchPage: React.FC = () => {
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div className=" overflow-hidden">
           <ProductsList categoryId={selectedCategoryId} searchQuery={searchQuery} viewMode={viewMode} />
         </div>
       </div>
