@@ -3296,8 +3296,8 @@ const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({ product, open
                   <Truck className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-amber-900 dark:text-amber-300">شحن مجاني</p>
-                  <p className="text-xs text-amber-700 dark:text-amber-400">للطلبات فوق 50,000 د.ع</p>
+                  <p className="text-sm font-bold text-amber-900 dark:text-amber-300">شحن سريع</p>
+                  <p className="text-xs text-amber-700 dark:text-amber-400">توصيل سريع للطلبات  من 1-2 يوم</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800">
@@ -3309,7 +3309,7 @@ const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({ product, open
                   <p className="text-xs text-green-700 dark:text-green-400">معاملات 100% آمنة</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-200 dark:border-purple-800">
+              {/* <div className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-200 dark:border-purple-800">
                 <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center flex-shrink-0">
                   <RotateCcw className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
@@ -3317,7 +3317,7 @@ const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({ product, open
                   <p className="text-sm font-bold text-purple-900 dark:text-purple-300">إرجاع سهل</p>
                   <p className="text-xs text-purple-700 dark:text-purple-400">سياسة إرجاع 30 يوم</p>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Tabs */}

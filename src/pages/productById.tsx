@@ -2921,8 +2921,8 @@ const ProductById: React.FC = () => {
                       <Truck className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                     </div>
                     <div>
-                      <p className="text-base font-semibold text-amber-900 dark:text-amber-300">شحن مجاني</p>
-                      <p className="text-sm text-amber-700 dark:text-amber-400">للطلبات فوق 50,000 د.ع</p>
+                      <p className="text-base font-semibold text-amber-900 dark:text-amber-300">شحن سريع</p>
+                       <p className="text-xs text-amber-700 dark:text-amber-400">توصيل سريع للطلبات  من 1-2 يوم</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
@@ -2934,7 +2934,7 @@ const ProductById: React.FC = () => {
                       <p className="text-sm text-green-700 dark:text-green-400">معاملات 100% آمنة ومشفرة</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                  {/* <div className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
                     <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center">
                       <RotateCcw className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                     </div>
@@ -2942,7 +2942,7 @@ const ProductById: React.FC = () => {
                       <p className="text-base font-semibold text-purple-900 dark:text-purple-300">إرجاع سهل</p>
                       <p className="text-sm text-purple-700 dark:text-purple-400">سياسة إرجاع لمدة 30 يوم</p>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </CardContent>
             </Card>
